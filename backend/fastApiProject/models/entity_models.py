@@ -2,11 +2,9 @@ from enum import Enum
 from typing import Optional, List, Annotated
 from uuid import UUID, uuid4
 
-
 from pydantic import BaseModel
 from pydantic import StringConstraints
 from typing_extensions import Annotated
-
 
 
 class Gender(str, Enum):
@@ -17,6 +15,7 @@ class Gender(str, Enum):
 class Role(str, Enum):
     volunteer = "volunteer"
     blind = "blind"
+
 
 class Ability(str, Enum):
     cooking = "cooking"
@@ -33,9 +32,13 @@ class User(BaseModel):
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
     isConsultant: Optional[bool]
     password: str
+    avg_rating: Optional[float] = 0
+    rating_count: Optional[int] = 0
+
 
 class Call(BaseModel):
     pass
 
-class LoginRequest(BaseModel):
-    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
+
+class Feedback(BaseModel):
+    pass

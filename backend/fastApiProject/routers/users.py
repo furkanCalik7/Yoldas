@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from ..models import models
+from ..models import entity_models, request_models
 
 from ..services import user_manager
 
@@ -13,13 +13,13 @@ async def get_user(user_id):
 
 
 @router.post("/register")
-async def add_user(user: models.User):
+async def add_user(user: entity_models.User):
     # If there is a missing or wrong input, it returns appropriate response.
     return user_manager.add_user(user)
 
 
 @router.get("/login")
-async def login(loginRequest: models.LoginRequest):
+async def login(loginRequest: request_models.LoginRequest):
     # If there is a missing or wrong input, it returns appropriate response.
     pass
 
