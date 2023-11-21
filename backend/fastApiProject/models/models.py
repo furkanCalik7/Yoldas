@@ -2,7 +2,11 @@ from enum import Enum
 from typing import Optional, List, Annotated
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, StringConstraints
+
+from pydantic import BaseModel
+from pydantic import StringConstraints
+from typing_extensions import Annotated
+
 
 
 class Gender(str, Enum):
@@ -26,7 +30,7 @@ class User(BaseModel):
     gender: Gender
     roles: Role
     abilities: Optional[list[Ability]]
-    phone_number: str  # TODO pydantic phone validator
+    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
     isConsultant: Optional[bool]
     password: str
 
