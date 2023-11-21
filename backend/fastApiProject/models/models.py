@@ -38,5 +38,4 @@ class Call(BaseModel):
     pass
 
 class LoginRequest(BaseModel):
-    phone_number: str
-    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(+90)?[0-9]{10}$")]
+    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
