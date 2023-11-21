@@ -11,10 +11,8 @@ class Gender(str, Enum):
 
 
 class Role(str, Enum):
-    admin = "admin"
-    user = "user"
-    student = "student"
-
+    volunteer = "volunteer"
+    blind = "blind"
 
 class Ability(str, Enum):
     cooking = "cooking"
