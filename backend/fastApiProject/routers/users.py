@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
-from models.models import User
-from services import user_manager
+from ..models import models
+
+from ..services import user_manager
 
 router = APIRouter(prefix="/users",)
 
@@ -12,5 +13,6 @@ async def get_users():
 
 
 @router.post("/add_user")
-async def add_user(user: User):
+async def add_user(user: models.User):
+    # If there is a missing or wrong input, it returns appropriate response.
     return user_manager.add_user(user)

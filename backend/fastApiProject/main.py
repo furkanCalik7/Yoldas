@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import FastAPI, HTTPException
 
 from fastapi import Depends, FastAPI
-from routers import users
+from .routers import users
 
 app = FastAPI()
 

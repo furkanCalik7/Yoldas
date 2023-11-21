@@ -1,6 +1,6 @@
-from dao import user_dao
-from models.models import User
+from ..dao import user_dao
+from ..models import models
 
 
-def add_user(user: User):
+def add_user(user: models.User):
     user_dao.add_user(user)

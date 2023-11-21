@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+db_connection/.env
 .venv
 env/
 venv/
@@ -151,6 +151,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+db_connection/credentials.json
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
