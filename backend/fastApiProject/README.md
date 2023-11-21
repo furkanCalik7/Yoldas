@@ -1,8 +1,8 @@
 To use the backend:
 - 
-- set to directory "fastApiProject"
+- set to directory "backend"
 - run "pip install -r requirement.txt"
-- run "uvicorn main:app --reload"
+- run "uvicorn fastApiProject.main:app --reload"
 - hopefully, there should be no errors
 
 While developing:
