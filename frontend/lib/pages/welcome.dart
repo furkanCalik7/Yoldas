@@ -12,6 +12,12 @@ class Welcome extends StatelessWidget {
         child: Column(
           children: [
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20)
+                //more than 50% of width makes circle
+              ),
               margin: EdgeInsets.fromLTRB(0, 100, 0, 30),
               child: Icon(
                 Icons.blind,
