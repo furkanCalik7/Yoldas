@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/buttons/button_default.dart';
+import 'package:frontend/custom_widgets/buttons/button_default.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -14,10 +14,9 @@ class Welcome extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20)
-                //more than 50% of width makes circle
-              ),
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)
+                  //more than 50% of width makes circle
+                  ),
               margin: EdgeInsets.fromLTRB(0, 100, 0, 30),
               child: Icon(
                 Icons.blind,
@@ -25,16 +24,18 @@ class Welcome extends StatelessWidget {
               ),
             ),
             Center(
-              child: Text("YOLDAS",
+              child: Text(
+                "YOLDAS",
                 style: TextStyle(
                     fontSize: 60,
                     fontWeight: FontWeight.bold,
-                    fontFamily: "WendyOne"
-                ),
+                    fontFamily: "WendyOne"),
               ),
             ),
             ButtonDefault(text: "Giris Yap", action: () {}),
-            SizedBox(height: 20.0,),
+            SizedBox(
+              height: 20.0,
+            ),
             ButtonDefault(text: "Kaydol", action: () {})
           ],
         ),
@@ -42,5 +43,3 @@ class Welcome extends StatelessWidget {
     );
   }
 }
-
-
