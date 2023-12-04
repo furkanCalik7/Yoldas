@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/custom_widgets/buttons/button_default.dart';
+import 'package:frontend/custom_widgets/buttons/button_big.dart';
+import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -7,7 +9,7 @@ class Welcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(242, 242, 244, 1),
+      backgroundColor: customBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -15,7 +17,6 @@ class Welcome extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(20)
-                  //more than 50% of width makes circle
                   ),
               margin: EdgeInsets.fromLTRB(0, 100, 0, 30),
               child: Icon(
@@ -24,19 +25,13 @@ class Welcome extends StatelessWidget {
               ),
             ),
             Center(
-              child: Text(
-                "YOLDAS",
-                style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "WendyOne"),
-              ),
+              child: TextHead(line: "YOLDAS"),
             ),
-            ButtonDefault(text: "Giris Yap", action: () {}),
+            ButtonBig(text: "Giris Yap", action: () {}),
             SizedBox(
               height: 20.0,
             ),
-            ButtonDefault(text: "Kaydol", action: () {})
+            ButtonBig(text: "Kaydol", action: () {})
           ],
         ),
       ),
