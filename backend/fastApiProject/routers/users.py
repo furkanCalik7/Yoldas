@@ -8,11 +8,14 @@ from ..models.entity_models import Ability
 from ..services import user_manager
 
 router = APIRouter(prefix="/users", )
+from firebase_admin import auth
 
 
 @router.get("/get_user_by_user_id/{user_id}")
 async def get_user_by_user_id(user_id: str):
-    return user_manager.get_user_by_user_id(user_id)
+    user = auth.get_user("i2cnUX3HPnhrTnh3zWDWdG3kUqi2")
+    return (200, user)
+    #return user_manager.get_user_by_user_id(user_id)
 
 
 @router.get("/get_user_by_phone_number/{phone_number}")
@@ -36,7 +39,7 @@ async def send_feedback(feedbackRequest: request_models.FeedbackRequest):
 
 
 @router.post("/register")
-async def add_user(user: entity_models.User):
+async def register_user(user: entity_models.User):
     # If there is a missing or wrong input, it returns appropriate response.
     return user_manager.add_user(user)
 

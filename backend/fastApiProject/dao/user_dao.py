@@ -1,5 +1,4 @@
-from typing import List
-from urllib.error import HTTPError
+from firebase_admin import auth
 
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
@@ -12,9 +11,22 @@ db = firebase_auth.connect_db()
 
 
 def add_user(user: User):
-    doc_ref = db.collection("UserCollection").document()
+    #try catch for code below
+    try:
+        auth_user = auth.create_user(
+            phone_number=user.phone_number,
+            password=user.password
+        )
+    except auth.PhoneNumberAlreadyExistsError as e:
+        raise HTTPException(status_code=400, detail=f"User with phone number {user.phone_number} already exists")
+    #get user id from user object and add it to firestore with additional fields
+    user_id = auth_user.uid
+    doc_ref = db.collection("UserCollection").document(user_id)
+    doc = doc_ref.get()
+    if doc.exists:
+        raise HTTPException(status_code=400, detail=f"User with id {user_id} already exists")
     doc_ref.set(user.model_dump())
-
+    return user.model_dump()
 
 def send_feedback(feedbackRequest):
     doc_ref = db.collection("UserCollection").document(feedbackRequest.user_id)

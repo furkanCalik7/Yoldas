@@ -33,13 +33,13 @@ class User(BaseModel):
     last_name: str
     gender: Gender
     role: Role
-    abilities: Optional[list[Ability]]
-    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
-    isConsultant: Optional[bool]
+    abilities: Optional[list[Ability]] = []
+    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9]\d{1,14}$")]
+    isConsultant: Optional[bool] = False
     password: str
     avg_rating: Optional[float] = 0
     rating_count: Optional[int] = 0
-    notification_settings: Optional[NotificationSettings]
+    notification_settings: Optional[NotificationSettings] = NotificationSettings( callNotifications=False, messageNotifications=False)
 
 
 class Call(BaseModel):
