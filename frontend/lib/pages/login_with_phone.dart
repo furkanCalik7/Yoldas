@@ -15,12 +15,13 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController controller = TextEditingController();
-  String initialCountry = 'NG';
-  PhoneNumber number = PhoneNumber(isoCode: 'NG');
+  String initialCountry = 'TR';
+  PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: customBackgroundColor,
       appBar: AppbarDefault(),
       body: Column(
@@ -91,7 +92,9 @@ class _LoginState extends State<Login> {
                   ),
 
                   SizedBox(height: 30,),
-                  ButtonMain(text: "Giriş Yap", action: () {})
+                  ButtonMain(text: "Giriş Yap", action: () {
+                    Navigator.pushReplacementNamed(context, "/verification");
+                  })
 
 
 
