@@ -27,7 +27,9 @@ class Welcome extends StatelessWidget {
             Center(
               child: TextHead(line: "YOLDAS"),
             ),
-            ButtonBig(text: "Giris Yap", action: () {}),
+            ButtonBig(text: "Giris Yap", action: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            }),
             SizedBox(
               height: 20.0,
             ),
