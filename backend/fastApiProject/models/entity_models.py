@@ -22,23 +22,25 @@ class Ability(str, Enum):
     sports = "sports"
 
 
+class NotificationSettings(BaseModel):
+    callNotifications: bool
+    messageNotifications: bool
+
+
 class User(BaseModel):
     # id: Optional[UUID] = uuid4()
     first_name: str
     last_name: str
     gender: Gender
-    roles: Role
+    role: Role
     abilities: Optional[list[Ability]]
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
     isConsultant: Optional[bool]
     password: str
     avg_rating: Optional[float] = 0
     rating_count: Optional[int] = 0
+    notification_settings: Optional[NotificationSettings]
 
 
 class Call(BaseModel):
-    pass
-
-
-class Feedback(BaseModel):
     pass
