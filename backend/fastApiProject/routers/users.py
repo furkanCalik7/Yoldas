@@ -1,9 +1,8 @@
-from typing import List, Annotated
-
-from fastapi import APIRouter, Query
+from typing import Annotated
+from fastapi import APIRouter,Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from ..models import entity_models, request_models
-from ..models.entity_models import Ability
 
 from ..services import user_manager
 
@@ -11,12 +10,15 @@ router = APIRouter(prefix="/users", )
 from firebase_admin import auth
 
 
-@router.get("/get_user_by_user_id/{user_id}")
-async def get_user_by_user_id(user_id: str):
-    user = auth.get_user("i2cnUX3HPnhrTnh3zWDWdG3kUqi2")
-    return (200, user)
-    #return user_manager.get_user_by_user_id(user_id)
+@router.get("/users/me/", response_model=entity_models.User)
+async def read_users_me(
+    current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]
+):
+    return current_user
 
+@router.get("/users/role")
+async def get_user_role(current_user_role: Annotated[entity_models.User, Depends(user_manager.get_current_user_role)]):
+    return current_user_role
 
 @router.get("/get_user_by_phone_number/{phone_number}")
 async def get_user_by_phone_number(phone_number: str):
@@ -41,7 +43,7 @@ async def send_feedback(feedbackRequest: request_models.FeedbackRequest):
 @router.post("/register")
 async def register_user(user: entity_models.User):
     # If there is a missing or wrong input, it returns appropriate response.
-    return user_manager.add_user(user)
+    return user_manager.register_user(user)
 
 
 @router.put("/update/{user_id}")
@@ -49,7 +51,9 @@ async def update_user(update_user_request: entity_models.User, user_id: str):
     return user_manager.update_user_request(user_id, update_user_request)
 
 
-@router.get("/login")
-async def login(loginRequest: request_models.LoginRequest):
-    # If there is a missing or wrong input, it returns appropriate response.
-    pass
+@router.post("/login")
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+):
+    return user_manager.login_for_access_token(form_data)
+

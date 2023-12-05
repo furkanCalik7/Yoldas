@@ -7,6 +7,7 @@ from fastApiProject.models.entity_models import Gender, Role, Ability, Notificat
 
 
 class LoginRequest(BaseModel):
+    password: str
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
 
 class FeedbackRequest(BaseModel):

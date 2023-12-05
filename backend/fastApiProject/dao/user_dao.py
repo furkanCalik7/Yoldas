@@ -1,32 +1,28 @@
-from firebase_admin import auth
-
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
-
-from ..models import request_models
 from ..models.entity_models import User
 from ..db_connection import firebase_auth
 
 db = firebase_auth.connect_db()
 
 
-def add_user(user: User):
-    #try catch for code below
-    try:
-        auth_user = auth.create_user(
-            phone_number=user.phone_number,
-            password=user.password
-        )
-    except auth.PhoneNumberAlreadyExistsError as e:
+def register_user(user: User):
+    # check if user exists
+    docs = (
+        db.collection("UserCollection")
+        .where(filter=FieldFilter("phone_number", "==", user.phone_number))
+        .stream()
+    )
+    docs_list = list(docs)
+    if docs_list:
         raise HTTPException(status_code=400, detail=f"User with phone number {user.phone_number} already exists")
-    #get user id from user object and add it to firestore with additional fields
-    user_id = auth_user.uid
-    doc_ref = db.collection("UserCollection").document(user_id)
-    doc = doc_ref.get()
-    if doc.exists:
-        raise HTTPException(status_code=400, detail=f"User with id {user_id} already exists")
-    doc_ref.set(user.model_dump())
-    return user.model_dump()
+
+    #set document id as phone number
+    user_col_ref = db.collection("UserCollection").document(user.phone_number)
+    user_col_ref.set(user.model_dump())
+    # TODO: add token to response
+    return {"user": user.model_dump()}
+
 
 def send_feedback(feedbackRequest):
     doc_ref = db.collection("UserCollection").document(feedbackRequest.user_id)
@@ -34,8 +30,8 @@ def send_feedback(feedbackRequest):
     if not doc.exists:
         raise HTTPException(status_code=404, detail=f"User with id {feedbackRequest.user_id} not found")
 
-        # increase rating count by 1
-        # update average rating
+    # increase rating count by 1
+    # update average rating
     user = User.model_validate(doc.to_dict())
     user.avg_rating = ((user.avg_rating * user.rating_count + feedbackRequest.rating)
                        / (user.rating_count + 1))
@@ -52,6 +48,14 @@ def get_user_by_user_id(user_id):
     return dict(doc.to_dict())
 
 
+def token_verify(uid):
+    doc_ref = db.collection("UserCollection").document(uid)
+    doc = doc_ref.get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail=f"User with id {uid} not found")
+    return doc.to_dict()
+
+
 def get_user_by_phone_number(phone_number):
     docs = (
         db.collection("UserCollection")
@@ -63,10 +67,8 @@ def get_user_by_phone_number(phone_number):
     if not docs_list:
         raise HTTPException(status_code=404, detail=f"User with phone number {phone_number} not found")
 
-    user_list = {}
     for doc in docs_list:
-        user_list[doc.id] = doc.to_dict()
-    return user_list
+        return doc.to_dict()
 
 
 def get_user_by_matching_ability(ability):

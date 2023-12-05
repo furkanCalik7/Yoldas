@@ -7,6 +7,17 @@ from pydantic import StringConstraints
 from typing_extensions import Annotated
 
 
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    phone_number: str | None = None
+
+
 class Gender(str, Enum):
     male = "male"
     female = "female"
@@ -39,7 +50,7 @@ class User(BaseModel):
     password: str
     avg_rating: Optional[float] = 0
     rating_count: Optional[int] = 0
-    notification_settings: Optional[NotificationSettings] = NotificationSettings( callNotifications=False, messageNotifications=False)
+    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False,                                                                            messageNotifications=False)
 
 
 class Call(BaseModel):

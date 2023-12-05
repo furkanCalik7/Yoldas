@@ -153,6 +153,7 @@ dmypy.json
 cython_debug/
 
 db_connection/credentials.json
+db_connection/secret_key.txt
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
