@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/custom_widgets/buttons/button_default.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
