@@ -2,16 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
+import 'package:frontend/pages/sms_code_page.dart';
+import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class CustomForm extends StatefulWidget {
-  const CustomForm({Key? key}) : super(key: key);
+  const CustomForm({Key? key, required this.userType}) : super(key: key);
 
+  final UserType userType;
   @override
   State<CustomForm> createState() => _CustomFormState();
 }
 
 class _CustomFormState extends State<CustomForm> {
+  UserType? userType;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userType = widget.userType;
+  }
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController controller = TextEditingController();
@@ -149,6 +161,12 @@ class _CustomFormState extends State<CustomForm> {
                     const SnackBar(content: Text('Gönderiliyor...')),
                   );
                   print(customPhoneNumberInput.getPhoneNumber());
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => PinCodeVerificationScreen(
+                            userType: userType!,
+                            phoneNumber:
+                                customPhoneNumberInput.getPhoneNumber(),
+                          )));
                 }
               },
               text: 'Submit',
