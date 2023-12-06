@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
+import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:vibration/vibration.dart';
+
+import 'blind_home_screen.dart';
 
 class PinCodeVerificationScreen extends StatefulWidget {
+
+  static const String routeName = "/pin_code_verification_screen";
   const PinCodeVerificationScreen({
     Key? key,
     this.phoneNumber = "+905555555555",
@@ -58,6 +64,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppbarDefault(),
       backgroundColor: customBackgroundColor,
       body: GestureDetector(
@@ -79,6 +86,11 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                         child: Text(
                           "${widget.phoneNumber} a gelen doğrulama kodunu giriniz",
                           textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                          ),
                         )
                     ),
                     const SizedBox(
@@ -154,10 +166,10 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Text(
-                        hasError ? "*Please fill up all the cells properly" : "",
+                        hasError ? "*Lütfen tüm haneleri doğru bir şekilde doldurun" : "",
                         style: const TextStyle(
                           color: Colors.red,
-                          fontSize: 12,
+                          fontSize: 15,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -170,7 +182,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                       children: [
                         const Text(
                           "Kodu almadınız mı? ",
-                          style: TextStyle(color: Colors.black54, fontSize: 15),
+                          style: TextStyle(color: Colors.black54, fontSize: 20),
                         ),
                         TextButton(
                           onPressed: () => snackBar("OTP resend!!"),
@@ -179,7 +191,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                             style: TextStyle(
                               color: Color(0xFF91D3B3),
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 20,
                             ),
                           ),
                         )
@@ -199,12 +211,14 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                           if (currentText.length != 4 || currentText != "1234") {
                             errorController!.add(ErrorAnimationType
                                 .shake); // Triggering error shake animation
+                            Vibration.vibrate();
                             setState(() => hasError = true);
                           } else {
                             setState(
                                   () {
                                 hasError = false;
                                 snackBar("OTP Verified!!");
+                                Navigator.pushReplacementNamed(context, BlindMainFrame.routeName);
                               },
                             );
                           }
