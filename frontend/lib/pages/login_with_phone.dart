@@ -4,6 +4,7 @@ import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
+import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -104,8 +105,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ButtonMain(
                       text: "Giriş Yap",
                       action: () {
-                        Navigator.pushNamed(
-                            context, PinCodeVerificationScreen.routeName);
+                        Navigator.of(context).push(
+                            MaterialPageRoute(
+                            builder: (context) => PinCodeVerificationScreen(userType: UserType.blind, phoneNumber: phone_controller.text,)
+                          ),
+                        );
                       })
 
                   // ElevatedButton(
