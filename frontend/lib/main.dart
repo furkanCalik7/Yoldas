@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/blind_home_screen.dart';
+import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -18,5 +19,7 @@ void main() => runApp(MaterialApp(
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
         BlindMainFrame.routeName: (context) => const BlindMainFrame(),
+        CategorySelectionScreen.routeName: (context) =>
+            const CategorySelectionScreen(),
       },
     ));

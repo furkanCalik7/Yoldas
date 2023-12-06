@@ -3,6 +3,7 @@ import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
+import 'package:frontend/pages/category_selection_screen.dart';
 class BlindHomeScreen extends StatelessWidget {
   const BlindHomeScreen({super.key});
 
@@ -24,7 +25,7 @@ class BlindHomeScreen extends StatelessWidget {
             SizedBox(height: 50,),
             TappableIcon(
               action: () {
-                print("tapped to 1");
+                Navigator.pushNamed(context, CategorySelectionScreen.routeName);
               },
               iconData: Icons.person_search,
               size: 150,
