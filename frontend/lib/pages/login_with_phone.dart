@@ -3,18 +3,22 @@ import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
+import 'package:frontend/pages/sms_code_page.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
+
+  static const String routeName = "/login";
 }
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController phone_controller = TextEditingController();
+  final TextEditingController password_controller = TextEditingController();
   String initialCountry = 'TR';
   PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
@@ -59,7 +63,7 @@ class _LoginState extends State<Login> {
                         autoValidateMode: AutovalidateMode.disabled,
                         selectorTextStyle: TextStyle(color: Colors.black),
                         initialValue: number,
-                        textFieldController: controller,
+                        textFieldController: phone_controller,
                         formatInput: true,
                         keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
                         inputBorder: OutlineInputBorder(),
@@ -93,11 +97,8 @@ class _LoginState extends State<Login> {
 
                   SizedBox(height: 30,),
                   ButtonMain(text: "Giriş Yap", action: () {
-                    Navigator.pushReplacementNamed(context, "/verification");
+                    Navigator.pushNamed(context, PinCodeVerificationScreen.routeName);
                   })
-
-
-
 
 
                   // ElevatedButton(
@@ -139,7 +140,8 @@ class _LoginState extends State<Login> {
 
   @override
   void dispose() {
-    controller.dispose();
+    phone_controller.dispose();
+    password_controller.dispose();
     super.dispose();
   }
 }
