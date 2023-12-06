@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/profile_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,6 +22,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SettingsTile.navigation(
                 leading: Icon(Icons.person),
                 title: Text('Profil'),
+                onPressed: (BuildContext context) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => ProfileScreen()));
+                },
               ),
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
