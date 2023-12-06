@@ -5,16 +5,17 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-class Login extends StatefulWidget {
-  const Login({super.key});
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginScreen> createState() => _LoginScreenState();
 
   static const String routeName = "/login";
 }
 
-class _LoginState extends State<Login> {
+class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController phone_controller = TextEditingController();
@@ -36,8 +37,7 @@ class _LoginState extends State<Login> {
             child: Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)
-              ),
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
                 children: [
                   Column(
@@ -65,7 +65,8 @@ class _LoginState extends State<Login> {
                         initialValue: number,
                         textFieldController: phone_controller,
                         formatInput: true,
-                        keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+                        keyboardType: TextInputType.numberWithOptions(
+                            signed: true, decimal: true),
                         inputBorder: OutlineInputBorder(),
                         onSaved: (PhoneNumber number) {
                           print('On Saved: $number');
@@ -74,7 +75,9 @@ class _LoginState extends State<Login> {
                     ],
                   ),
 
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
 
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,11 +98,15 @@ class _LoginState extends State<Login> {
                     ],
                   ),
 
-                  SizedBox(height: 30,),
-                  ButtonMain(text: "Giriş Yap", action: () {
-                    Navigator.pushNamed(context, PinCodeVerificationScreen.routeName);
-                  })
-
+                  SizedBox(
+                    height: 30,
+                  ),
+                  ButtonMain(
+                      text: "Giriş Yap",
+                      action: () {
+                        Navigator.pushNamed(
+                            context, PinCodeVerificationScreen.routeName);
+                      })
 
                   // ElevatedButton(
                   //   onPressed: () {
@@ -119,7 +126,6 @@ class _LoginState extends State<Login> {
                   //   },
                   //   child: Text('Save'),
                   // ),
-
                 ],
               ),
             ),
@@ -131,7 +137,7 @@ class _LoginState extends State<Login> {
 
   void getPhoneNumber(String phoneNumber) async {
     PhoneNumber number =
-    await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
+        await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
 
     setState(() {
       this.number = number;

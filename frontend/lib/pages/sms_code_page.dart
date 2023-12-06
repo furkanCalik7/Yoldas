@@ -5,6 +5,7 @@ import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
+import 'package:frontend/utility/types.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/custom_widgets/colors.dart';
@@ -13,14 +14,15 @@ import 'package:vibration/vibration.dart';
 import 'blind_home_screen.dart';
 
 class PinCodeVerificationScreen extends StatefulWidget {
-
   static const String routeName = "/pin_code_verification_screen";
   const PinCodeVerificationScreen({
     Key? key,
     this.phoneNumber = "+905555555555",
+    required this.userType,
   }) : super(key: key);
 
   final String? phoneNumber;
+  final UserType userType;
 
   @override
   State<PinCodeVerificationScreen> createState() =>
@@ -37,9 +39,11 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
   bool hasError = false;
   String currentText = "";
   final formKey = GlobalKey<FormState>();
+  UserType? userType;
 
   @override
   void initState() {
+    userType = widget.userType;
     errorController = StreamController<ErrorAnimationType>();
     super.initState();
   }
@@ -77,22 +81,21 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
               const TextContainer(text: "Dogrulama Kodunu Girin"),
               Container(
                 decoration: BoxDecoration(
-                    color: Colors.white, borderRadius: BorderRadius.circular(20)
-                ),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
                 child: Column(
                   children: [
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 8),
                         child: Text(
                           "${widget.phoneNumber} a gelen doğrulama kodunu giriniz",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                               color: Colors.black,
                               fontSize: 20,
-                              fontWeight: FontWeight.bold
-                          ),
-                        )
-                    ),
+                              fontWeight: FontWeight.bold),
+                        )),
                     const SizedBox(
                       height: 20,
                     ),
@@ -127,8 +130,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                               fieldHeight: 50,
                               fieldWidth: 40,
                               activeFillColor: Colors.white,
-                              inactiveFillColor: Colors.white
-                          ),
+                              inactiveFillColor: Colors.white),
                           cursorColor: Colors.black,
                           animationDuration: const Duration(milliseconds: 300),
                           enableActiveFill: true,
@@ -166,7 +168,9 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Text(
-                        hasError ? "*Lütfen tüm haneleri doğru bir şekilde doldurun" : "",
+                        hasError
+                            ? "*Lütfen tüm haneleri doğru bir şekilde doldurun"
+                            : "",
                         style: const TextStyle(
                           color: Colors.red,
                           fontSize: 15,
@@ -201,24 +205,30 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                       height: 14,
                     ),
                     Container(
-                      margin:
-                      const EdgeInsets.symmetric(vertical: 16.0, horizontal: 30),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 30),
                       child: ButtonMain(
                         text: "Dogrula",
                         action: () {
                           formKey.currentState!.validate();
                           // conditions for validating
-                          if (currentText.length != 4 || currentText != "1234") {
+                          if (currentText.length != 4 ||
+                              currentText != "1234") {
                             errorController!.add(ErrorAnimationType
                                 .shake); // Triggering error shake animation
                             Vibration.vibrate();
                             setState(() => hasError = true);
                           } else {
                             setState(
-                                  () {
+                              () {
                                 hasError = false;
                                 snackBar("OTP Verified!!");
-                                Navigator.pushReplacementNamed(context, BlindMainFrame.routeName);
+                                if (userType == UserType.blind) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, BlindMainFrame.routeName, (r) {
+                                    return false;
+                                  });
+                                }
                               },
                             );
                           }
@@ -228,7 +238,6 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(
                 height: 16,
               ),

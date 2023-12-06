@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_big.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:frontend/pages/login_with_phone.dart';
+import 'package:frontend/pages/onboarding_screen.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -16,8 +18,7 @@ class Welcome extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)
-                  ),
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
               margin: EdgeInsets.fromLTRB(0, 100, 0, 30),
               child: Icon(
                 Icons.blind,
@@ -27,13 +28,19 @@ class Welcome extends StatelessWidget {
             Center(
               child: TextHead(line: "YOLDAS"),
             ),
-            ButtonBig(text: "Giris Yap", action: () {
-              Navigator.pushNamed(context, '/login');
-            }),
+            ButtonBig(
+                text: "Giris Yap",
+                action: () {
+                  Navigator.pushNamed(context, LoginScreen.routeName);
+                }),
             SizedBox(
               height: 20.0,
             ),
-            ButtonBig(text: "Kaydol", action: () {})
+            ButtonBig(
+                text: "Kaydol",
+                action: () {
+                  Navigator.pushNamed(context, OnboardingScreen.routeName);
+                })
           ],
         ),
       ),

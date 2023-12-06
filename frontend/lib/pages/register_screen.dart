@@ -8,6 +8,8 @@ import 'package:frontend/utility/types.dart';
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key, required this.userType});
 
+  static const String routeName = "/register";
+
   final UserType userType;
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,9 @@ class RegisterScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
                 margin: const EdgeInsets.all(20),
-                child: const CustomForm(),
+                child: CustomForm(
+                  userType: userType,
+                ),
               ),
             ],
           ),
