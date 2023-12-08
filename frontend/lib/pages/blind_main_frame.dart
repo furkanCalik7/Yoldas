@@ -4,6 +4,7 @@ import 'package:frontend/pages/blind_home_screen.dart';
 import 'package:frontend/pages/settings_screen.dart';
 
 import '../custom_widgets/appbars/appbar_custom.dart';
+import 'ai_model_selection_page.dart';
 class BlindMainFrame extends StatefulWidget {
   const BlindMainFrame({super.key});
   static const String routeName = "/blind_main_frame";
@@ -22,9 +23,7 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
   ];
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: AI',
-    ),
+    AIModelSelectionPage(),
     BlindHomeScreen(),
     SettingsScreen(),
   ];
