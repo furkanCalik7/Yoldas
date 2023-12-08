@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
 
 const List<IconData> icons = [
@@ -28,6 +29,7 @@ class CategorySelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: customBackgroundColor,
       appBar: AppbarCustom(
         title: "Kategori Seç",
       ),
