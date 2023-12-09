@@ -5,6 +5,7 @@ import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:http/http.dart' as http;
 
 class CustomForm extends StatefulWidget {
   const CustomForm({Key? key, required this.userType}) : super(key: key);
@@ -72,6 +73,25 @@ class _CustomFormState extends State<CustomForm> {
     confirmPasswordController.dispose();
     phoneNumberController.dispose();
     super.dispose();
+  }
+
+  void register() async {
+
+    String name_and_surname = nameController.text;
+    String name = name_and_surname.split(" ")[0];
+    String surname = name_and_surname.split(" ")[1];
+    String mail = mailController.text;
+    String password = passwordController.text;
+    String phoneNumber = phoneNumberController.text;
+    Future response =  http.post(Uri.parse('http://127.0.0.1:8000/users/register'), body: {
+      'first_name': name,
+      'last_name': surname,
+      'mail': mail,
+      'password': password,
+      'phone_number': phoneNumber,
+    });
+
+
   }
 
   @override
