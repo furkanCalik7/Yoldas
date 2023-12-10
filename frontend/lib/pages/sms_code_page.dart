@@ -226,6 +226,12 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                                 snackBar("OTP Verified!!");
                                 if (userType == UserType.blind) {
                                   Navigator.pushNamedAndRemoveUntil(
+                                      context, BlindMainFrame.routeName, (r) {
+                                    return false;
+                                  });
+                                }
+                                else if (userType == UserType.volunteer) {
+                                  Navigator.pushNamedAndRemoveUntil(
                                       context, VolunteerMainFrame.routeName, (r) {
                                     return false;
                                   });
