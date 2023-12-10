@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
@@ -6,6 +9,7 @@ import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CustomForm extends StatefulWidget {
   const CustomForm({Key? key, required this.userType}) : super(key: key);
@@ -75,23 +79,58 @@ class _CustomFormState extends State<CustomForm> {
     super.dispose();
   }
 
-  void register() async {
+  Future<int> register(String phoneNumber) async {
 
     String name_and_surname = nameController.text;
     String name = name_and_surname.split(" ")[0];
     String surname = name_and_surname.split(" ")[1];
-    String mail = mailController.text;
     String password = passwordController.text;
-    String phoneNumber = phoneNumberController.text;
-    Future response =  http.post(Uri.parse('http://127.0.0.1:8000/users/register'), body: {
-      'first_name': name,
-      'last_name': surname,
-      'mail': mail,
-      'password': password,
-      'phone_number': phoneNumber,
-    });
+
+    print(name);
+    print(surname);
+    print(password);
+    print(phoneNumber);
+    print(userType == UserType.volunteer ? "volunteer" : "blind");
+
+    String path = API_URL + "/users/register";
 
 
+    Map<String, dynamic> notificationSettings = {
+      "callNotifications": false,
+      "messageNotifications": false,
+    };
+
+    Map<String, dynamic> requestBody = {
+      "first_name": name,
+      "last_name": surname,
+      "gender": "male",
+      "role": userType == UserType.volunteer ? "volunteer" : "blind",
+      "phone_number": phoneNumber,
+      "password": password,
+      "notification_settings": notificationSettings,
+    };
+
+    final response = await http.post(
+      Uri.parse(path),
+      body: jsonEncode(requestBody),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    Map data = jsonDecode(response.body);
+    print(data);
+
+    String hashedPassword = data["user"]["password"];
+
+    if (response.statusCode == 200) {
+      final storage = new FlutterSecureStorage();
+      await storage.write(key: "name", value: name);
+      await storage.write(key: "surname", value: surname);
+      await storage.write(key: "password", value: password); // TODO change with hashed password
+      await storage.write(key: "phone_number", value: phoneNumber);
+      await storage.write(key: "user_type", value: userType == UserType.volunteer ? "volunteer" : "blind");
+    }
+
+    return response.statusCode;
   }
 
   @override
@@ -172,21 +211,39 @@ class _CustomFormState extends State<CustomForm> {
             ),
             const SizedBox(height: 20),
             ButtonMain(
-              action: () {
+              action: () async {
                 // Validate returns true if the form is valid, or false otherwise.
                 if (formKey.currentState!.validate()) {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
+
+                  int statusCode = await register(customPhoneNumberInput.getPhoneNumber());
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Gönderiliyor...')),
                   );
-                  print(customPhoneNumberInput.getPhoneNumber());
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => PinCodeVerificationScreen(
-                            userType: userType!,
-                            phoneNumber:
-                                customPhoneNumberInput.getPhoneNumber(),
-                          )));
+
+                  print(statusCode);
+                  if (statusCode == 200) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Kayıt başarılı')),
+                    );
+
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => PinCodeVerificationScreen(
+                          userType: userType!,
+                          phoneNumber:
+                          customPhoneNumberInput.getPhoneNumber(),
+                        )));
+                  }
+                  else {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Kayıt başarısız'),
+                      backgroundColor: Colors.red,),
+                    );
+                  }
                 }
               },
               text: 'Submit',
