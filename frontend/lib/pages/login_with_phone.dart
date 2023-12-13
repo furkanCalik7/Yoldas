@@ -154,6 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ButtonMain(
                       text: "Giriş Yap",
                       action: () {
+
                         String phoneNumber = customPhoneNumberInput.getPhoneNumber();
                         _login(phoneNumber);
                       })
