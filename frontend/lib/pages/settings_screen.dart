@@ -52,6 +52,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: Icon(Icons.format_paint),
                 title: Text('Tema'),
               ),
+              SettingsTile.navigation(
+                leading: Icon(Icons.info),
+                title: Text('Hakkında'),
+              ),
+              SettingsTile.navigation(
+                leading: Icon(Icons.logout),
+                title: Text('Çıkış'),
+                onPressed: (BuildContext context) {
+                  AlertDialog alert = AlertDialog(
+                    title: Text("Çıkış"),
+                    content: Text("Çıkış yapmak istediğinize emin misiniz?"),
+                    actions: [
+                      TextButton(
+                        child: Text("Evet"),
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/login', (Route<dynamic> route) => false);
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Hayır"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                  showDialog(context: context, builder: (BuildContext context) {
+                    return alert;
+                  }
+                  );
+                }
+              ),
             ],
           ),
         ],

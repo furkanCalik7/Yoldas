@@ -5,6 +5,7 @@ import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
+import 'package:frontend/pages/volunteer_main_frame.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -226,6 +227,12 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                                 if (userType == UserType.blind) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context, BlindMainFrame.routeName, (r) {
+                                    return false;
+                                  });
+                                }
+                                else if (userType == UserType.volunteer) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, VolunteerMainFrame.routeName, (r) {
                                     return false;
                                   });
                                 }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -6,6 +9,11 @@ import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:frontend/custom_widgets/custom_text_field.dart';
+
+import '../custom_widgets/custom_phoneNumberInput.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,19 +28,78 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController phone_controller = TextEditingController();
-  final TextEditingController password_controller = TextEditingController();
+  final password_controller = TextEditingController();
   String initialCountry = 'TR';
   PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
+  Future _login(String phoneNumber) async {
+    String path = API_URL + "/users/login";
+
+    print(password_controller.text);
+    print(phoneNumber);
+
+    var response = await http.post(
+      Uri.parse(path),
+      body: {
+        'grant_type': '',
+        'username': phoneNumber,
+        'password': password_controller.text,
+        'scope': '',
+        'client_id': '',
+        'client_secret': '',
+      },
+      headers: {'content-type': 'application/x-www-form-urlencoded'},
+    );
+
+    if (response.statusCode == 200) {
+      Map data = jsonDecode(response.body);
+
+      String role = data['user']['role'];
+      UserType us = role == "volunteer" ? UserType.volunteer : UserType.blind;
+
+      // Rest of your code for successful response
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PinCodeVerificationScreen(
+            userType: us,
+            phoneNumber: phone_controller.text,
+          ),
+        ),
+      );
+    } else {
+      // Print the response body in case of an error
+      print("Error: ${response.body}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Kullanıcı adı veya şifre hatalı"),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    CustomPhoneNumberInput customPhoneNumberInput = CustomPhoneNumberInput(
+        controller: phone_controller,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Lütfen telefon numaranızı giriniz';
+          }
+          return null;
+        });
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: customBackgroundColor,
       appBar: AppbarDefault(),
       body: Column(
         children: [
-          TextContainer(text: "Giris Yap"),
+          const TextContainer(text: "Giris Yap"),
           Form(
             key: formKey,
             child: Container(
@@ -50,66 +117,46 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 20,
                         ),
                       ),
-                      InternationalPhoneNumberInput(
-                        onInputChanged: (PhoneNumber number) {
-                          print(number.phoneNumber);
-                        },
-                        onInputValidated: (bool value) {
-                          print(value);
-                        },
-                        selectorConfig: const SelectorConfig(
-                          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                        ),
-                        ignoreBlank: false,
-                        autoValidateMode: AutovalidateMode.disabled,
-                        selectorTextStyle: TextStyle(color: Colors.black),
-                        initialValue: number,
-                        textFieldController: phone_controller,
-                        formatInput: true,
-                        keyboardType: TextInputType.numberWithOptions(
-                            signed: true, decimal: true),
-                        inputBorder: OutlineInputBorder(),
-                        onSaved: (PhoneNumber number) {
-                          print('On Saved: $number');
-                        },
-                      ),
+                      customPhoneNumberInput,
                     ],
                   ),
-
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
 
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Şifre",
                         style: TextStyle(
                           fontSize: 20,
                         ),
                       ),
-                      TextField(
+                      CustomTextFormField(
+                        icon: Icons.lock,
+                        hintText: "Şifre",
                         obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Şifre',
-                        ),
+                        controller: password_controller,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen şifrenizi giriniz';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   ButtonMain(
                       text: "Giriş Yap",
                       action: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => PinCodeVerificationScreen(
-                                  userType: UserType.blind,
-                                  phoneNumber: phone_controller.text,
-                                )));
+
+                        String phoneNumber = customPhoneNumberInput.getPhoneNumber();
+                        _login(phoneNumber);
                       })
 
                   // ElevatedButton(
@@ -139,14 +186,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void getPhoneNumber(String phoneNumber) async {
-    PhoneNumber number =
-        await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'US');
-
-    setState(() {
-      this.number = number;
-    });
-  }
 
   @override
   void dispose() {
