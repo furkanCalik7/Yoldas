@@ -5,6 +5,7 @@ import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/evaluation_page.dart';
 import 'package:frontend/pages/initial_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
+import 'package:frontend/pages/object_detection_camera_view.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -18,10 +19,6 @@ void main() async {
   runApp(
     MaterialApp(
       initialRoute: '/',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      darkTheme: ThemeData.dark(),
       routes: {
         '/': (context) => const InitializationPage(),
         // '/': (context) => const EvaluationPage(),
@@ -31,6 +28,7 @@ void main() async {
         CategorySelectionScreen.routeName: (context) =>
             const CategorySelectionScreen(),
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
+        ObjectDetectionCameraView.routeName: (context) => ObjectDetectionCameraView(),
       },
     ),
   );
