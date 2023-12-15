@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -9,7 +12,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
   bool notificationsEnabled = true;
   bool darkThemeEnabled = false;
   @override
@@ -57,34 +59,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: Text('Hakkında'),
               ),
               SettingsTile.navigation(
-                leading: Icon(Icons.logout),
-                title: Text('Çıkış'),
-                onPressed: (BuildContext context) {
-                  AlertDialog alert = AlertDialog(
-                    title: Text("Çıkış"),
-                    content: Text("Çıkış yapmak istediğinize emin misiniz?"),
-                    actions: [
-                      TextButton(
-                        child: Text("Evet"),
-                        onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/login', (Route<dynamic> route) => false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text("Hayır"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                  showDialog(context: context, builder: (BuildContext context) {
-                    return alert;
-                  }
-                  );
-                }
-              ),
+                  leading: Icon(Icons.logout),
+                  title: Text('Çıkış'),
+                  onPressed: (BuildContext context) {
+                    AlertDialog alert = AlertDialog(
+                      title: Text("Çıkış"),
+                      content: Text("Çıkış yapmak istediğinize emin misiniz?"),
+                      actions: [
+                        TextButton(
+                          child: Text("Evet"),
+                          onPressed: () {
+                            FlutterSecureStorage storage =
+                                const FlutterSecureStorage();
+                            storage.deleteAll();
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                Welcome.routeName,
+                                (Route<dynamic> route) => false);
+                          },
+                        ),
+                        TextButton(
+                          child: Text("Hayır"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        });
+                  }),
             ],
           ),
         ],
