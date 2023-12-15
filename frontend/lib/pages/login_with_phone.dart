@@ -10,6 +10,7 @@ import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 
@@ -53,16 +54,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       Map data = jsonDecode(response.body);
+      Map user = data['user'];
 
-      String role = data['user']['role'];
-      UserType us = role == "volunteer" ? UserType.volunteer : UserType.blind;
+      // local storage writing
+      FlutterSecureStorage storage = const FlutterSecureStorage();
+
+      storage.write(key: "access_token", value: data['access_token']);
+      storage.write(key: "token_type", value: data['token_type']);
+
+      storage.write(key: "first_name", value: user['first_name']);
+      storage.write(key: "role", value: user['role']);
+      storage.write(key: "phone_number", value: user['phone_number']);
+      storage.write(key: "password", value: password_controller.text);
+
+      String phoneNumber = user['phone_number'];
+      UserType userType =
+          user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
       // Rest of your code for successful response
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => PinCodeVerificationScreen(
-            userType: us,
-            phoneNumber: phone_controller.text,
+            userType: userType,
+            phoneNumber: phoneNumber,
           ),
         ),
       );
@@ -80,10 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     CustomPhoneNumberInput customPhoneNumberInput = CustomPhoneNumberInput(
         controller: phone_controller,
         validator: (value) {
@@ -154,7 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ButtonMain(
                       text: "Giriş Yap",
                       action: () {
-                        String phoneNumber = customPhoneNumberInput.getPhoneNumber();
+                        String phoneNumber =
+                            customPhoneNumberInput.getPhoneNumber();
                         _login(phoneNumber);
                       })
 
@@ -184,7 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 
   @override
   void dispose() {

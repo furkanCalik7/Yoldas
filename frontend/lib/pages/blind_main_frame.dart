@@ -13,14 +13,9 @@ class BlindMainFrame extends StatefulWidget {
 }
 
 class _BlindMainFrameState extends State<BlindMainFrame> {
-
   int _selectedIndex = 1;
 
-  static const List<String> labels = [
-    "Yapay Zeka",
-    "Arama",
-    "Ayarlar"
-  ];
+  static const List<String> labels = ["Yapay Zeka", "Arama", "Ayarlar"];
 
   static const List<Widget> _widgetOptions = <Widget>[
     AIModelSelectionPage(),
@@ -30,25 +25,27 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarCustom(title: labels[_selectedIndex],),
+      appBar: AppbarCustom(
+        title: labels[_selectedIndex],
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.remove_red_eye),
-              label: "Yapay Zeka",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.video_call_sharp),
-              label: "Arama",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: "Ayarlar",
-            ),
-          ],
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.remove_red_eye),
+            label: "Yapay Zeka",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_call_sharp),
+            label: "Arama",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Ayarlar",
+          ),
+        ],
         backgroundColor: defaultButtonColor,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,

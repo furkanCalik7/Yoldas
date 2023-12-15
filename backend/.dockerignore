@@ -1,0 +1,10 @@
+*.md
+venv
+.idea
+*/.idea
+*/.vscode
+*/.pytest_cache
+*/.mypy_cache
+*/.coverage
+*/.tox
+*/.eggs
