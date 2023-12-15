@@ -2,14 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  ProfileScreen({super.key});
 
-  final name = "Can";
-  final surname = "Yılmaz";
-  final email = "can.yilmaz@gmail.com";
-  final phoneNumber = "05076009363";
+  @override
+  State<StatefulWidget> createState() {
+    return _ProfileScreenState();
+  }
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+
+  var name = "Dummy Name";
+  var surname = "Dummy Surname";
+  var email = "can.yilmaz@gmail.com";
+  var phoneNumber = "05076009363";
+
+  Future _updateFieldsFromStorage() async {
+    name = await storage.read(key: "first_name") ?? "N/A";
+    surname = await storage.read(key: "last_name") ?? "N/A";
+    email = await storage.read(key: "email") ?? "N/A";
+    phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _updateFieldsFromStorage();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

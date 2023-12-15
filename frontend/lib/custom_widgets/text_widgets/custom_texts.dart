@@ -41,3 +41,21 @@ class ProfileText extends StatelessWidget {
     );
   }
 }
+
+class SubTitleText extends StatelessWidget {
+  const SubTitleText({super.key, required this.line});
+
+  final String line;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      line,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.russoOne(
+        fontSize: 50,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}

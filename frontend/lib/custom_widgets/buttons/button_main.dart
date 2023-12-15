@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/colors.dart';
-class ButtonMain extends StatelessWidget {
+import 'dart:math';
 
+class ButtonMain extends StatelessWidget {
   final String text;
   final Function action;
   final double height;
   final double width;
-
 
   ButtonMain({
     required this.text,
@@ -15,20 +15,19 @@ class ButtonMain extends StatelessWidget {
     this.width = 200,
   });
 
+  double getFontSize() {
+    return min(height / 2, width / 4);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
       width: width,
       child: ElevatedButton(
-        onPressed: () { action();},
-        child: Text(text,
-          style: TextStyle (
-              fontSize: height / 2,
-              fontWeight: FontWeight.bold,
-              color: Colors.white
-          ),
-        ),
+        onPressed: () {
+          action();
+        },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(defaultButtonColor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -36,6 +35,14 @@ class ButtonMain extends StatelessWidget {
               borderRadius: BorderRadius.circular(18.0),
             ),
           ),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: getFontSize(),
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
       ),
     );

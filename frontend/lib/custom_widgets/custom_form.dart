@@ -80,7 +80,6 @@ class _CustomFormState extends State<CustomForm> {
   }
 
   Future<int> register(String phoneNumber) async {
-
     String name_and_surname = nameController.text;
     String name = name_and_surname.split(" ")[0];
     String surname = name_and_surname.split(" ")[1];
@@ -90,10 +89,9 @@ class _CustomFormState extends State<CustomForm> {
     print(surname);
     print(password);
     print(phoneNumber);
-    print(userType == UserType.volunteer ? "volunteer" : "blind");
+    print(userTypeToString(userType!));
 
     String path = API_URL + "/users/register";
-
 
     Map<String, dynamic> notificationSettings = {
       "callNotifications": false,
@@ -104,7 +102,7 @@ class _CustomFormState extends State<CustomForm> {
       "first_name": name,
       "last_name": surname,
       "gender": "male",
-      "role": userType == UserType.volunteer ? "volunteer" : "blind",
+      "role": userTypeToString(userType!),
       "phone_number": phoneNumber,
       "password": password,
       "notification_settings": notificationSettings,
@@ -125,9 +123,10 @@ class _CustomFormState extends State<CustomForm> {
       final storage = new FlutterSecureStorage();
       await storage.write(key: "name", value: name);
       await storage.write(key: "surname", value: surname);
-      await storage.write(key: "password", value: password); // TODO change with hashed password
+      await storage.write(
+          key: "password", value: password); // TODO change with hashed password
       await storage.write(key: "phone_number", value: phoneNumber);
-      await storage.write(key: "user_type", value: userType == UserType.volunteer ? "volunteer" : "blind");
+      await storage.write(key: "role", value: userType.toString());
     }
 
     return response.statusCode;
@@ -217,7 +216,8 @@ class _CustomFormState extends State<CustomForm> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
 
-                  int statusCode = await register(customPhoneNumberInput.getPhoneNumber());
+                  int statusCode =
+                      await register(customPhoneNumberInput.getPhoneNumber());
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Gönderiliyor...')),
                   );
@@ -231,17 +231,17 @@ class _CustomFormState extends State<CustomForm> {
 
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (ctx) => PinCodeVerificationScreen(
-                          userType: userType!,
-                          phoneNumber:
-                          customPhoneNumberInput.getPhoneNumber(),
-                        )));
-                  }
-                  else {
+                              userType: userType!,
+                              phoneNumber:
+                                  customPhoneNumberInput.getPhoneNumber(),
+                            )));
+                  } else {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Kayıt başarısız'),
-                      backgroundColor: Colors.red,),
+                        backgroundColor: Colors.red,
+                      ),
                     );
                   }
                 }

@@ -4,12 +4,16 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/onboarding_screen.dart';
+import 'package:frontend/utility/login.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
+  static const routeName = '/';
 
   @override
   Widget build(BuildContext context) {
+    // Login.tryLoginWithoutSMSVerification(context);
+
     return Scaffold(
       backgroundColor: customBackgroundColor,
       body: SafeArea(
