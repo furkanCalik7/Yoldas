@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../custom_widgets/appbars/appbar_custom.dart';
 import '../custom_widgets/buttons/button_main.dart';
 import '../custom_widgets/swiper/custom_swiper.dart';
+import 'object_detection_camera_view.dart';
 
 const List<String> models = [
   "Para tanıma",
@@ -37,7 +38,9 @@ class AIModelSelectionPage extends StatelessWidget {
           ),
           ButtonMain(
             text: "Kullanmaya Başla",
-            action: () {},
+            action: () {
+              Navigator.pushNamed(context, ObjectDetectionCameraView.routeName);
+            },
             height: 80,
             width: 400,
           ),
