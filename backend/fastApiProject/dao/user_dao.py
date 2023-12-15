@@ -1,7 +1,8 @@
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
-from ..models.entity_models import User
+
 from ..db_connection import firebase_auth
+from ..models.entity_models import User
 
 db = firebase_auth.connect_db()
 
@@ -17,7 +18,7 @@ def register_user(user: User):
     if docs_list:
         raise HTTPException(status_code=400, detail=f"User with phone number {user.phone_number} already exists")
 
-    #set document id as phone number
+    # set document id as phone number
     user_col_ref = db.collection("UserCollection").document(user.phone_number)
     user_col_ref.set(user.model_dump())
     # TODO: add token to response
