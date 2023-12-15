@@ -1,11 +1,11 @@
+from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Annotated
+from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr
 from pydantic import StringConstraints
 from typing_extensions import Annotated
-from datetime import datetime
 
 
 class Token(BaseModel):
@@ -55,24 +55,22 @@ class User(BaseModel):
 
 
 class CallUser(BaseModel):
-    id: Optional[UUID] = uuid4()
-    user_id: str
-    call_id: str
-    ice_candidates: Optional[list] = [] # Interactive Connectivity Establishment
-    sdp: Optional[dict] = {} # Session Description Protocol
+    phone_number: str
+    # Interactive Connectivity Establishment
+    ice_candidates: Optional[list] = []
+    # Session Description Protocol
+    sdp: Optional[dict] = {}
+
 
 # TODO: implement feedback model
 class Call(BaseModel):
-    id: Optional[UUID] = uuid4()
     caller: CallUser
     callee: CallUser
-    # write start and end time
     start_time: datetime
-    end_time: datetime
-    # write duration
-    duration: int # seconds
+    end_time: Optional[datetime]
+    duration: Optional[int] = 11 # seconds
     # write call type
-    call_category: str
+    call_category: Optional[str] = "cooking"
     # write call status
     # write call rating
     # write call feedback

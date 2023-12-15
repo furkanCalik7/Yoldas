@@ -5,7 +5,9 @@ import socketio
 import json
 
 from ..services.socket_manager import SocketManager
-from ..Constants.client_socket_events import  ClientSocketEvents
+from ..Constants.client_socket_events import ClientSocketEvents
+from ..dao.call_dao import register_call
+from ..models.entity_models import Call, CallUser
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
@@ -32,6 +34,22 @@ async def connect(socket_id, environ, auth=None):
     assert len(user_id) == 1
     user_id = user_id[0]
     await socket_manager.connect(user_id, socket_id)
+    call = Call(
+        caller=CallUser(
+            phone_number=user_id,
+            ice_candidates=[],
+            sdp={}
+        ),
+
+        callee=CallUser(
+            phone_number=user_id,
+            ice_candidates=[],
+            sdp={}
+        ),
+        start_time=time.time(),
+        end_time=time.time(),
+    )
+    await register_call(call)
 
 
 @sio.event
@@ -64,7 +82,8 @@ async def signaling(sid, message):
     # TODO: fix later
     for ice_candidate in completely_temp_ice_candidate_for_caller:
         print("ice_candidate: ", ice_candidate)
-        await socket_manager.send_message_to_user("ice_candidate", socket_manager.get_client_id_from_socket_id(sid), ice_candidate)
+        await socket_manager.send_message_to_user("ice_candidate", socket_manager.get_client_id_from_socket_id(sid),
+                                                  ice_candidate)
 
 
 @sio.event
@@ -83,6 +102,7 @@ async def answer(sid, message):
     # for ice_candidate in completely_temp_ice_candidate_for_callee:
     #     print("ice_candidate: ", ice_candidate)
     #     await socket_manager.send_message_to_user("ice_candidate", b'0', ice_candidate)
+
 
 @sio.event
 async def ice_candidate(sid, message):
