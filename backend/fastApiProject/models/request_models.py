@@ -10,12 +10,13 @@ class LoginRequest(BaseModel):
     password: str
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]
 
+
 class FeedbackRequest(BaseModel):
     def check_rating(v: int) -> int:
         assert 5 >= v >= 0, f'{v} is not a proper rating'
         return v
 
-    user_id: str
+    phoneNumber: str
     rating: Annotated[int, AfterValidator(check_rating)]
 
 
