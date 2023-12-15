@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:frontend/custom_widgets/colors.dart';
+class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  String title;
+
+  AppbarCustom({required this.title});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      title: Text(
+        title,
+        style: const TextStyle(
+          letterSpacing: 3,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: defaultButtonColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
+        ),
+      ),
+    );
+  }
+}
+
+
+
