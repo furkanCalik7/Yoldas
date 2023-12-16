@@ -17,10 +17,10 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
 
   static const List<String> labels = ["Yapay Zeka", "Arama", "Ayarlar"];
 
-  static const List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     AIModelSelectionPage(),
-    BlindHomeScreen(),
-    SettingsScreen(),
+    const BlindHomeScreen(),
+    const SettingsScreen(),
   ];
   @override
   Widget build(BuildContext context) {
