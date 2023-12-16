@@ -12,16 +12,9 @@ const List<IconData> icons = [
   Icons.eco,
 ];
 
-const List<String> categories = [
-  'Psikoloji',
-  'Aşçılık',
-  'Botanik'
-];
-
-
+const List<String> categories = ['Psikoloji', 'Aşçılık', 'Botanik'];
 
 class CategorySelectionScreen extends StatelessWidget {
-
   const CategorySelectionScreen({Key? key}) : super(key: key);
 
   static const String routeName = "/category_selection_screen";
@@ -29,35 +22,34 @@ class CategorySelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: customBackgroundColor,
       appBar: AppbarCustom(
         title: "Kategori Seç",
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 400,
-            child: CustomSwiper(
-              titles: categories,
-              icons: icons,
-              action: (index) {
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Column(
+          children: [
+            Container(
+              height: 400,
+              child: CustomSwiper(
+                titles: categories,
+                icons: icons,
+                action: (index) {
                 print(categories[index]);
-              },
+              ),
             ),
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          ButtonMain(
-            text: "Aramayı Başlat",
-            action: () {},
-            height: 80,
-            width: 400,
-
-          ),
-        ],
+            SizedBox(
+              height: 50,
+            ),
+            ButtonMain(
+              text: "Aramayı Başlat",
+              action: () {},
+              height: 80,
+              width: 400,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-

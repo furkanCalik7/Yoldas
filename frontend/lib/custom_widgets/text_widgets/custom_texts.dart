@@ -59,3 +59,28 @@ class SubTitleText extends StatelessWidget {
     );
   }
 }
+
+class VideoCallName extends StatelessWidget {
+  const VideoCallName({super.key, required this.line});
+
+  final String line;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.black.withOpacity(0.5),
+      ),
+      child: Text(
+        line,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.russoOne(
+          color: Colors.white,
+          fontSize: 20,
+        ),
+      ),
+    );
+  }
+}

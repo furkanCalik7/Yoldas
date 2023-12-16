@@ -16,6 +16,8 @@ import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({Key? key}) : super(key: key);
 
+  static const String routeName = "/evaluation";
+
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
 }
@@ -83,50 +85,59 @@ class _EvaluationPageState extends State<EvaluationPage> {
       appBar: AppbarCustom(
         title: "Değerlendirme",
       ),
-      backgroundColor: customBackgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            const SubTitleText(line: "Görüşmeyi Değerlendirin"),
-            RatingBar.builder(
-              onRatingUpdate: (rating) {
-                setState(() {
-                  point = rating;
-                });
-              },
-              allowHalfRating: true,
-              initialRating: 3,
-              itemCount: 5,
-              itemSize: 60.0,
-              itemBuilder: (context, _) => const Icon(
-                Icons.star,
-                color: Colors.yellow,
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              const SubTitleText(line: "Görüşmeyi Değerlendirin"),
+              RatingBar.builder(
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    point = rating;
+                  });
+                },
+                allowHalfRating: true,
+                initialRating: 3,
+                itemCount: 5,
+                itemSize: 60.0,
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.yellow,
+                ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ButtonMain(
-                    text: "Gönder",
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ButtonMain(
+                      text: "Gönder",
+                      width: 150,
+                      height: 75,
+                      fontSize: 30.0,
+                      action: () {
+                        sendEvaluation();
+                      }),
+                  const SizedBox(
+                    width: 20.0,
+                  ),
+                  ButtonMain(
+                    text: "Geç",
                     width: 150,
                     height: 75,
-                    action: () {
-                      sendEvaluation();
-                    }),
-                const SizedBox(
-                  width: 20.0,
-                ),
-                ButtonMain(
-                  text: "Geç",
-                  width: 150,
-                  height: 75,
-                  action: navigateToNextScreen,
-                )
-              ],
-            ),
-            ButtonMain(text: "Şikayet Et", height: 75, action: () {})
-          ],
+                    fontSize: 30.0,
+                    action: navigateToNextScreen,
+                  )
+                ],
+              ),
+              ButtonMain(
+                text: "Şikayet Et",
+                height: 75,
+                fontSize: 30.0,
+                action: () {},
+              )
+            ],
+          ),
         ),
       ),
     );

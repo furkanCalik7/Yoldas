@@ -5,12 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 class TappableIcon extends StatelessWidget {
   const TappableIcon(
       {super.key,
-        required this.action,
-        required this.iconData,
-        required this.size,
-        this.textColor = Colors.white,
-        this.iconColor = tappableIconColor,
-        this.text = ""});
+      required this.action,
+      required this.iconData,
+      required this.size,
+      this.textColor = Colors.white,
+      this.iconColor = tappableIconColor,
+      this.text = ""});
 
   final IconData iconData;
   final Function action;
@@ -27,7 +27,7 @@ class TappableIcon extends StatelessWidget {
           decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.8),
+                  color: gradiendColor2.withOpacity(0.8),
                   spreadRadius: 5,
                   blurRadius: 7,
                   offset: const Offset(0, 3), // changes position of shadow

@@ -3,19 +3,21 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'dart:math';
 
 class ButtonMain extends StatelessWidget {
+  const ButtonMain(
+      {super.key,
+      required this.text,
+      required this.action,
+      this.height = 40,
+      this.width = 200,
+      this.fontSize = 0.0});
+
   final String text;
   final Function action;
   final double height;
   final double width;
+  final double fontSize;
 
-  ButtonMain({
-    required this.text,
-    required this.action,
-    this.height = 40,
-    this.width = 200,
-  });
-
-  double getFontSize() {
+  double determineFontSize() {
     return min(height / 2, width / 4);
   }
 
@@ -40,7 +42,7 @@ class ButtonMain extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-              fontSize: getFontSize(),
+              fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
               fontWeight: FontWeight.bold,
               color: Colors.white),
         ),

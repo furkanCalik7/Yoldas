@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class AppbarDefault extends StatelessWidget implements PreferredSizeWidget {
   const AppbarDefault({super.key});
@@ -14,15 +15,12 @@ class AppbarDefault extends StatelessWidget implements PreferredSizeWidget {
       title: const TextHead(
         line: "YOLDAS",
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: defaultButtonColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
+          bottom: Radius.circular(0),
         ),
       ),
     );
   }
 }
-
-
-
