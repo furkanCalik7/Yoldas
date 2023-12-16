@@ -32,11 +32,11 @@ class CategorySelectionScreen extends StatelessWidget {
             Container(
               height: 400,
               child: CustomSwiper(
-                titles: categories,
-                icons: icons,
-                action: (index) {
-                print(categories[index]);
-              ),
+                  titles: categories,
+                  icons: icons,
+                  action: (index) {
+                    print(categories[index]);
+                  }),
             ),
             SizedBox(
               height: 50,
