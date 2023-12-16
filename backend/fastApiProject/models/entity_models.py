@@ -1,5 +1,6 @@
+from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Annotated
+from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr
@@ -50,9 +51,26 @@ class User(BaseModel):
     password: str
     avg_rating: Optional[float] = 0
     rating_count: Optional[int] = 0
-    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False,
-                                                                                 messageNotifications=False)
+    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
 
 
+class CallUser(BaseModel):
+    phone_number: str
+    # Interactive Connectivity Establishment
+    ice_candidates: Optional[list] = []
+    # Session Description Protocol
+    sdp: Optional[dict] = {}
+
+
+# TODO: implement feedback model
 class Call(BaseModel):
-    pass
+    caller: CallUser
+    callee: CallUser
+    start_time: datetime
+    end_time: Optional[datetime]
+    duration: Optional[int] = 11 # seconds
+    # write call type
+    call_category: Optional[str] = "cooking"
+    # write call status
+    # write call rating
+    # write call feedback

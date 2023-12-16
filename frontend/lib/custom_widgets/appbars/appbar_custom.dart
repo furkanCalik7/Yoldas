@@ -16,7 +16,9 @@ class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: const TextStyle(
-          letterSpacing: 10,
+          letterSpacing: 3,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
         ),
       ),
       backgroundColor: defaultButtonColor,

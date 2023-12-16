@@ -34,6 +34,8 @@ class CategorySelectionScreen extends StatelessWidget {
               child: CustomSwiper(
                 titles: categories,
                 icons: icons,
+                action: (index) {
+                print(categories[index]);
               ),
             ),
             SizedBox(

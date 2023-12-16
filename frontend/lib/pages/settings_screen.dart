@@ -41,33 +41,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   });
                 },
                 initialValue: notificationsEnabled,
-                leading: Icon(Icons.notifications),
-                title: Text('Bildirimler'),
+                leading: const Icon(Icons.notifications),
+                title: const Text('Bildirimler'),
               ),
               SettingsTile.navigation(
-                leading: Icon(Icons.category),
-                title: Text('Terchiler'),
+                leading: const Icon(Icons.category),
+                title: const Text('Tercihler'),
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {},
                 initialValue: darkThemeEnabled,
-                leading: Icon(Icons.format_paint),
-                title: Text('Tema'),
+                leading: const Icon(Icons.format_paint),
+                title: const Text('Tema'),
               ),
               SettingsTile.navigation(
-                leading: Icon(Icons.info),
-                title: Text('Hakkında'),
+                leading: const Icon(Icons.info),
+                title: const Text('Hakkında'),
               ),
               SettingsTile.navigation(
                   leading: Icon(Icons.logout),
-                  title: Text('Çıkış'),
+                  title: const Text('Çıkış'),
                   onPressed: (BuildContext context) {
                     AlertDialog alert = AlertDialog(
-                      title: Text("Çıkış"),
-                      content: Text("Çıkış yapmak istediğinize emin misiniz?"),
+                      title: const Text("Çıkış"),
+                      content: const Text("Çıkış yapmak istediğinize emin misiniz?"),
                       actions: [
                         TextButton(
-                          child: Text("Evet"),
+                          child: const Text("Evet"),
                           onPressed: () {
                             FlutterSecureStorage storage =
                                 const FlutterSecureStorage();

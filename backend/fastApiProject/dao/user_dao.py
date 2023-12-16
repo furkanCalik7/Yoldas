@@ -1,8 +1,10 @@
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
-from ..models.entity_models import User
+
 from ..db_connection import firebase_auth
+from ..models.entity_models import User
 import logging
+
 
 db = firebase_auth.connect_db()
 logger = logging.getLogger(__name__)
@@ -19,7 +21,7 @@ def register_user(user: User):
         logger.error(f"User with phone number {user.phone_number} already exists")
         raise HTTPException(status_code=400, detail=f"User with phone number {user.phone_number} already exists")
 
-    #set document id as phone number
+    # set document id as phone number
     user_col_ref = db.collection("UserCollection").document(user.phone_number)
     user_col_ref.set(user.model_dump())
     logger.info(f"User with phone number {user.phone_number} successfully registered")

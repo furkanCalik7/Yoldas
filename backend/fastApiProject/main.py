@@ -1,13 +1,22 @@
-from uuid import UUID
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
-from fastapi import FastAPI, HTTPException
-
-from fastapi import Depends, FastAPI
 from .routers import users
+from .services.sockets import socket_app
 
 app = FastAPI()
 
 app.include_router(users.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Set this to ["*"] to allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/", app=socket_app)
 
 
 @app.get("/")
