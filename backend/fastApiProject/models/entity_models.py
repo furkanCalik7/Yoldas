@@ -51,7 +51,8 @@ class User(BaseModel):
     password: str
     avg_rating: Optional[float] = 0
     rating_count: Optional[int] = 0
-    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
+    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False,
+                                                                                 messageNotifications=False)
 
 
 class CallUser(BaseModel):
@@ -68,7 +69,7 @@ class Call(BaseModel):
     callee: CallUser
     start_time: datetime
     end_time: Optional[datetime]
-    duration: Optional[int] = 11 # seconds
+    duration: Optional[int] = 11  # seconds
     # write call type
     call_category: Optional[str] = "cooking"
     # write call status

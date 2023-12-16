@@ -1,8 +1,11 @@
+import time
+
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
 
+from . import call_dao
 from ..db_connection import firebase_auth
-from ..models.entity_models import User
+from ..models.entity_models import User, Call, CallUser
 import logging
 
 
@@ -29,21 +32,35 @@ def register_user(user: User):
     return {"user": user.model_dump()}
 
 
-def send_feedback(feedbackRequest):
-    doc_ref = db.collection("UserCollection").document(feedbackRequest.user_id)
-    doc = doc_ref.get()
+def send_feedback(feedbackRequest, current_user: User):
+    doc = db.collection("CallCollection").document(feedbackRequest.callID).get()
     if not doc.exists:
-        logger.error(f"User with id {feedbackRequest.user_id} not found")
-        raise HTTPException(status_code=404, detail=f"User with id {feedbackRequest.user_id} not found")
+        logger.error(f"Call with {feedbackRequest.callID} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {feedbackRequest.callID} not found")
 
+    phone_number_of_feedback_sender = current_user["phone_number"]
+    call = Call.model_validate(doc.to_dict())
+    print(call)
+    phone_number_of_update_user = 0
+    if call.caller.phone_number == phone_number_of_feedback_sender:
+        phone_number_of_update_user = call.callee.phone_number
+    else:
+        phone_number_of_update_user = call.caller.phone_number
     # increase rating count by 1
     # update average rating
+    doc_ref = db.collection("UserCollection").document(phone_number_of_update_user)
+    doc = doc_ref.get()
+    print(f"doccc = {doc}")
+    if not doc.exists:
+        logger.error(f"User with phone number {phone_number_of_update_user} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {phone_number_of_update_user} not found")
+
     user = User.model_validate(doc.to_dict())
     user.avg_rating = ((user.avg_rating * user.rating_count + feedbackRequest.rating)
                        / (user.rating_count + 1))
     user.rating_count += 1
     doc_ref.set(user.model_dump())
-    logger.info(f"User with id {feedbackRequest.user_id} successfully updated")
+    logger.info(f"User with phone_number {phone_number_of_update_user} successfully updated")
     return user.model_dump()
 
 
