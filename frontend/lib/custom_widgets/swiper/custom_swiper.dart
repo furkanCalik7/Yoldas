@@ -5,11 +5,17 @@ import '../buttons/tappableIcon.dart';
 class CustomSwiper extends StatelessWidget {
   final List<String> titles;
   final List<IconData> icons;
-  const CustomSwiper({super.key, required this.titles, required this.icons});
+  final Function action;
+  int selectedIndex = 0;
+
+  CustomSwiper({super.key, required this.titles, required this.icons, required this.action});
 
   @override
   Widget build(BuildContext context) {
     return Swiper(
+      onIndexChanged: (index) {
+        action(index);
+      },
       itemBuilder: (context, index) {
         return TappableIcon(
             action: () {

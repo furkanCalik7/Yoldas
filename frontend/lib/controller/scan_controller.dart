@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:frontend/utility/dictionary.dart';
+import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:get/get.dart';
@@ -15,7 +17,6 @@ class ScanController extends GetxController {
     initCamera();
     initTflite();
     flutterTts = FlutterTts();
-    flutterTts.setLanguage("en-US");
   }
 
 
@@ -112,14 +113,18 @@ class ScanController extends GetxController {
         y = detector.first['rect']['y'];
         w = detector.first['rect']['w'];
         h = detector.first['rect']['h'];
+
+        label = englishToTurkishDictionary[label]!;
         await flutterTts.speak(label);
         await flutterTts.awaitSpeakCompletion(true);
 
-      }
 
+
+      }
 
     }
   }
+
 }
 
 
