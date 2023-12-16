@@ -148,9 +148,9 @@ async def read_users_me(current_user: Annotated[entity_models.User, Depends(get_
     return current_user
 
 
-def send_feedback(feedbackRequest, current_user):
+def send_feedback(feedbackRequest: Annotated[request_models.FeedbackRequest, Depends(get_current_active_user)]):
     logger.info(f"send_feedback with feedbackRequest {feedbackRequest} called")
-    return user_dao.send_feedback(feedbackRequest, current_user)
+    return user_dao.send_feedback(feedbackRequest)
 
 
 def get_user_by_user_id(user_id):

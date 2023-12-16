@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter,Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..models import entity_models, request_models
@@ -13,19 +13,16 @@ from firebase_admin import auth
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-
 @router.get("/users/me/", response_model=entity_models.User)
 async def read_users_me(
-        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]
+    current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]
 ):
     return current_user
-
 
 @router.get("/users/role")
 async def get_user_role(current_user_role: Annotated[entity_models.User, Depends(user_manager.get_current_user_role)]):
     logger.info(f"get_user_role for user with phoneNumber {entity_models.User.uid} called")
     return current_user_role
-
 
 @router.get("/get_user_by_phone_number/{phone_number}")
 async def get_user_by_phone_number(phone_number: str):
@@ -45,10 +42,10 @@ async def get_user_by_rating_average(low: int, high: int):
     return user_manager.get_user_by_rating_average(low, high)
 
 
-@router.post("/send_feedback/")
-async def send_feedback(feedbackRequest: request_models.FeedbackRequest, current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+@router.post("/send_feedback")
+async def send_feedback(feedbackRequest: request_models.FeedbackRequest):
     logger.info(f"send_feedback with feedbackRequest {feedbackRequest} called")
-    return user_manager.send_feedback(feedbackRequest, current_user)
+    return user_manager.send_feedback(feedbackRequest)
 
 
 @router.post("/register")
@@ -66,7 +63,8 @@ async def update_user(update_user_request: entity_models.User, user_id: str):
 
 @router.post("/login")
 async def login_for_access_token(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
     logger.info(f"login_for_access_token with form_data {form_data.username} called")
     return user_manager.login_for_access_token(form_data)
+
