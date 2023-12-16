@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/custom_widgets/colors.dart';
-class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
 
+class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
   String title;
 
   AppbarCustom({required this.title});
-
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +20,11 @@ class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       backgroundColor: defaultButtonColor,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
+          bottom: Radius.circular(0),
         ),
       ),
     );
   }
 }
-
-
-

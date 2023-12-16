@@ -14,24 +14,26 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: customBackgroundColor,
       appBar: const AppbarDefault(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              const TextContainer(text: "Kayıt Ol"),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                const TextContainer(text: "Kayıt Ol"),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                  ),
+                  margin: const EdgeInsets.all(20),
+                  child: CustomForm(
+                    userType: userType,
+                  ),
                 ),
-                margin: const EdgeInsets.all(20),
-                child: CustomForm(
-                  userType: userType,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

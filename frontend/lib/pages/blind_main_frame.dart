@@ -5,6 +5,7 @@ import 'package:frontend/pages/settings_screen.dart';
 
 import '../custom_widgets/appbars/appbar_custom.dart';
 import 'ai_model_selection_page.dart';
+
 class BlindMainFrame extends StatefulWidget {
   const BlindMainFrame({super.key});
   static const String routeName = "/blind_main_frame";
@@ -28,8 +29,11 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
       appBar: AppbarCustom(
         title: labels[_selectedIndex],
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [

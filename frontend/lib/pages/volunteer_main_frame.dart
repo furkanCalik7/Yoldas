@@ -6,6 +6,7 @@ import 'package:frontend/pages/volunteer_home_screen.dart';
 
 import '../custom_widgets/appbars/appbar_custom.dart';
 import 'ai_model_selection_page.dart';
+
 class VolunteerMainFrame extends StatefulWidget {
   const VolunteerMainFrame({super.key});
   static const String routeName = "/volunteer_main_frame";
@@ -14,7 +15,6 @@ class VolunteerMainFrame extends StatefulWidget {
 }
 
 class _VolunteerMainFrameState extends State<VolunteerMainFrame> {
-
   int _selectedIndex = 1;
 
   static const List<String> labels = [
@@ -25,16 +25,98 @@ class _VolunteerMainFrameState extends State<VolunteerMainFrame> {
 
   static List<Widget> _widgetOptions = <Widget>[
     Text("Nasıl kullanılır?"),
-    VolunteerHomeScreen("Furkan", DateTime.parse("2023-12-04"), ["Aşçılık", "Psikoloji", "Botanik", "Bilgisayar", "Mühendislik", "Tarih", "Felsefe", "Biyoloji", "Kimya", "Fizik", "Matematik", "Edebiyat", "Müzik", "Sanat", "Spor", "Tiyatro", "Sinema", "Dans", "Fotoğrafçılık", "Yazılım", "Mobil", "Web", "Oyun", "Masaüstü", "Mühendislik", "Tarih", "Felsefe", "Biyoloji", "Kimya", "Fizik", "Matematik", "Edebiyat", "Müzik", "Sanat", "Spor", "Tiyatro", "Sinema", "Dans", "Fotoğrafçılık", "Yazılım", "Mobil", "Web", "Oyun", "Masaüstü", "Mühendislik", "Tarih", "Felsefe", "Biyoloji", "Kimya", "Fizik", "Matematik", "Edebiyat", "Müzik", "Sanat", "Spor", "Tiyatro", "Sinema", "Dans", "Fotoğrafçılık", "Yazılım", "Mobil", "Web", "Oyun", "Masaüstü", "Mühendislik", "Tarih", "Felsefe", "Biyoloji", "Kimya", "Fizik", "Matematik", "Edebiyat", "Müzik", "Sanat", "Spor", "Tiyatro", "Sinema",]),
+    VolunteerHomeScreen("Furkan", DateTime.parse("2023-12-04"), [
+      "Aşçılık",
+      "Psikoloji",
+      "Botanik",
+      "Bilgisayar",
+      "Mühendislik",
+      "Tarih",
+      "Felsefe",
+      "Biyoloji",
+      "Kimya",
+      "Fizik",
+      "Matematik",
+      "Edebiyat",
+      "Müzik",
+      "Sanat",
+      "Spor",
+      "Tiyatro",
+      "Sinema",
+      "Dans",
+      "Fotoğrafçılık",
+      "Yazılım",
+      "Mobil",
+      "Web",
+      "Oyun",
+      "Masaüstü",
+      "Mühendislik",
+      "Tarih",
+      "Felsefe",
+      "Biyoloji",
+      "Kimya",
+      "Fizik",
+      "Matematik",
+      "Edebiyat",
+      "Müzik",
+      "Sanat",
+      "Spor",
+      "Tiyatro",
+      "Sinema",
+      "Dans",
+      "Fotoğrafçılık",
+      "Yazılım",
+      "Mobil",
+      "Web",
+      "Oyun",
+      "Masaüstü",
+      "Mühendislik",
+      "Tarih",
+      "Felsefe",
+      "Biyoloji",
+      "Kimya",
+      "Fizik",
+      "Matematik",
+      "Edebiyat",
+      "Müzik",
+      "Sanat",
+      "Spor",
+      "Tiyatro",
+      "Sinema",
+      "Dans",
+      "Fotoğrafçılık",
+      "Yazılım",
+      "Mobil",
+      "Web",
+      "Oyun",
+      "Masaüstü",
+      "Mühendislik",
+      "Tarih",
+      "Felsefe",
+      "Biyoloji",
+      "Kimya",
+      "Fizik",
+      "Matematik",
+      "Edebiyat",
+      "Müzik",
+      "Sanat",
+      "Spor",
+      "Tiyatro",
+      "Sinema",
+    ]),
     SettingsScreen(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: customBackgroundColor,
-      appBar: AppbarCustom(title: labels[_selectedIndex],),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      appBar: AppbarCustom(
+        title: labels[_selectedIndex],
+      ),
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [

@@ -15,50 +15,52 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: customBackgroundColor,
-      body: Column(
-        children: [
-          const AppbarDefault(),
-          Center(
-            child: SafeArea(
-              child: SizedBox(
-                width: 300,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(
-                      height: 80,
-                    ),
-                    TappableIcon(
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Column(
+          children: [
+            const AppbarDefault(),
+            Center(
+              child: SafeArea(
+                child: SizedBox(
+                  width: 300,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(
+                        height: 80,
+                      ),
+                      TappableIcon(
+                          action: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const RegisterScreen(
+                                      userType: UserType.blind,
+                                    )));
+                          },
+                          iconData: Icons.blind,
+                          size: 150,
+                          text: "Görme Engelliyim"),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      TappableIcon(
                         action: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => const RegisterScreen(
-                                    userType: UserType.blind,
+                                    userType: UserType.volunteer,
                                   )));
                         },
-                        iconData: Icons.blind,
+                        iconData: Icons.volunteer_activism,
                         size: 150,
-                        text: "Görme Engelliyim"),
-                    const SizedBox(
-                      height: 60,
-                    ),
-                    TappableIcon(
-                      action: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const RegisterScreen(
-                                  userType: UserType.volunteer,
-                                )));
-                      },
-                      iconData: Icons.volunteer_activism,
-                      size: 150,
-                      text: "Gönüllüyüm",
-                    ),
-                  ],
+                        text: "Gönüllüyüm",
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -107,93 +107,96 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: customBackgroundColor,
       appBar: AppbarDefault(),
-      body: Column(
-        children: [
-          const TextContainer(text: "Giris Yap"),
-          Form(
-            key: formKey,
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
-              child: Column(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Telefon Numarası",
-                        style: TextStyle(
-                          fontSize: 20,
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Column(
+          children: [
+            const TextContainer(text: "Giris Yap"),
+            Form(
+              key: formKey,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Telefon Numarası",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      customPhoneNumberInput,
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                        customPhoneNumberInput,
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Şifre",
-                        style: TextStyle(
-                          fontSize: 20,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Şifre",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      CustomTextFormField(
-                        icon: Icons.lock,
-                        hintText: "Şifre",
-                        obscureText: true,
-                        controller: password_controller,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Lütfen şifrenizi giriniz';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
+                        CustomTextFormField(
+                          icon: Icons.lock,
+                          hintText: "Şifre",
+                          obscureText: true,
+                          controller: password_controller,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Lütfen şifrenizi giriniz';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ButtonMain(
-                      text: "Giriş Yap",
-                      action: () {
-                        String phoneNumber =
-                            customPhoneNumberInput.getPhoneNumber();
-                        _login(phoneNumber);
-                      })
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ButtonMain(
+                        text: "Giriş Yap",
+                        action: () {
+                          String phoneNumber =
+                              customPhoneNumberInput.getPhoneNumber();
+                          _login(phoneNumber);
+                        })
 
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     formKey.currentState?.validate();
-                  //   },
-                  //   child: Text('Validate'),
-                  // ),
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     getPhoneNumber('+15417543010');
-                  //   },
-                  //   child: Text('Update'),
-                  // ),
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     formKey.currentState?.save();
-                  //   },
-                  //   child: Text('Save'),
-                  // ),
-                ],
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     formKey.currentState?.validate();
+                    //   },
+                    //   child: Text('Validate'),
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     getPhoneNumber('+15417543010');
+                    //   },
+                    //   child: Text('Update'),
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     formKey.currentState?.save();
+                    //   },
+                    //   child: Text('Save'),
+                    // ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
