@@ -28,7 +28,7 @@ class OnboardingScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(
-                        height: 80,
+                        height: 60,
                       ),
                       TappableIcon(
                           action: () {
@@ -38,7 +38,7 @@ class OnboardingScreen extends StatelessWidget {
                                     )));
                           },
                           iconData: Icons.blind,
-                          size: 150,
+                          size: 140,
                           text: "Görme Engelliyim"),
                       const SizedBox(
                         height: 60,

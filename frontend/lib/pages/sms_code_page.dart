@@ -181,6 +181,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
           .shake); // Triggering error shake animation
       Vibration.vibrate();
       setState(() => hasError = true);
+      snackBar("Kod doğrulama başarısız");
       return -1;
     }
   }
@@ -198,7 +199,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: <Widget>[
-              const TextContainer(text: "Dogrulama Kodunu Girin"),
+              const TextContainer(text: "SMS Kontrol"),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -309,7 +310,11 @@ class _SMSCodePageState extends State<SMSCodePage> {
                           style: TextStyle(color: Colors.black54, fontSize: 20),
                         ),
                         TextButton(
-                          onPressed: () => snackBar("OTP resend!!"),
+                          onPressed: ()
+                          {
+                            sendSMS(widget.user.phoneNumber);
+                            snackBar("SMS Tekrar Gönderildi");
+                          },
                           child: const Text(
                             "Tekrar Gönder",
                             style: TextStyle(
@@ -329,7 +334,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                           vertical: 16.0, horizontal: 30),
                       child: ButtonMain(
                         text: "Dogrula",
-                        action: () {
+                        action: () async {
                           formKey.currentState!.validate();
                           // conditions for validating
                           if (currentText.length != 6) {
@@ -339,39 +344,37 @@ class _SMSCodePageState extends State<SMSCodePage> {
                             setState(() => hasError = true);
                           } else {
                             setState(
-                                  () async {
+                                  ()  {
                                 hasError = false;
-                                int statusCode = await checkAuthentication(verificationIdx);
-                                snackBar("OTP Verified!!");
-
-                                if (statusCode == -1) {
-                                  return;
-                                }
-                                else if(statusCode == 200) {
-                                  snackBar("OTP Verified!!");
-                                  if (userType == UserType.blind) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, BlindMainFrame.routeName, (r) {
-                                      return false;
-                                    });
-                                  }
-                                  else if (userType == UserType.volunteer) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, VolunteerMainFrame.routeName, (r) {
-                                      return false;
-                                    });
-                                  }
-                                }
-                                else {
-                                  snackBar("OTP Verification Failed!!");
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context, SMSCodePage.routeName, (r) {
-                                    return false;
-                                  });
-                                  return;
-                                }
                               },
                             );
+                            int statusCode = await checkAuthentication(verificationIdx);
+
+                            if (statusCode == -1) {
+                              return;
+                            }
+                            else if(statusCode == 200) {
+                              snackBar("Doğrulama Başarılı");
+                              if (userType == UserType.blind) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, BlindMainFrame.routeName, (r) {
+                                  return false;
+                                });
+                              }
+                              else if (userType == UserType.volunteer) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, VolunteerMainFrame.routeName, (r) {
+                                  return false;
+                                });
+                              }
+                            }
+                            else {
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, SMSCodePage.routeName, (r) {
+                                return false;
+                              });
+                              return;
+                            }
                           }
                         },
                       ),
@@ -382,29 +385,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
               const SizedBox(
                 height: 16,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: TextButton(
-                      child: const Text("Clear"),
-                      onPressed: () {
-                        textEditingController.clear();
-                      },
-                    ),
-                  ),
-                  Flexible(
-                    child: TextButton(
-                      child: const Text("Set Text"),
-                      onPressed: () {
-                        setState(() {
-                          textEditingController.text = "1234";
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),
