@@ -42,10 +42,10 @@ async def get_user_by_rating_average(low: int, high: int):
     return user_manager.get_user_by_rating_average(low, high)
 
 
-@router.post("/send_feedback")
-async def send_feedback(feedbackRequest: request_models.FeedbackRequest):
-    logger.info(f"send_feedback with feedbackRequest {feedbackRequest} called")
-    return user_manager.send_feedback(feedbackRequest)
+@router.post("/send_feedback/")
+async def send_feedback(feedbackRequest: request_models.FeedbackRequest,
+                        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    return user_manager.send_feedback(feedbackRequest, current_user)
 
 
 @router.post("/register")

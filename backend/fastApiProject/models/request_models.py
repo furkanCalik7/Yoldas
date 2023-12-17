@@ -16,8 +16,8 @@ class FeedbackRequest(BaseModel):
         assert 5 >= v >= 0, f'{v} is not a proper rating'
         return v
 
-    phoneNumber: str
     rating: Annotated[int, AfterValidator(check_rating)]
+    callID: str
 
 
 class UpdateUserRequest(BaseModel):
