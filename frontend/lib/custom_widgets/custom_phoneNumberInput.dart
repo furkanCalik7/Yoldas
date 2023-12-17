@@ -22,6 +22,7 @@ class CustomPhoneNumberInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InternationalPhoneNumberInput(
+      spaceBetweenSelectorAndTextField: 0,
       onInputChanged: (PhoneNumber newNumber) {
         phoneNumber = newNumber;
       },

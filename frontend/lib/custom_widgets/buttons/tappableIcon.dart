@@ -23,6 +23,7 @@ class TappableIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         child: Container(
+          height: size * 1.6,
           padding: EdgeInsets.all(size / 10),
           decoration: BoxDecoration(
               boxShadow: [
