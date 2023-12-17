@@ -9,6 +9,7 @@ import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/auth_behavior.dart';
 import 'package:frontend/utility/types.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -64,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
       storage.write(key: "access_token", value: data['access_token']);
       storage.write(key: "token_type", value: data['token_type']);
 
-      storage.write(key: "first_name", value: user['first_name']);
+      storage.write(key: "name", value: user['name']);
+      storage.write(key: "email", value: user['email']);
       storage.write(key: "role", value: user['role']);
       storage.write(key: "phone_number", value: user['phone_number']);
       storage.write(key: "password", value: password_controller.text);
@@ -128,8 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)),
+                    color: formColor, borderRadius: BorderRadius.circular(20)),
                 child: Column(
                   children: [
                     Column(

@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/pages/sms_code_page.dart';
@@ -15,8 +16,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_data.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
 
 class CustomForm extends StatefulWidget {
   const CustomForm({Key? key, required this.userType}) : super(key: key);
@@ -91,8 +90,8 @@ class _CustomFormState extends State<CustomForm> {
     String password = passwordController.text;
     String mail = mailController.text;
 
-    return UserData(name: name, mail: mail, password: password, phoneNumber: phoneNumber);
-
+    return UserData(
+        name: name, mail: mail, password: password, phoneNumber: phoneNumber);
   }
 
   @override
@@ -111,7 +110,7 @@ class _CustomFormState extends State<CustomForm> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: formColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -179,16 +178,17 @@ class _CustomFormState extends State<CustomForm> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
 
-                  UserData user = createUser(customPhoneNumberInput.getPhoneNumber());
+                  UserData user =
+                      createUser(customPhoneNumberInput.getPhoneNumber());
 
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (ctx) => SMSCodePage(
-                        userType: userType!,
-                        user: user,
-                        phoneNumber:
-                        customPhoneNumberInput.getPhoneNumber(),
-                        authBehavior: AuthenticationBehavior.Register,
-                      )));
+                            userType: userType!,
+                            user: user,
+                            phoneNumber:
+                                customPhoneNumberInput.getPhoneNumber(),
+                            authBehavior: AuthenticationBehavior.Register,
+                          )));
                 }
               },
               text: 'Submit',

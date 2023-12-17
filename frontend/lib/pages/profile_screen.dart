@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -22,8 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var phoneNumber = "05076009363";
 
   Future _updateFieldsFromStorage() async {
-    name = await storage.read(key: "first_name") ?? "N/A";
-    surname = await storage.read(key: "last_name") ?? "N/A";
+    name = await storage.read(key: "name") ?? "N/A";
     email = await storage.read(key: "email") ?? "N/A";
     phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
     setState(() {});
@@ -43,10 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.all(30),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(20),
-        ),
+        decoration: getBackgroundDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
