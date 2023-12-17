@@ -13,10 +13,10 @@ class VolunteerHomeScreen extends StatelessWidget {
 
   // Named constructor
   VolunteerHomeScreen(
-    String username,
-    DateTime date,
-    List<String> categories,
-  )   : this.username = username,
+      String username,
+      DateTime date,
+      List<String> categories,
+      )   : this.username = username,
         this.joinDate = date,
         this.categories = categories;
 
@@ -78,24 +78,24 @@ class VolunteerHomeScreen extends StatelessWidget {
                   ),
                 ),
                 Wrap(
-                children: categories.map((e) => Container(
-                  margin: const EdgeInsets.all(5),
-                  padding: const EdgeInsets.all(4),
-                  child: Text(
-                    "\u2022 " + e,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  children: categories.map((e) => Container(
+                    margin: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(4),
+                    child: Text(
+                      "\u2022 " + e,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                )).toList(
+                  )).toList(),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 SizedBox(height: 20,),
-                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50, buttonColor: gradiendColor2,)
+                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50, buttonColor: gradiendColor2,),
               ],
             ),
           )
