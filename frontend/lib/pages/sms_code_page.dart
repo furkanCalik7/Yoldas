@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'package:http/http.dart' as http;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +11,16 @@ import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
+import 'package:frontend/utility/auth_behavior.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
-
-import 'package:frontend/custom_widgets/colors.dart';
 import 'package:vibration/vibration.dart';
 
 import '../config.dart';
 import '../firebase_options.dart';
 import '../models/user_data.dart';
-import 'blind_home_screen.dart';
 
 class SMSCodePage extends StatefulWidget {
   static const String routeName = "/pin_code_verification_screen";
@@ -29,12 +28,15 @@ class SMSCodePage extends StatefulWidget {
     Key? key,
     this.phoneNumber = "+905555555555",
     required this.userType,
-    required this.user
+    required this.user,
+    required this.authBehavior
   }) : super(key: key);
 
   final String? phoneNumber;
   final UserType userType;
   final UserData user;
+  final AuthenticationBehavior authBehavior;
+
 
   @override
   State<SMSCodePage> createState() =>
@@ -108,39 +110,16 @@ class _SMSCodePageState extends State<SMSCodePage> {
     );
   }
 
-  Future<int> register(String phoneNumber, RxString verificationId) async {
-
-    String smsCode = currentText;
-
-    log(currentText);
-    // Create a PhoneAuthCredential with the code
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId.value, smsCode: smsCode);
-
-    log("Credential created");
-
-    try {
-      UserCredential userCredential = await _auth.signInWithCredential(
-          credential);
-      print(userCredential);
-    }
-    catch (e) {
-      errorController!.add(ErrorAnimationType
-          .shake); // Triggering error shake animation
-      Vibration.vibrate();
-      setState(() => hasError = true);
-      return -1;
-    }
+  Future<int> register() async {
 
     String name = widget.user.name;
     String mail = widget.user.mail;
-
     String password = widget.user.password;
+    String phoneNumber = widget.user.phoneNumber;
 
     print(name);
     print(password);
     print(phoneNumber);
-
     print(userTypeToString(userType!));
 
     String path = API_URL + "/users/register";
@@ -174,6 +153,36 @@ class _SMSCodePageState extends State<SMSCodePage> {
     }
 
     return response.statusCode;
+  }
+
+  Future<int> checkAuthentication(RxString verificationId) async {
+    String smsCode = currentText;
+
+    log(currentText);
+    // Create a PhoneAuthCredential with the code
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId.value, smsCode: smsCode);
+
+    log("Credential created");
+
+    try {
+      UserCredential userCredential = await _auth.signInWithCredential(
+          credential);
+      print(userCredential);
+      if (widget.authBehavior == AuthenticationBehavior.Register) {
+        return await register();
+      }
+      else {
+        return 200;
+      }
+    }
+    catch (e) {
+      errorController!.add(ErrorAnimationType
+          .shake); // Triggering error shake animation
+      Vibration.vibrate();
+      setState(() => hasError = true);
+      return -1;
+    }
   }
 
 
@@ -332,7 +341,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                             setState(
                                   () async {
                                 hasError = false;
-                                int statusCode = await register(widget.user.phoneNumber, verificationIdx);
+                                int statusCode = await checkAuthentication(verificationIdx);
                                 snackBar("OTP Verified!!");
 
                                 if (statusCode == -1) {
