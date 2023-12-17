@@ -44,8 +44,9 @@ class CategorySelectionScreen extends StatelessWidget {
             ButtonMain(
               text: "Aramayı Başlat",
               action: () {},
-              height: 80,
-              width: 400,
+              height: 100,
+              width: 350,
+              fontSize: 40,
             ),
           ],
         ),

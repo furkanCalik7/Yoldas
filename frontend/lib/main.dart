@@ -21,7 +21,7 @@ void main() async {
     MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => const Welcome(),
+        '/': (context) => const InitializationPage(),
         //'/': (context) => const CallMainFrame(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),

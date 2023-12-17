@@ -42,6 +42,7 @@ class AIModelSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    selectedIndex = 0;
 
 
 
@@ -63,12 +64,13 @@ class AIModelSelectionPage extends StatelessWidget {
             height: 50,
           ),
           ButtonMain(
-            text: "Kullanmaya Başla",
+            text: "Başlat",
             action: () {
               navigateToModel(context, selectedIndex);
             },
-            height: 80,
-            width: 400,
+            height: 100,
+            width: 350,
+            fontSize: 40,
           ),
         ],
       );
