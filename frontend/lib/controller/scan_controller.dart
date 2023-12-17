@@ -106,7 +106,7 @@ class ScanController extends GetxController {
 
     if(detector != null) {
       log("Detected object: ${detector.first}");
-      label = detector.first['detectedClass'].toString();
+      String detected = detector.first['detectedClass'].toString();
       var confidence = detector.first['confidenceInClass'];
       if (confidence > 0.6) {
         x = detector.first['rect']['x'];
@@ -114,7 +114,7 @@ class ScanController extends GetxController {
         w = detector.first['rect']['w'];
         h = detector.first['rect']['h'];
 
-        label = englishToTurkishDictionary[label]!;
+        label = englishToTurkishDictionary[detected]!;
         await flutterTts.speak(label);
         await flutterTts.awaitSpeakCompletion(true);
 

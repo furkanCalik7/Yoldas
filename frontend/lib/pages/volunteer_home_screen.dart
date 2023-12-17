@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container_custom.dart';
 
+import '../custom_widgets/colors.dart';
 import '../custom_widgets/text_widgets/text_container.dart';
 
 class VolunteerHomeScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class VolunteerHomeScreen extends StatelessWidget {
             height: 150,
             width: 300,
             decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(30),
+              color: textContainerColor, borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
               child: Column(
@@ -58,7 +59,7 @@ class VolunteerHomeScreen extends StatelessWidget {
             margin: const EdgeInsets.fromLTRB(0, 0, 0, 30),
             width: 300,
             decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(30),
+              color: textContainerColor, borderRadius: BorderRadius.circular(30),
             ),
             child: Column(
               children: [
@@ -75,7 +76,6 @@ class VolunteerHomeScreen extends StatelessWidget {
                 children: categories.map((e) => Container(
                   margin: const EdgeInsets.all(5),
                   padding: const EdgeInsets.all(4),
-                  color: Colors.grey[200],
                   child: Text(
                     "\u2022 " + e,
                     textAlign: TextAlign.center,
@@ -88,7 +88,7 @@ class VolunteerHomeScreen extends StatelessWidget {
                 ),
                 ),
                 SizedBox(height: 20,),
-                ButtonMain(text: "Ekle veya Değiştir", action: () {}, width: 250, height: 50,)
+                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50,)
               ],
             ),
           )
