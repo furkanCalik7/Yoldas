@@ -102,6 +102,7 @@ class ScanController extends GetxController {
 
     if (detector != null) {
       log("Detected object: ${detector.first}");
+
       String detectedObject = detector.first['detectedClass'].toString();
       var confidence = detector.first['confidenceInClass'];
       if (confidence > 0.5) {
