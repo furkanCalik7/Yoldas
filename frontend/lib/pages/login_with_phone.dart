@@ -15,6 +15,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 
 import '../custom_widgets/custom_phoneNumberInput.dart';
+import '../models/user_data.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,11 +72,17 @@ class _LoginScreenState extends State<LoginScreen> {
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
+      UserData userData = UserData(
+        phoneNumber: user['phone_number'],
+        password: password_controller.text,
+      );
+
       // Rest of your code for successful response
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => PinCodeVerificationScreen(
+          builder: (context) => SMSCodePage(
             userType: userType,
+            user: userData,
             phoneNumber: phoneNumber,
           ),
         ),
