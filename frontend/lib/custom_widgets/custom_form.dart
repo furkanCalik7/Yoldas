@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
@@ -7,9 +8,14 @@ import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/utility/types.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../models/user_data.dart';
+import 'package:frontend/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 class CustomForm extends StatefulWidget {
   const CustomForm({Key? key, required this.userType}) : super(key: key);
@@ -79,57 +85,13 @@ class _CustomFormState extends State<CustomForm> {
     super.dispose();
   }
 
-  Future<int> register(String phoneNumber) async {
-    String name_and_surname = nameController.text;
-    String name = name_and_surname.split(" ")[0];
-    String surname = name_and_surname.split(" ")[1];
+  UserData createUser(String phoneNumber) {
+    String name = nameController.text;
     String password = passwordController.text;
+    String mail = mailController.text;
 
-    print(name);
-    print(surname);
-    print(password);
-    print(phoneNumber);
-    print(userTypeToString(userType!));
+    return UserData(name: name, mail: mail, password: password, phoneNumber: phoneNumber);
 
-    String path = API_URL + "/users/register";
-
-    Map<String, dynamic> notificationSettings = {
-      "callNotifications": false,
-      "messageNotifications": false,
-    };
-
-    Map<String, dynamic> requestBody = {
-      "first_name": name,
-      "last_name": surname,
-      "gender": "male",
-      "role": userTypeToString(userType!),
-      "phone_number": phoneNumber,
-      "password": password,
-      "notification_settings": notificationSettings,
-    };
-
-    final response = await http.post(
-      Uri.parse(path),
-      body: jsonEncode(requestBody),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    Map data = jsonDecode(response.body);
-    print(data);
-
-    String hashedPassword = data["user"]["password"];
-
-    if (response.statusCode == 200) {
-      final storage = new FlutterSecureStorage();
-      await storage.write(key: "name", value: name);
-      await storage.write(key: "surname", value: surname);
-      await storage.write(
-          key: "password", value: password); // TODO change with hashed password
-      await storage.write(key: "phone_number", value: phoneNumber);
-      await storage.write(key: "role", value: userType.toString());
-    }
-
-    return response.statusCode;
   }
 
   @override
@@ -216,34 +178,15 @@ class _CustomFormState extends State<CustomForm> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
 
-                  int statusCode =
-                      await register(customPhoneNumberInput.getPhoneNumber());
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Gönderiliyor...')),
-                  );
+                  UserData user = createUser(customPhoneNumberInput.getPhoneNumber());
 
-                  print(statusCode);
-                  if (statusCode == 200) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Kayıt başarılı')),
-                    );
-
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => PinCodeVerificationScreen(
-                              userType: userType!,
-                              phoneNumber:
-                                  customPhoneNumberInput.getPhoneNumber(),
-                            )));
-                  } else {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Kayıt başarısız'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => SMSCodePage(
+                        userType: userType!,
+                        user: user,
+                        phoneNumber:
+                        customPhoneNumberInput.getPhoneNumber(),
+                      )));
                 }
               },
               text: 'Submit',

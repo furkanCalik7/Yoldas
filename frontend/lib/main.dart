@@ -7,6 +7,7 @@ import 'package:frontend/pages/initial_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/object_detection_camera_view.dart';
 import 'package:frontend/pages/sms_code_page.dart';
+import 'package:frontend/pages/text_recognition_view.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
 import 'package:frontend/pages/welcome.dart';
 import "package:frontend/pages/onboarding_screen.dart";
@@ -20,7 +21,7 @@ void main() async {
     MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => const InitializationPage(),
+        '/': (context) => const Welcome(),
         //'/': (context) => const CallMainFrame(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
@@ -32,6 +33,7 @@ void main() async {
         Welcome.routeName: (context) => const Welcome(),
         EvaluationPage.routeName: (context) => const EvaluationPage(),
         ObjectDetectionCameraView.routeName: (context) => ObjectDetectionCameraView(),
+        TextRecognitionCameraView.routeName: (context) => TextRecognitionCameraView(),
       },
     ),
   );
