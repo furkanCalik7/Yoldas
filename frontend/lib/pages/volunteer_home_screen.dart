@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container_custom.dart';
 
 import '../custom_widgets/colors.dart';
@@ -11,11 +12,13 @@ class VolunteerHomeScreen extends StatelessWidget {
   final DateTime joinDate;
 
   // Named constructor
-  VolunteerHomeScreen(String username, DateTime date, List<String> categories,)
-      : this.username = username,
+  VolunteerHomeScreen(
+    String username,
+    DateTime date,
+    List<String> categories,
+  )   : this.username = username,
         this.joinDate = date,
         this.categories = categories;
-
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +56,9 @@ class VolunteerHomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.fromLTRB(0, 0, 0, 30),
@@ -86,9 +91,11 @@ class VolunteerHomeScreen extends StatelessWidget {
                   ),
                 )).toList(
                 ),
+                SizedBox(
+                  height: 20,
                 ),
                 SizedBox(height: 20,),
-                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50,)
+                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50, buttonColor: gradiendColor2,)
               ],
             ),
           )

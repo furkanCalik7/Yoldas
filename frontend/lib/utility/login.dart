@@ -57,9 +57,10 @@ class Login {
 
       storage.write(key: "access_token", value: data['access_token']);
       storage.write(key: "token_type", value: data['token_type']);
-      storage.write(key: "first_name", value: user['first_name']);
+      storage.write(key: "name", value: user['name']);
       storage.write(key: "role", value: user['role']);
       storage.write(key: "phone_number", value: user['phone_number']);
+      storage.write(key: "email", value: user['email']);
       storage.write(key: "password", value: password);
 
       UserType userType =
@@ -83,6 +84,12 @@ class Login {
           content: Text("Kullanıcı adı veya şifre hatalı"),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const Welcome(),
         ),
       );
     }

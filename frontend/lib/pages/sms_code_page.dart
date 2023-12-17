@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
@@ -24,23 +25,21 @@ import '../models/user_data.dart';
 
 class SMSCodePage extends StatefulWidget {
   static const String routeName = "/pin_code_verification_screen";
-  const SMSCodePage({
-    Key? key,
-    this.phoneNumber = "+905555555555",
-    required this.userType,
-    required this.user,
-    required this.authBehavior
-  }) : super(key: key);
+  const SMSCodePage(
+      {Key? key,
+      this.phoneNumber = "+905555555555",
+      required this.userType,
+      required this.user,
+      required this.authBehavior})
+      : super(key: key);
 
   final String? phoneNumber;
   final UserType userType;
   final UserData user;
   final AuthenticationBehavior authBehavior;
 
-
   @override
-  State<SMSCodePage> createState() =>
-      _SMSCodePageState();
+  State<SMSCodePage> createState() => _SMSCodePageState();
 }
 
 class _SMSCodePageState extends State<SMSCodePage> {
@@ -82,7 +81,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
   }
 
   void sendSMS(String phoneNumber) async {
-
     FirebaseApp app = await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -101,7 +99,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
         verificationIdx.value = verificationId;
         print("successfully sent");
         print("verificationId: " + verificationId);
-
       },
       timeout: const Duration(seconds: 60),
       codeAutoRetrievalTimeout: (verificationId) {
@@ -111,7 +108,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
   }
 
   Future<int> register() async {
-
     String name = widget.user.name;
     String mail = widget.user.mail;
     String password = widget.user.password;
@@ -166,19 +162,17 @@ class _SMSCodePageState extends State<SMSCodePage> {
     log("Credential created");
 
     try {
-      UserCredential userCredential = await _auth.signInWithCredential(
-          credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       print(userCredential);
       if (widget.authBehavior == AuthenticationBehavior.Register) {
         return await register();
-      }
-      else {
+      } else {
         return 200;
       }
-    }
-    catch (e) {
-      errorController!.add(ErrorAnimationType
-          .shake); // Triggering error shake animation
+    } catch (e) {
+      errorController!
+          .add(ErrorAnimationType.shake); // Triggering error shake animation
       Vibration.vibrate();
       setState(() => hasError = true);
       snackBar("Kod doğrulama başarısız");
@@ -186,206 +180,207 @@ class _SMSCodePageState extends State<SMSCodePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppbarDefault(),
-      body: GestureDetector(
-        onTap: () {},
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: <Widget>[
-              const TextContainer(text: "SMS Kontrol"),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)),
-                child: Column(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30.0, vertical: 8),
-                        child: Text(
-                          "${widget.phoneNumber} a gelen doğrulama kodunu giriniz",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        )),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Form(
-                      key: formKey,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 50,
-                        ),
-                        child: PinCodeTextField(
-                          appContext: context,
-                          pastedTextStyle: TextStyle(
-                            color: Colors.green.shade600,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          length: 6,
-                          obscureText: true,
-                          obscuringCharacter: '*',
-                          blinkWhenObscuring: true,
-                          animationType: AnimationType.fade,
-                          validator: (v) {
-                            if (v!.length < 3) {
-                              return "I'm from validator";
-                            } else {
-                              return null;
-                            }
-                          },
-                          pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius: BorderRadius.circular(5),
-                              fieldHeight: 50,
-                              fieldWidth: 40,
-                              activeFillColor: Colors.white,
-                              inactiveFillColor: Colors.white),
-                          cursorColor: Colors.black,
-                          animationDuration: const Duration(milliseconds: 300),
-                          enableActiveFill: true,
-                          errorAnimationController: errorController,
-                          controller: textEditingController,
-                          keyboardType: TextInputType.number,
-                          boxShadows: const [
-                            BoxShadow(
-                              offset: Offset(0, 1),
-                              color: Colors.black12,
-                              blurRadius: 10,
-                            )
-                          ],
-                          onCompleted: (v) {
-                            debugPrint("Completed");
-                          },
-                          // onTap: () {
-                          //   print("Pressed");
-                          // },
-                          onChanged: (value) {
-                            debugPrint(value);
-                            setState(() {
-                              currentText = value;
-                            });
-                          },
-                          beforeTextPaste: (text) {
-                            debugPrint("Allowing to paste $text");
-                            //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                            //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                            return true;
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Text(
-                        hasError
-                            ? "*Lütfen tüm haneleri doğru bir şekilde doldurun"
-                            : "",
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        decoration: getBackgroundDecoration(),
+        child: Center(
+          child: GestureDetector(
+            onTap: () {},
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: <Widget>[
+                  const TextContainer(text: "SMS Kontrol"),
+                  Container(
+                    child: Column(
                       children: [
-                        const Text(
-                          "Kodu almadınız mı? ",
-                          style: TextStyle(color: Colors.black54, fontSize: 20),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 8),
+                            child: Text(
+                              "${widget.phoneNumber} a gelen doğrulama kodunu giriniz",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                        const SizedBox(
+                          height: 20,
                         ),
-                        TextButton(
-                          onPressed: ()
-                          {
-                            sendSMS(widget.user.phoneNumber);
-                            snackBar("SMS Tekrar Gönderildi");
-                          },
-                          child: const Text(
-                            "Tekrar Gönder",
-                            style: TextStyle(
-                              color: Color(0xFF91D3B3),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                        Form(
+                          key: formKey,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 50,
+                            ),
+                            child: PinCodeTextField(
+                              appContext: context,
+                              pastedTextStyle: TextStyle(
+                                color: Colors.green.shade600,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              length: 6,
+                              obscureText: true,
+                              obscuringCharacter: '*',
+                              blinkWhenObscuring: true,
+                              animationType: AnimationType.fade,
+                              validator: (v) {
+                                if (v!.length < 3) {
+                                  return "I'm from validator";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              pinTheme: PinTheme(
+                                  shape: PinCodeFieldShape.box,
+                                  borderRadius: BorderRadius.circular(5),
+                                  fieldHeight: 50,
+                                  fieldWidth: 40,
+                                  activeFillColor: Colors.white,
+                                  inactiveFillColor: Colors.white),
+                              cursorColor: Colors.black,
+                              animationDuration:
+                                  const Duration(milliseconds: 300),
+                              enableActiveFill: true,
+                              errorAnimationController: errorController,
+                              controller: textEditingController,
+                              keyboardType: TextInputType.number,
+                              boxShadows: const [
+                                BoxShadow(
+                                  offset: Offset(0, 1),
+                                  color: Colors.black12,
+                                  blurRadius: 10,
+                                )
+                              ],
+                              onCompleted: (v) {
+                                debugPrint("Completed");
+                              },
+                              // onTap: () {
+                              //   print("Pressed");
+                              // },
+                              onChanged: (value) {
+                                debugPrint(value);
+                                setState(() {
+                                  currentText = value;
+                                });
+                              },
+                              beforeTextPaste: (text) {
+                                debugPrint("Allowing to paste $text");
+                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                return true;
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Text(
+                            hasError
+                                ? "*Lütfen tüm haneleri doğru bir şekilde doldurun"
+                                : "",
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Kodu almadınız mı? ",
+                              style: TextStyle(
+                                  color: Colors.black54, fontSize: 20),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                sendSMS(widget.user.phoneNumber);
+                                snackBar("SMS Tekrar Gönderildi");
+                              },
+                              child: const Text(
+                                "Tekrar Gönder",
+                                style: TextStyle(
+                                  color: Color(0xFF91D3B3),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 30),
+                          child: ButtonMain(
+                            text: "Dogrula",
+                            action: () async {
+                              formKey.currentState!.validate();
+                              // conditions for validating
+                              if (currentText.length != 6) {
+                                errorController!.add(ErrorAnimationType
+                                    .shake); // Triggering error shake animation
+                                Vibration.vibrate();
+                                setState(() => hasError = true);
+                              } else {
+                                setState(
+                                  () {
+                                    hasError = false;
+                                  },
+                                );
+                                int statusCode =
+                                    await checkAuthentication(verificationIdx);
+
+                                if (statusCode == -1) {
+                                  return;
+                                } else if (statusCode == 200) {
+                                  snackBar("Doğrulama Başarılı");
+                                  if (userType == UserType.blind) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context, BlindMainFrame.routeName, (r) {
+                                      return false;
+                                    });
+                                  } else if (userType == UserType.volunteer) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context, VolunteerMainFrame.routeName,
+                                        (r) {
+                                      return false;
+                                    });
+                                  }
+                                } else {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, SMSCodePage.routeName, (r) {
+                                    return false;
+                                  });
+                                  return;
+                                }
+                              }
+                            },
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 14,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 30),
-                      child: ButtonMain(
-                        text: "Dogrula",
-                        action: () async {
-                          formKey.currentState!.validate();
-                          // conditions for validating
-                          if (currentText.length != 6) {
-                            errorController!.add(ErrorAnimationType
-                                .shake); // Triggering error shake animation
-                            Vibration.vibrate();
-                            setState(() => hasError = true);
-                          } else {
-                            setState(
-                                  ()  {
-                                hasError = false;
-                              },
-                            );
-                            int statusCode = await checkAuthentication(verificationIdx);
-
-                            if (statusCode == -1) {
-                              return;
-                            }
-                            else if(statusCode == 200) {
-                              snackBar("Doğrulama Başarılı");
-                              if (userType == UserType.blind) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context, BlindMainFrame.routeName, (r) {
-                                  return false;
-                                });
-                              }
-                              else if (userType == UserType.volunteer) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context, VolunteerMainFrame.routeName, (r) {
-                                  return false;
-                                });
-                              }
-                            }
-                            else {
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, SMSCodePage.routeName, (r) {
-                                return false;
-                              });
-                              return;
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 16,
-              ),
-            ],
+            ),
           ),
         ),
       ),

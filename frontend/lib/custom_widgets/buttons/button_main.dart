@@ -9,13 +9,15 @@ class ButtonMain extends StatelessWidget {
       required this.action,
       this.height = 40,
       this.width = 200,
-      this.fontSize = 0.0});
+      this.fontSize = 0.0,
+      this.buttonColor = defaultButtonColor});
 
   final String text;
   final Function action;
   final double height;
   final double width;
   final double fontSize;
+  final Color buttonColor;
 
   double determineFontSize() {
     return min(height / 2, width / 4);
@@ -31,7 +33,7 @@ class ButtonMain extends StatelessWidget {
           action();
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(defaultButtonColor),
+          backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),
@@ -42,9 +44,10 @@ class ButtonMain extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-              fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,),
+            fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
       ),
     );

@@ -14,3 +14,14 @@
 - Furkan Çalık - Student ID: 21802114
 - Can Yılmaz - Student ID: 21902019
 - Furkan Güzelant - Student ID: 21901515
+
+### Project Documents
+- [Project information report](https://drive.google.com/file/d/13N37ExVf8V9qZBrBk5gKLUdSz5FOYu8Y/view?usp=sharing)
+- [Project specification report](https://drive.google.com/file/d/1v76TEi4scV9s1gY3brurSB3S2R-NMFTn/view?usp=sharing)
+- [Analysis and requirement report](https://drive.google.com/file/d/17-u-kGnBHranERJvcq7cz8Be_qqXltgs/view?usp=sharing)
+
+### Project Github Repo
+- [Project Github Repository](https://github.com/furkanCalik7/Yoldas)
+
+
+
