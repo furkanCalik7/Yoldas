@@ -7,6 +7,7 @@ import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/pages/sms_code_page.dart';
+import 'package:frontend/utility/auth_behavior.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -186,6 +187,7 @@ class _CustomFormState extends State<CustomForm> {
                         user: user,
                         phoneNumber:
                         customPhoneNumberInput.getPhoneNumber(),
+                        authBehavior: AuthenticationBehavior.Register,
                       )));
                 }
               },

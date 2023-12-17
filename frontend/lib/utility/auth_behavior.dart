@@ -1,0 +1,1 @@
+enum AuthenticationBehavior { Login, Register }
