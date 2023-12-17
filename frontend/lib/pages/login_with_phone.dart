@@ -118,6 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppbarDefault(),
       body: Container(
+        padding: EdgeInsets.all(20),
         decoration: getBackgroundDecoration(),
         child: Column(
           children: [
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Form(
               key: formKey,
               child: Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20)),
