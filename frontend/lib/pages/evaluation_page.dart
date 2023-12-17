@@ -47,19 +47,23 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   Future<void> sendEvaluation() async {
-    String path = "$API_URL/users/send_feedback";
-
     String phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
     print(point);
-    var response = await http.post(
+
+    String path = "$API_URL/users/send_feedback/";
+
+    Map<String, dynamic> requestBody = {
+      "rating": point,
+      "callID": "NxSbReykcZHYqWa4WpU8",
+    };
+
+    final response = await http.post(
       Uri.parse(path),
-      body: jsonEncode({
-        'user_id': phoneNumber,
-        'rating': point,
-      }),
+      body: jsonEncode(requestBody),
       headers: {
-        'content-type': 'application/json',
-        'Authorization': 'Bearer ${await storage.read(key: "access_token")}'
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await storage.read(key: "access_token")}',
       },
     );
 

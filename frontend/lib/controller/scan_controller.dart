@@ -11,14 +11,13 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class ScanController extends GetxController {
-
   void onInit() {
     super.onInit();
     initCamera();
     initTflite();
     flutterTts = FlutterTts();
+    flutterTts.setLanguage("tr-TR");
   }
-
 
   @override
   void onClose() {
@@ -50,8 +49,7 @@ class ScanController extends GetxController {
   var label = "";
 
   initCamera() async {
-
-    if(await Permission.camera.request().isGranted){
+    if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
       cameraController = CameraController(cameras[0], ResolutionPreset.max);
       await cameraController.initialize().then((_) {
@@ -61,18 +59,16 @@ class ScanController extends GetxController {
             cameraCount = 0;
             objectDetection(image);
           }
-          if(!disposed.value) {
+          if (!disposed.value) {
             update();
-          }
-          else {
+          } else {
             return;
           }
         });
       });
       isCameraInitialized.value = true;
       update();
-    }
-    else {
+    } else {
       print("Permission denied");
     }
   }
@@ -83,49 +79,41 @@ class ScanController extends GetxController {
         labels: "assets/ssd_mobilenet.txt",
         isAsset: true,
         numThreads: 1,
-        useGpuDelegate: false
-    );
+        useGpuDelegate: false);
     log("result: $res");
   }
 
   objectDetection(CameraImage image) async {
-    if(disposed.value) {
+    if (disposed.value) {
       return;
     }
     var detector = await Tflite.detectObjectOnFrame(
-        bytesList: image.planes.map((plane) {return plane.bytes;}).toList(),// required
+        bytesList: image.planes.map((plane) {
+          return plane.bytes;
+        }).toList(), // required
         model: "SSDMobileNet",
         imageHeight: image.height,
         imageWidth: image.width,
-        imageMean: 127.5,   // defaults to 127.5
-        imageStd: 127.5,    // defaults to 127.5
-        rotation: 90,       // defaults to 90, Android only
-        threshold: 0.1,     // defaults to 0.1
-        asynch: true
-    );
+        imageMean: 127.5, // defaults to 127.5
+        imageStd: 127.5, // defaults to 127.5
+        rotation: 90, // defaults to 90, Android only
+        threshold: 0.1, // defaults to 0.1
+        asynch: true);
 
-    if(detector != null) {
+    if (detector != null) {
       log("Detected object: ${detector.first}");
-      label = detector.first['detectedClass'].toString();
+      String detectedObject = detector.first['detectedClass'].toString();
       var confidence = detector.first['confidenceInClass'];
-      if (confidence > 0.6) {
+      if (confidence > 0.5) {
         x = detector.first['rect']['x'];
         y = detector.first['rect']['y'];
         w = detector.first['rect']['w'];
         h = detector.first['rect']['h'];
 
-        label = englishToTurkishDictionary[label]!;
+        label = englishToTurkishDictionary[detectedObject]!;
         await flutterTts.speak(label);
         await flutterTts.awaitSpeakCompletion(true);
-
-
-
       }
-
     }
   }
-
 }
-
-
-
