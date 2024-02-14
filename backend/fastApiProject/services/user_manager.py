@@ -14,7 +14,7 @@ import logging
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login", auto_error=False)
-#read secret_key from secret_key.txt
+# read secret_key from secret_key.txt
 SecretKeyFile = open("fastApiProject/db_connection/secret_key.txt", "r")
 SECRET_KEY = SecretKeyFile.read()
 ALGORITHM = "HS256"
@@ -22,6 +22,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -72,9 +74,6 @@ def login(loginRequest: request_models.LoginRequest):
     return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 
-
-
-
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     logger.info(f"get_current_user with token {token} called")
     credentials_exception = HTTPException(
@@ -108,7 +107,7 @@ async def get_current_user_role(current_user: Annotated[entity_models.User, Depe
 
 
 async def get_current_active_user(
-    current_user: Annotated[entity_models.User, Depends(get_current_user)]
+        current_user: Annotated[entity_models.User, Depends(get_current_user)]
 ):
     logger.info(f"get_current_active_user for user with phoneNumber {current_user['phone_number']} called")
     return current_user
