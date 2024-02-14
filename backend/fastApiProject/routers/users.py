@@ -13,11 +13,6 @@ from firebase_admin import auth
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-@router.get("/users/me/", response_model=entity_models.User)
-async def read_users_me(
-    current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]
-):
-    return current_user
 
 @router.get("/users/role")
 async def get_user_role(current_user_role: Annotated[entity_models.User, Depends(user_manager.get_current_user_role)]):
