@@ -32,7 +32,7 @@ flutterfire configure --project=yoldas-73fe5
 - open terminal in there
 
 - For windows:
-run keytool -list -v keystore  "your path to this folder\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
+run keytool -list -v -keystore  "your path to this folder\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
 
 - go to android_app in firebase console
 - add fingerprint
