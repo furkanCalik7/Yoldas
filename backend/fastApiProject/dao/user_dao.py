@@ -165,5 +165,5 @@ def update_user_request(user_id, update_user_request):
         if value is not None:
             setattr(user, attribute, value)
     doc_ref.update(user.model_dump())
-    logger.error(f"User with id {user_id} successfully updated")
+    logger.info(f"User with id {user_id} successfully updated")
     return user.model_dump()
