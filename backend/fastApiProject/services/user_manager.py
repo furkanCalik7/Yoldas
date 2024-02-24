@@ -174,4 +174,6 @@ def get_user_by_rating_average(low, high):
 
 def update_user_request(user_id, update_user_request):
     logger.info(f"update_user_request with user_id {user_id} called")
+    if update_user_request.password:
+        update_user_request.password = get_password_hash(password=update_user_request.password)
     return user_dao.update_user_request(user_id, update_user_request)

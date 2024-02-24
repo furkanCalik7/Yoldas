@@ -21,14 +21,14 @@ class FeedbackRequest(BaseModel):
 
 
 class UpdateUserRequest(BaseModel):
-    first_name: Optional[str]
-    last_name: Optional[str]
-    gender: Optional[Gender]
-    role: Optional[Role]
-    abilities: Optional[list[Ability]]
-    phone_number: Optional[Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]]
-    isConsultant: Optional[bool]
-    password: Optional[str]
-    avg_rating: Optional[float]
-    rating_count: Optional[int]
-    notification_settings: Optional[NotificationSettings]
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    gender: Optional[Gender] = None
+    role: Optional[Role] = None
+    abilities: Optional[list[Ability]] = []
+    phone_number: Optional[Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
+    isConsultant: Optional[bool] = None
+    password: Optional[str] = None
+    avg_rating: Optional[float] = None
+    rating_count: Optional[int] = None
+    notification_settings: Optional[NotificationSettings] = None

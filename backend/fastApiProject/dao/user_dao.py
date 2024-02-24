@@ -3,6 +3,7 @@ from google.cloud.firestore_v1 import FieldFilter
 import time
 from . import call_dao
 from ..models.entity_models import User, Call, CallUser
+from ..models.request_models import UpdateUserRequest
 from ..db_connection import firebase_auth
 from ..models.entity_models import User
 import logging
@@ -139,29 +140,30 @@ def get_user_by_rating_average(low, high):
     return user_list
 
 
-def update_user_request(user_id, update_user_request1):
+def update_user_request(user_id, update_user_request):
     doc_ref = db.collection("UserCollection").document(user_id)
     doc = doc_ref.get()
     if not doc.exists:
         logger.error(f"User with id {user_id} not found")
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
 
-    user = User.model_validate(doc.to_dict())
+    user = UpdateUserRequest.model_validate(doc.to_dict())
 
-    if update_user_request1.first_name is not None:
-        user.first_name = update_user_request1.first_name
-    if update_user_request1.last_name is not None:
-        user.last_name = update_user_request1.last_name
-    if update_user_request1.phone_number is not None:
-        user.phone_number = update_user_request1.phone_number
-    if update_user_request1.password is not None:
-        user.password = update_user_request1.password
-    if update_user_request1.isConsultant is not None:
-        user.isConsultant = update_user_request1.isConsultant
-    if update_user_request1.role is not None:
-        user.role = update_user_request1.role
-    if update_user_request1.notification_settings is not None:
-        user.notification_settings = update_user_request1.notification_settings
-    doc_ref.set(user.model_dump())
-    logger.error(f"User with id {user_id} successfully updated")
+    # Define a dictionary containing attributes to update
+    attributes_to_update = {
+        'first_name': update_user_request.first_name,
+        'last_name': update_user_request.last_name,
+        'phone_number': update_user_request.phone_number,
+        'password': update_user_request.password,
+        'isConsultant': update_user_request.isConsultant,
+        'role': update_user_request.role,
+        'notification_settings': update_user_request.notification_settings
+    }
+
+    # Iterate over the dictionary and update user attributes if the value is not None
+    for attribute, value in attributes_to_update.items():
+        if value is not None:
+            setattr(user, attribute, value)
+    doc_ref.update(user.model_dump())
+    logger.info(f"User with id {user_id} successfully updated")
     return user.model_dump()

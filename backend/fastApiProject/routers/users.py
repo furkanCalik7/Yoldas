@@ -51,7 +51,7 @@ async def register_user(user: entity_models.User):
 
 
 @router.put("/update/{user_id}")
-async def update_user(update_user_request: entity_models.User, user_id: str):
+async def update_user(update_user_request: request_models.UpdateUserRequest, user_id: str):
     logger.info(f"update_user with user_id {user_id} called")
     return user_manager.update_user_request(user_id, update_user_request)
 
@@ -60,6 +60,5 @@ async def update_user(update_user_request: entity_models.User, user_id: str):
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
-    logger.info(f"login_for_access_token with form_data {form_data.username} called")
     return user_manager.login_for_access_token(form_data)
 
