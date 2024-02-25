@@ -37,10 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   Future _login(String phoneNumber) async {
-    String path = API_URL + "/users/login";
-
-    print(password_controller.text);
-    print(phoneNumber);
+    String path = "$API_URL/users/login";
 
     var response = await http.post(
       Uri.parse(path),
