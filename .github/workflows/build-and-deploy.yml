@@ -2,7 +2,7 @@ name: Publish Backend
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   release:
     concurrency:
@@ -18,6 +18,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd Yoldas/backend
-            git checkout main
+            git checkout master
             git pull git@github.com:furkancalik7/Yoldas.git
             bash start.sh
