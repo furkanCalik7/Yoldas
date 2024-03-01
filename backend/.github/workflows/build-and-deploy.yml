@@ -1,1 +1,23 @@
-
+name: Publish Backend
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release:
+    concurrency:
+      group: ${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key : ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd Yoldas/backend
+            git checkout master
+            git pull
+            bash start.sh
