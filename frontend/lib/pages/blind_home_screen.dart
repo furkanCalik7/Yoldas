@@ -20,6 +20,8 @@ class BlindHomeScreen extends StatelessWidget {
           const SizedBox(
             height: 50,
           ),
+          
+
           TappableIcon(
             action: () { 
               Navigator.pushNamed(context, CallMainFrame.routeName);

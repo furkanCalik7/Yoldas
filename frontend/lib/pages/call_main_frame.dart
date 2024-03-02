@@ -4,6 +4,7 @@ import 'package:frontend/controller/socket_controller.dart';
 import 'package:frontend/controller/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import "package:socket_io_client/socket_io_client.dart" as IO;
 
 class CallMainFrame extends StatefulWidget {
   const CallMainFrame({Key? key}) : super(key: key);
@@ -19,19 +20,21 @@ class _CallMainFrameState extends State<CallMainFrame> {
   WebRTCController webRTCController = WebRTCController();
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+  IO.Socket? socket;
+  late String callID;
 
   @override
   void initState() {
     _localRenderer.initialize();
     _remoteRenderer.initialize();
-    webRTCController.openUserMedia(_localRenderer, _remoteRenderer);
+    webRTCController.openUserMedia(_localRenderer, _remoteRenderer).then((value) {
+      print("User Media Opened");
+      setState(() {});  
+    });
     webRTCController.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
       setState(() {});
-    });
-    socketController.getConnection().then((socket) {
-      webRTCController.requestCall(_remoteRenderer, socket);
-    });
+    }); 
     super.initState();
   }
 
@@ -39,8 +42,12 @@ class _CallMainFrameState extends State<CallMainFrame> {
   void dispose() {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
+    _textEditingController.dispose();
     super.dispose();
   }
+
+  // Delete later
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +56,76 @@ class _CallMainFrameState extends State<CallMainFrame> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // this sized box's child will be the video screen
             Center(
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
                     color: Colors.black,
                     child: RTCVideoView(_remoteRenderer))),
+            // Add button here
+            Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter text here...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                Row(children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add functionality for first button
+                      socketController.getConnection().then((value) {
+                        print("Socket: $value");
+                        webRTCController
+                            .requestCall(_remoteRenderer, value, "fast")
+                            .then((value) {
+                          callID = value;
+                          print("Call ID: $callID");
+                        });
+                      });
+                    },
+                    child: Text('call'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add functionality for second button
+                      socketController.getConnection().then((value) {
+                        print("Socket: $value");
+                        // if (callID ) {
+                          webRTCController.acceptCall(
+                              _remoteRenderer, value, callID);
+                        // } else {
+                        // print("Call ID: ${_textEditingController.text}");
+                        // print("here");
+                        // webRTCController.acceptCall(_remoteRenderer, value,
+                        //     _textEditingController.text);
+                        // }
+                      });
+                    },
+                    child: Text('answer'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add functionality for second button
+                      socketController.getConnection().then((value) {
+                        print("Socket: $value"); 
+                        print("Call ID: ${_textEditingController.text}");
+                        print("here");
+                        webRTCController.acceptCall(_remoteRenderer, value,
+                            _textEditingController.text);
+                        // }
+                      });
+                    },
+                    child: Text('answer2'),
+                  )
+                ])
+              ],
+            )),
+
             // SizedBox(
             //   width: MediaQuery.of(context).size.width,
             //   height: MediaQuery.of(context).size.height,
