@@ -40,7 +40,6 @@ dependencies:
   pin_code_fields: ^8.0.1
   vibration: ^1.8.4
   settings_ui: ^2.0.2
-  editable_image: ^2.0.0
   card_swiper: ^3.0.1
   http: ^1.1.2
   shared_preferences: ^2.2.2
@@ -48,7 +47,6 @@ dependencies:
   get: ^4.6.6
   camera: ^0.10.5+7
   permission_handler: ^11.1.0
-  flutter_tflite: ^1.0.1
   image: ^3.2.0
   flutter_tts: ^3.8.5
   flutter_translate: ^4.0.4
@@ -56,6 +54,9 @@ dependencies:
   google_mlkit_text_recognition: ^0.11.0
   firebase_core: ^2.24.2
   firebase_auth: ^4.15.3
+  tflite_v2: ^1.0.0
+  flutter_vision: ^1.1.4
+  simplytranslate: ^1.2.4
 
 
 dev_dependencies:

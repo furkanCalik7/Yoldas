@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:frontend/utility/dictionary.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
-import 'package:flutter_tflite/flutter_tflite.dart';
+import 'package:tflite_v2/tflite_v2.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-class ScanController extends GetxController {
+class ObjectDetectionController extends GetxController {
   void onInit() {
     super.onInit();
     initCamera();
@@ -105,13 +105,14 @@ class ScanController extends GetxController {
 
       String detectedObject = detector.first['detectedClass'].toString();
       var confidence = detector.first['confidenceInClass'];
-      if (confidence > 0.5) {
+      if (confidence > 0.6) {
         x = detector.first['rect']['x'];
         y = detector.first['rect']['y'];
         w = detector.first['rect']['w'];
         h = detector.first['rect']['h'];
 
         label = englishToTurkishDictionary[detectedObject]!;
+        await flutterTts.awaitSpeakCompletion(true);
         await flutterTts.speak(label);
         await flutterTts.awaitSpeakCompletion(true);
       }

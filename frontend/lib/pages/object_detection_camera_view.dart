@@ -1,6 +1,7 @@
 import "package:camera/camera.dart";
 import "package:flutter/material.dart";
-import "package:frontend/controller/scan_controller.dart";
+import "package:frontend/controller/object_detection_controller.dart";
+import "package:frontend/controller/yolo_model_controller.dart";
 import "package:get/get.dart";
 
 class ObjectDetectionCameraView extends StatefulWidget {
@@ -13,21 +14,22 @@ class ObjectDetectionCameraView extends StatefulWidget {
 }
 
 class _ObjectDetectionCameraViewState extends State<ObjectDetectionCameraView> {
-  final ScanController controller = Get.put(ScanController());
+  final ObjectDetectionController controller = Get.put(ObjectDetectionController());
 
   @override
   void dispose() {
-    Get.delete<ScanController>();
+    Get.delete<YoloModelController>();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           title: const Text("Obje Tanıma"),
         ) ,
-        body: GetBuilder<ScanController>(
+        body: GetBuilder<ObjectDetectionController>(
           init: controller,
           builder: (controller) {
             return controller.isCameraInitialized.value

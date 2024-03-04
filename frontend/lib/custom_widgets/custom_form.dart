@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_data.dart';
-import 'package:frontend/firebase_options.dart';
+import '../firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CustomForm extends StatefulWidget {

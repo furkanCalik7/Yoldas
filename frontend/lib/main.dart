@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/blind_home_screen.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
+import 'package:frontend/pages/currency_recognition_camera_view.dart';
 import 'package:frontend/pages/evaluation_page.dart';
+import 'package:frontend/pages/image_caption_view.dart';
 import 'package:frontend/pages/initial_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/object_detection_camera_view.dart';
@@ -34,6 +36,8 @@ void main() async {
         EvaluationPage.routeName: (context) => const EvaluationPage(),
         ObjectDetectionCameraView.routeName: (context) => ObjectDetectionCameraView(),
         TextRecognitionCameraView.routeName: (context) => TextRecognitionCameraView(),
+        CurrencyRecognitionCameraView.routeName: (context) => CurrencyRecognitionCameraView(),
+        ImageCaptionView.routeName: (context) => ImageCaptionView(),
       },
     ),
   );
