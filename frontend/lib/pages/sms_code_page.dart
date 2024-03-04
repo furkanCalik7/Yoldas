@@ -20,8 +20,8 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:vibration/vibration.dart';
 
 import '../config.dart';
-import '../firebase_options.dart';
 import '../models/user_data.dart';
+import '../firebase_options.dart';
 
 class SMSCodePage extends StatefulWidget {
   static const String routeName = "/pin_code_verification_screen";
@@ -85,11 +85,9 @@ class _SMSCodePageState extends State<SMSCodePage> {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     _auth = FirebaseAuth.instance;
-    print('Initialized default app $app');
     _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
-        print("credentiaaaaaaaaal: " + credential.toString());
         await _auth.signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -98,7 +96,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
       codeSent: (String verificationId, int? resendToken) async {
         verificationIdx.value = verificationId;
         print("successfully sent");
-        print("verificationId: " + verificationId);
       },
       timeout: const Duration(seconds: 60),
       codeAutoRetrievalTimeout: (verificationId) {

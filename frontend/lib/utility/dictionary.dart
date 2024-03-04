@@ -1,5 +1,5 @@
 Map<String, String> englishToTurkishDictionary = {
-  "person": "kişi",
+  "person": "insan",
   "bicycle": "bisiklet",
   "car": "araba",
   "motorcycle": "motosiklet",

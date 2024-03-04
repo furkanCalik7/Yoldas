@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/currency_recognition_camera_view.dart';
+import 'package:frontend/pages/image_caption_view.dart';
 import 'package:frontend/pages/text_recognition_view.dart';
 
 import '../custom_widgets/appbars/appbar_custom.dart';
@@ -10,14 +12,16 @@ const List<String> models = [
   "Para tanıma",
   "Metin tanıma",
   "Obje tanıma",
-  "Belge tanıma"
+  "Belge tanıma",
+  "Resim tanıma",
 ];
 
 const List<IconData> icons = [
   Icons.money,
   Icons.text_fields,
+  Icons.remove_red_eye,
+  Icons.file_copy,
   Icons.image,
-  Icons.file_copy
 ];
 
 class AIModelSelectionPage extends StatelessWidget {
@@ -27,7 +31,7 @@ class AIModelSelectionPage extends StatelessWidget {
   void navigateToModel(context, index) {
     switch (index) {
       case 0:
-        print("Index = 0");
+        Navigator.pushNamed(context, CurrencyRecognitionCameraView.routeName);
         break;
       case 1:
         Navigator.pushNamed(context, TextRecognitionCameraView.routeName);
@@ -37,6 +41,10 @@ class AIModelSelectionPage extends StatelessWidget {
         break;
       case 3:
         print("Index = 3");
+        break;
+      case 4:
+        Navigator.pushNamed(context, ImageCaptionView.routeName);
+        break;
     }
   }
 

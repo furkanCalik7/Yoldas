@@ -3,19 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'package:frontend/utility/dictionary.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
-import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:flutter/services.dart';
 
@@ -86,13 +79,16 @@ class MLKitTextRecognizer {
   MLKitTextRecognizer() {
     recognizer = TextRecognizer();
     flutterTTs.setSpeechRate(0.7);
+    flutterTTs.setLanguage("tr-TR");
+    flutterTTs.setPitch(1);
+    flutterTTs.setVoice({"name": "tr-tr-x-ama-local", "locale": "tr-TR"});
   }
 
   void dispose() {
     recognizer.close();
   }
 
-  void spellcheck(String exampleText) async {
+  Future<String> spellcheck(String exampleText) async {
     var endpoint = "https://api.bing.microsoft.com/v7.0/spellcheck";
     var url = Uri.parse("$endpoint?mkt=en-US&mode=proof&text=${Uri.encodeComponent(exampleText)}");
 
@@ -115,23 +111,28 @@ class MLKitTextRecognizer {
         // Handle the successful response
         var responseData = json.decode(response.body);
         print(responseData);
+        return responseData["flaggedTokens"][0]["suggestions"][0]["suggestion"];
       } else {
         // Handle errors
         print("Error: ${response.statusCode}");
+        return "Error: ${response.statusCode}";
       }
     } catch (e) {
       // Handle exceptions
       print("Exception: $e");
+      return "Exception: $e";
     }
   }
-
-
 
   Future<String> processImage(InputImage image) async {
     final recognized = await recognizer.processImage(image);
     log(recognized.text);
 
-    flutterTTs.speak(recognized.text);
+    // remove the new line character from the recognized text
+    var text = recognized.text.replaceAll("\n", " ");
+    var out = await spellcheck(text);
+    print(out);
+    flutterTTs.speak(text);
     return recognized.text;
   }
 }
