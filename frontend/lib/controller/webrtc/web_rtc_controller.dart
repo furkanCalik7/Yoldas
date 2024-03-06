@@ -6,7 +6,50 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import "package:rxdart/rxdart.dart";
+
+class IceCandidateHandler {
+  String? callId;
+  List<RTCIceCandidate?> iceCandidates = [];
+  IO.Socket socket;
+  CallUser callUser;
+
+  IceCandidateHandler({required this.socket, required this.callUser});
+
+  void handleIceCandidate(RTCIceCandidate? candidate) {
+    if (candidate == null) {
+      print("Ice candidates completed");
+      return;
+    }
+
+    if (callId != null) {
+      // If callId is available, send ICE candidates immediately
+      sendIceCandidate(candidate);
+    } else {
+      // If callId is not available yet, store ICE candidates
+      iceCandidates.add(candidate);
+    }
+  }
+
+  void sendIceCandidate(RTCIceCandidate candidate) {
+    print('Sending candidate: ${candidate.toMap()}');
+    IceCandidateMessage iceCandidate =
+        IceCandidateMessage(callID: callId!, iceCandidate: candidate);
+
+    // Assuming `socket.emit` is a function to send data over the socket
+    socket.emit(
+        '${callUser.name}_ice_candidate', jsonEncode(iceCandidate.toJSON()));
+  }
+
+  void setCallId(String id) {
+    callId = id;
+    // Process any stored ICE candidates after receiving callId
+    iceCandidates.forEach((candidate) {
+      sendIceCandidate(candidate!);
+    });
+    // Clear stored ICE candidates after sending them
+    iceCandidates.clear();
+  }
+}
 
 typedef void StreamStateCallback(MediaStream stream);
 
@@ -32,12 +75,13 @@ class CallRequest {
 }
 
 class CallAccept {
-  CallAccept({required this.callID});
+  CallAccept({required this.callID, required this.phoneNumber});
 
   String callID;
+  String phoneNumber;
 
   toJSON() {
-    return {'call_id': callID};
+    return {'call_id': callID, 'phone_number': phoneNumber};
   }
 }
 
@@ -52,16 +96,16 @@ class Signal {
   }
 }
 
-// class SignalMessage {
-//   SignalMessage({required this.callID, required this.signal});
+class SignalMessage {
+  SignalMessage({required this.callID, required this.signal});
 
-//   late String callID;
-//   late Signal signal;
+  late String callID;
+  late Signal signal;
 
-//   toJSON() {
-//     return {"call_id": callID, "signal": signal.toJSON()};
-//   }
-// }
+  toJSON() {
+    return {"call_id": callID, "signal": signal.toJSON()};
+  }
+}
 
 class IceCandidateMessage {
   IceCandidateMessage({required this.callID, required this.iceCandidate});
@@ -99,6 +143,20 @@ class WebRTCController {
     if (offer.sdp == null) throw Exception("offer.sdp is null");
     await _peerConnection!.setLocalDescription(offer);
     Signal signal = Signal(type: SignalType.offer, sdp: offer.sdp!);
+    IceCandidateHandler iceCandidateHandler =
+        IceCandidateHandler(socket: socket, callUser: CallUser.caller);
+    _peerConnection?.onIceCandidate = iceCandidateHandler.handleIceCandidate;
+
+    socket.on("answer_to_caller", (data) {
+      var answerJson = jsonDecode(data) as Map<String, dynamic>;
+      var signal = answerJson['signal'];
+      var answer = RTCSessionDescription(
+        signal['sdp'],
+        signal['type'],
+      );
+      print("Someone tried to connect");
+      _peerConnection?.setRemoteDescription(answer);
+    });
 
     CallRequest callRequest = CallRequest(
         type: type,
@@ -114,9 +172,9 @@ class WebRTCController {
         headers: {
           "Content-Type": "application/json",
           'Authorization': 'Bearer ${await storage.read(key: "access_token")}'
-        }).then((value) {
-      print(value.body);
+        }).then((value) {  
       var callJson = jsonDecode(value.body);
+      iceCandidateHandler.setCallId(callJson["call_id"]);
 
       _sendPeerConnection(
           remoteRenderer, socket, CallUser.caller, callJson["call_id"]);
@@ -128,12 +186,46 @@ class WebRTCController {
 
   Future<void> acceptCall(
       RTCVideoRenderer remoteRenderer, IO.Socket socket, String callID) async {
-    CallAccept callAccept = CallAccept(callID: callID);
-    print("acceptCall: $callAccept");
-    socket.emit("call_accept", jsonEncode(callAccept.toJSON()));
-    socket.on("call_accept_response", (data) {
-      _sendPeerConnection(remoteRenderer, socket, CallUser.callee, callID);
+    CallAccept callAccept = CallAccept(
+        callID: callID,
+        phoneNumber: await storage.read(key: "phone_number") ?? "N/A");
+
+    _peerConnection = await createPeerConnection(_configuration);
+    IceCandidateHandler iceCandidateHandler =
+        IceCandidateHandler(socket: socket, callUser: CallUser.callee);
+
+    _peerConnection?.onIceCandidate = iceCandidateHandler.handleIceCandidate;
+    _sendPeerConnection(remoteRenderer, socket, CallUser.callee, callID);
+
+    http.post(
+        Uri.parse(
+          "$API_URL/calls/call/accept",
+        ),
+        body: jsonEncode(callAccept.toJSON()),
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ${await storage.read(key: "access_token")}'
+        }).then((value) {
+          print(value);
+      iceCandidateHandler.setCallId(callID);
+      var signal = jsonDecode(value.body)['offer'];
+      RTCSessionDescription offer = RTCSessionDescription(
+        signal['sdp'],
+        signal['type'],
+      );
+      _peerConnection?.setRemoteDescription(offer);
+      _peerConnection?.createAnswer().then((value) {
+        _peerConnection?.setLocalDescription(value);
+        Signal signal = Signal(type: SignalType.answer, sdp: value.sdp!);
+        SignalMessage signalMessage =
+            SignalMessage(callID: callID, signal: signal);
+        socket.emit("answer_signal", jsonEncode(signalMessage.toJSON()));
+      }); 
     });
+    // socket.emit("call_accept", jsonEncode(callAccept.toJSON()));
+    // socket.on("call_accept_response", (data) {
+    //   _sendPeerConnection(remoteRenderer, socket, CallUser.callee, callID);
+    // });
   }
 
   Future<void> _sendPeerConnection(RTCVideoRenderer remoteRenderer,
@@ -144,85 +236,39 @@ class WebRTCController {
 
     registerPeerConnectionListeners();
 
-    RTCSessionDescription offer = await _peerConnection!.createOffer();
-    await _peerConnection!.setLocalDescription(offer);
+    _localStream?.getTracks().forEach((track) {
+      _peerConnection?.addTrack(track, _localStream!);
+    });
 
-    print("offer: ${offer.type}");
-
-    if (offer.sdp != null) {
-      SignalType signalType;
-      if (callUser == CallUser.caller) {
-        signalType = SignalType.offer;
-      } else {
-        signalType = SignalType.answer;
+    _peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
+      if (state == RTCIceGatheringState.RTCIceGatheringStateComplete) {
+        print("${callUser.name}_ice_candidates_completed");
+        socket.emit("${callUser.name}_ice_candidates_completed",
+            jsonEncode({'call_id': callID}));
       }
-      Signal signal = Signal(type: signalType, sdp: offer.sdp!);
-      SignalMessage signalMessage =
-          SignalMessage(callID: callID, signal: signal);
+    };
 
-      socket.emit(
-          "${callUser.name}_signaling", jsonEncode(signalMessage.toJSON()));
-
-      _localStream?.getTracks().forEach((track) {
-        _peerConnection?.addTrack(track, _localStream!);
+    _peerConnection?.onTrack = (RTCTrackEvent event) {
+      print('Got remote track: ${event.streams[0]}');
+      event.streams[0].getTracks().forEach((track) {
+        print('Add a track to the remoteStream $track');
+        _remoteStream?.addTrack(track);
       });
+    };
 
-      _peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
-        if (state == RTCIceGatheringState.RTCIceGatheringStateComplete) {
-          print("${callUser.name}_ice_candidates_completed");
-          socket.emit("${callUser.name}_ice_candidates_completed",
-              jsonEncode({'call_id': callID}));
-        }
-      };
-
-      _peerConnection?.onIceCandidate = (RTCIceCandidate? candidate) {
-        if (candidate == null) {
-          print("${callUser.name}_ice_candidates_completed");
-          return;
-        }
-
-        print('Got candidate: ${candidate.toMap()}');
-        IceCandidateMessage iceCandidate =
-            IceCandidateMessage(callID: callID, iceCandidate: candidate);
-
-        socket.emit('${callUser.name}_ice_candidate',
-            jsonEncode(iceCandidate.toJSON()));
-      };
-
-      _peerConnection?.onTrack = (RTCTrackEvent event) {
-        print('Got remote track: ${event.streams[0]}');
-        event.streams[0].getTracks().forEach((track) {
-          print('Add a track to the remoteStream $track');
-          _remoteStream?.addTrack(track);
-        });
-      };
-
-      socket.on("remote_signal", (data) {
-        var answerJson = jsonDecode(data) as Map<String, dynamic>;
-        var signal = answerJson['signal'];
-        var answer = RTCSessionDescription(
-          signal['sdp'],
-          signal['type'],
+    socket.on("remote_ice_candidate", (data) async {
+      var iceCandidateJson = jsonDecode(data) as Map<String, dynamic>;
+      var iceCandidates = iceCandidateJson['ice_candidates'];
+      for (var iceCandidate in iceCandidates) {
+        print("ice_candidate arrived : " + iceCandidate.toString());
+        var candidate = RTCIceCandidate(
+          iceCandidate['candidate'],
+          iceCandidate['sdpMid'],
+          iceCandidate['sdpMLineIndex'],
         );
-        print("Someone tried to connect");
-        _peerConnection?.setRemoteDescription(answer);
-      });
-
-      socket.on("remote_ice_candidate", (data) async {
-        var iceCandidateJson = jsonDecode(data) as Map<String, dynamic>;
-        var iceCandidates = iceCandidateJson['ice_candidates'];
-        for (var iceCandidate in iceCandidates) {
-          var candidate = RTCIceCandidate(
-            iceCandidate['candidate'],
-            iceCandidate['sdpMid'],
-            iceCandidate['sdpMLineIndex'],
-          );
-          await _peerConnection?.addCandidate(candidate);
-        }
-      });
-    } else {
-      print("offer.sdp is null");
-    }
+        await _peerConnection?.addCandidate(candidate);
+      }
+    });
   }
 
   // Future<void> acceptCall(

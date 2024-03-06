@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/socket_controller.dart';
-import 'package:frontend/controller/web_rtc_controller.dart';
+import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import "package:socket_io_client/socket_io_client.dart" as IO;

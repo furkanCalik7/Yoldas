@@ -1,0 +1,45 @@
+import "package:flutter_webrtc/flutter_webrtc.dart";
+
+class IceCandidateHandler {
+  String? callId;
+  List<RTCIceCandidate?> iceCandidates = [];
+  IO.Socket socket;
+  CallUser callUser;
+
+  IceCandidateHandler({required this.socket, required this.callUser});
+
+  void handleIceCandidate(RTCIceCandidate? candidate) {
+    if (candidate == null) {
+      print("Ice candidates completed");
+      return;
+    }
+
+    if (callId != null) {
+      // If callId is available, send ICE candidates immediately
+      sendIceCandidate(candidate);
+    } else {
+      // If callId is not available yet, store ICE candidates
+      iceCandidates.add(candidate);
+    }
+  }
+
+  void sendIceCandidate(RTCIceCandidate candidate) {
+    print('Sending candidate: ${candidate.toMap()}');
+    IceCandidateMessage iceCandidate =
+        IceCandidateMessage(callID: callId!, iceCandidate: candidate);
+
+    // Assuming `socket.emit` is a function to send data over the socket
+    socket.emit(
+        '${callUser.name}_ice_candidate', jsonEncode(iceCandidate.toJSON()));
+  }
+
+  void setCallId(String id) {
+    callId = id;
+    // Process any stored ICE candidates after receiving callId
+    iceCandidates.forEach((candidate) {
+      sendIceCandidate(candidate!);
+    });
+    // Clear stored ICE candidates after sending them
+    iceCandidates.clear();
+  }
+}

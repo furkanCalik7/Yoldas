@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/controller/web_rtc_controller.dart';
+import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
