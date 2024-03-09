@@ -88,51 +88,73 @@ class MLKitTextRecognizer {
     recognizer.close();
   }
 
-  Future<String> spellcheck(String exampleText) async {
-    var endpoint = "https://api.bing.microsoft.com/v7.0/spellcheck";
-    var url = Uri.parse("$endpoint?mkt=en-US&mode=proof&text=${Uri.encodeComponent(exampleText)}");
+  Future<String> spellcheck(String text) async {
+    String openaiApiKey = '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';
+    String openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
 
-    String apiKey = "0213527169d74afaacd7d4e196319321";
+    int length = text.length;
 
-    var data = {'text': exampleText};
+
+    var requestBody = jsonEncode({
+      'model': 'gpt-3.5-turbo-0125',
+      'messages': [
+        {
+          'role': 'system',
+          'content': [
+            {'type': 'text', 'text': 'Türkçe dilindeki yazıda bulunan yanlış karakterleri düzelten bir asistansın.'},
+          ],
+        },
+        {
+          'role': 'user',
+          'content': [
+            {'type': 'text', 'text': text},
+          ],
+        },
+      ],
+      'max_tokens': 1000
+    });
+
+    final headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $openaiApiKey"
+    };
 
     try {
-      var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Ocp-Apim-Subscription-Key': apiKey,
-        },
-        body: data,
-        encoding: Encoding.getByName('utf-8'),
+      final response = await http.post(
+        Uri.parse(openaiApiUrl),
+        headers: headers,
+        body: requestBody,
       );
 
       if (response.statusCode == 200) {
-        // Handle the successful response
-        var responseData = json.decode(response.body);
-        print(responseData);
-        return responseData["flaggedTokens"][0]["suggestions"][0]["suggestion"];
+        print('Response: ${response.body}');
+
+        var decodedJson = jsonDecode(response.body);
+        var generatedText = decodedJson['choices'][0]['message']['content'];
+        return generatedText;
+        // Handle response here
       } else {
-        // Handle errors
-        print("Error: ${response.statusCode}");
-        return "Error: ${response.statusCode}";
+        print(response.body);
+        print('Request failed with status: ${response.statusCode}');
+        return 'request failed';
       }
     } catch (e) {
-      // Handle exceptions
-      print("Exception: $e");
-      return "Exception: $e";
+      print('Request failed with error: $e');
+      return '';
     }
   }
 
   Future<String> processImage(InputImage image) async {
     final recognized = await recognizer.processImage(image);
-    log(recognized.text);
 
     // remove the new line character from the recognized text
     var text = recognized.text.replaceAll("\n", " ");
+    log(text);
     var out = await spellcheck(text);
-    print(out);
-    flutterTTs.speak(text);
+    
+    var encoded = utf8.decode(out.runes.toList());
+    log(encoded);
+    flutterTTs.speak(encoded);
     return recognized.text;
   }
 }

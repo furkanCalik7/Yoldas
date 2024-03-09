@@ -63,11 +63,13 @@ class CurrencyRecognizerController extends GetxController {
         print(detectedObject);
         label = detectedObject;
         update();
-        flutterTts.awaitSpeakCompletion(true);
-        flutterTTs.speak(detectedObject);
-
-
       }
+      else {
+        label = "para bulunamadı";
+        update();
+      }
+      flutterTts.awaitSpeakCompletion(true);
+      flutterTTs.speak(label);
     }
   }
 

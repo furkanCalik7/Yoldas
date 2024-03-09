@@ -1,10 +1,10 @@
 import "package:camera/camera.dart";
 import "package:flutter/material.dart";
 import "package:frontend/controller/image_caption_controller.dart";
-import "package:frontend/controller/object_detection_controller.dart";
-import "package:frontend/controller/text_recognizer_controller.dart";
 import "package:get/get.dart";
 import "dart:io";
+
+import "../controller/gpt_controller.dart";
 
 class ImageCaptionView extends StatefulWidget {
   const ImageCaptionView({super.key});
@@ -16,11 +16,11 @@ class ImageCaptionView extends StatefulWidget {
 }
 
 class _ImageCaptionViewState extends State<ImageCaptionView> {
-  final ImageCaptionController controller = Get.put(ImageCaptionController());
+  final GPTController controller = Get.put(GPTController());
 
   @override
   void dispose() {
-    Get.delete<ImageCaptionController>();
+    Get.delete<GPTController>();
     super.dispose();
   }
 
@@ -36,11 +36,13 @@ class _ImageCaptionViewState extends State<ImageCaptionView> {
           if (controller.isPaused.value) {
             controller.cameraController.resumePreview();
             controller.isPaused.value = false;
+            controller.output = "";
+            controller.update();
           } else {
             await controller.predictImage();
           }
         },
-        child: GetBuilder<ImageCaptionController>(
+        child: GetBuilder<GPTController>(
           init: controller,
           builder: (controller) {
             return controller.isCameraInitialized.value
@@ -52,12 +54,15 @@ class _ImageCaptionViewState extends State<ImageCaptionView> {
                       CameraPreview(controller.cameraController),
                       Align(
                         alignment: Alignment.bottomCenter,
-                        child: Text(
-                          controller.output,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                        child: Container(
+                          color: Colors.white,
+                          child: Text(
+                            controller.output,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
