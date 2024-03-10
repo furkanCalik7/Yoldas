@@ -5,45 +5,37 @@ class CustomTextFormField extends StatelessWidget {
       {super.key,
       this.hintText = "",
       this.obscureText = false,
+      this.enabled = true,
       required this.validator,
       required this.controller,
-      this.icon});
+      this.icon,
+      this.onChanged});
 
   final String hintText;
   final bool obscureText;
   final Function validator;
   final TextEditingController controller;
   final IconData? icon;
+  final bool enabled;
+  final Function? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      enabled: enabled,
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.black),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
+        hintStyle: const TextStyle(color: Colors.black54),
       ),
       validator: (value) => validator(value),
+      onChanged: (value) {
+        if (onChanged != null) {
+          onChanged!(value);
+        }
+      },
     );
   }
 }

@@ -111,9 +111,10 @@ class _CustomFormState extends State<CustomForm> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: formColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CustomTextFormField(
               icon: Icons.person,

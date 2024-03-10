@@ -33,13 +33,12 @@ class ButtonMain extends StatelessWidget {
           action();
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-            ),
-          ),
-        ),
+            backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+              ),
+            )),
         child: Text(
           text,
           textAlign: TextAlign.center,
