@@ -46,7 +46,6 @@ class User(BaseModel):
     role: Role
     abilities: Optional[list[Ability]] = []
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9]\d{1,14}$")]
-    email: EmailStr
     isConsultant: Optional[bool] = False
     password: str
     avg_rating: Optional[float] = 0
