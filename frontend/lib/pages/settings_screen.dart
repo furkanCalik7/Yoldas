@@ -3,6 +3,7 @@ import 'package:frontend/pages/profile_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/pages/change_password_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,6 +28,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: (BuildContext context) {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) => ProfileScreen()));
+                },
+              ),
+              SettingsTile.navigation(
+                leading: Icon(Icons.lock),
+                title: Text('Şifreyi Değiştir'),
+                onPressed: (BuildContext context) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => ChangePasswordPage()));
                 },
               ),
               SettingsTile.navigation(
@@ -64,7 +73,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: (BuildContext context) {
                     AlertDialog alert = AlertDialog(
                       title: const Text("Çıkış"),
-                      content: const Text("Çıkış yapmak istediğinize emin misiniz?"),
+                      content:
+                          const Text("Çıkış yapmak istediğinize emin misiniz?"),
                       actions: [
                         TextButton(
                           child: const Text("Evet"),
