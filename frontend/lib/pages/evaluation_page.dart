@@ -6,6 +6,7 @@ import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import "package:frontend/pages/blind_main_frame.dart";
+import "package:frontend/pages/complaint_page.dart";
 import "package:frontend/pages/volunteer_main_frame.dart";
 import "package:frontend/utility/types.dart";
 import "package:frontend/config.dart";
@@ -138,7 +139,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 text: "Şikayet Et",
                 height: 75,
                 fontSize: 30.0,
-                action: () {},
+                action: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => ComplaintPage()));
+                },
               )
             ],
           ),

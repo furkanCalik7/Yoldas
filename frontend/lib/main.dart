@@ -23,7 +23,7 @@ void main() async {
     MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => const BlindMainFrame(),
+        '/': (context) => const InitializationPage(),
         //'/': (context) => const CallMainFrame(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
@@ -34,9 +34,12 @@ void main() async {
         CallMainFrame.routeName: (context) => const CallMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
         EvaluationPage.routeName: (context) => const EvaluationPage(),
-        ObjectDetectionCameraView.routeName: (context) => ObjectDetectionCameraView(),
-        TextRecognitionCameraView.routeName: (context) => TextRecognitionCameraView(),
-        CurrencyRecognitionCameraView.routeName: (context) => CurrencyRecognitionCameraView(),
+        ObjectDetectionCameraView.routeName: (context) =>
+            ObjectDetectionCameraView(),
+        TextRecognitionCameraView.routeName: (context) =>
+            TextRecognitionCameraView(),
+        CurrencyRecognitionCameraView.routeName: (context) =>
+            CurrencyRecognitionCameraView(),
         ImageCaptionView.routeName: (context) => ImageCaptionView(),
       },
     ),
