@@ -13,11 +13,11 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
 class GPTController extends GetxController {
-  late CameraController cameraController;
+  late CameraController controller;
   late List<CameraDescription> cameras;
   late CameraImage cameraImage;
   var isCameraInitialized = false.obs;
-  var isPaused = false.obs;
+  var isImageStreamActive = true.obs;
   late FlutterTts flutterTts;
   final gt = SimplyTranslator(EngineType.google);
   var output = "";
@@ -27,7 +27,7 @@ class GPTController extends GetxController {
     String openaiApiKey = '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';
     String openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
 
-    String base64Image = base64Encode(await imageFile.readAsBytes());
+    String base64Image = base64Encode(imageFile.readAsBytesSync());
 
     var requestBody = jsonEncode({
       'model': 'gpt-4-vision-preview',
@@ -55,7 +55,7 @@ class GPTController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse("https://api.openai.com/v1/chat/completions"),
+        Uri.parse(openaiApiUrl),
         headers: headers,
         body: requestBody,
       );
@@ -77,7 +77,6 @@ class GPTController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     initCamera();
     flutterTts = FlutterTts();
@@ -85,12 +84,12 @@ class GPTController extends GetxController {
 
   @override
   void onClose() {
-    cameraController.dispose();
+    controller.dispose();
     flutterTts.stop();
   }
 
   void onDispose() {
-    cameraController.dispose();
+    controller.dispose();
     flutterTts.stop();
   }
 
@@ -104,19 +103,16 @@ class GPTController extends GetxController {
   initCamera() async {
     if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
-      cameraController = CameraController(cameras[0], ResolutionPreset.max);
-      await cameraController.initialize();
+      controller = CameraController(cameras[0], ResolutionPreset.max);
+      await controller.initialize();
       isCameraInitialized.value = true;
       update();
     }
   }
 
   predictImage() async {
-    XFile file = await cameraController.takePicture();
-    cameraController.pausePreview();
-    isPaused.value = true;
-    update();
-
+    XFile file = await controller.takePicture();
+    controller.pausePreview();
     File imageFile = File(file.path);
     print("File path: ${imageFile.path}");
     print("File size: ${imageFile.lengthSync()}");
@@ -124,9 +120,7 @@ class GPTController extends GetxController {
     resizeImage(imageFile, 520, 520);
     print("Resized file size: ${imageFile.lengthSync()}");
 
-
     var response = await fetchResponse(imageFile);
-    update();
     Map<String, dynamic> decodedJson = jsonDecode(response);
 
     String generatedText = decodedJson['choices'][0]['message']['content'];
@@ -134,5 +128,23 @@ class GPTController extends GetxController {
     output = generatedText;
     update();
     flutterTts.speak(generatedText);
+
+
+  }
+
+  void onTapScreen() {
+    isImageStreamActive.value = !isImageStreamActive.value;
+    update();
+
+    // If the image stream is reactivated, set the flag to perform text recognition
+    if (isImageStreamActive.value) {
+      controller.resumePreview();
+      flutterTts.stop();
+      output = "";
+      update();
+    }
+    else {
+      predictImage();
+    }
   }
 }

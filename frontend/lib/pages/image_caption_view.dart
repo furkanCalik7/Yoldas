@@ -32,15 +32,8 @@ class _ImageCaptionViewState extends State<ImageCaptionView> {
         title: const Text("Resim Tanıma"),
       ),
       body: GestureDetector(
-        onTap: () async {
-          if (controller.isPaused.value) {
-            controller.cameraController.resumePreview();
-            controller.isPaused.value = false;
-            controller.output = "";
-            controller.update();
-          } else {
-            await controller.predictImage();
-          }
+        onTap: ()  {
+          controller.onTapScreen();
         },
         child: GetBuilder<GPTController>(
           init: controller,
@@ -51,7 +44,7 @@ class _ImageCaptionViewState extends State<ImageCaptionView> {
                 Expanded(
                   child: Stack(
                     children: [
-                      CameraPreview(controller.cameraController),
+                      CameraPreview(controller.controller),
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
