@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/utility/secure_storage.dart';
 import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
@@ -16,8 +16,6 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
-
   TextEditingController _currentPasswordController = TextEditingController();
   TextEditingController _newPasswordController = TextEditingController();
   TextEditingController _confirmNewPasswordController = TextEditingController();
@@ -29,9 +27,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   String phoneNumber = "";
 
   _getLocalStorageFields() async {
-    bearerToken = await storage.read(key: "access_token") ?? "N/A";
-    currentPasswordInStorage = await storage.read(key: "password") ?? "N/A";
-    phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
+    // bearerToken = await storage.read(key: "access_token") ?? "N/A";
+    // currentPasswordInStorage = await storage.read(key: "password") ?? "N/A";
+    // phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
+    bearerToken =
+        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+    currentPasswordInStorage =
+        await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
+    phoneNumber =
+        await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
   }
 
   @override
@@ -148,7 +152,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       );
 
       if (response.statusCode == 200) {
-        await storage.write(key: "password", value: newPassword);
+        await SecureStorageManager.write(
+            key: StorageKey.password, value: newPassword);
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Şifre başarıyla değiştirildi'),
