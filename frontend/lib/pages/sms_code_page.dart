@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/utility/secure_storage.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -137,12 +137,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
     String hashedPassword = data["user"]["password"];
 
     if (response.statusCode == 200) {
-      final storage = new FlutterSecureStorage();
-      await storage.write(key: "name", value: name);
-      await storage.write(
-          key: "password", value: password); // TODO change with hashed password
-      await storage.write(key: "phone_number", value: phoneNumber);
-      await storage.write(key: "role", value: userType.toString());
+      await SecureStorageManager.write(key: StorageKey.name, value: name);
+      await SecureStorageManager.write(
+          key: StorageKey.password, value: password);
+      await SecureStorageManager.write(
+          key: StorageKey.phone_number, value: phoneNumber);
+      await SecureStorageManager.write(
+          key: StorageKey.role, value: userTypeToString(userType!));
     }
 
     return response.statusCode;

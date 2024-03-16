@@ -2,7 +2,7 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
-import "package:flutter_secure_storage/flutter_secure_storage.dart";
+import 'package:frontend/utility/secure_storage.dart';
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import "package:frontend/pages/blind_main_frame.dart";
@@ -27,10 +27,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
   var point = 3.0;
   final controller = TextEditingController();
 
-  FlutterSecureStorage storage = const FlutterSecureStorage();
-
   Future<UserType> getUserType() async {
-    return await storage.read(key: "role") == userTypeToString(UserType.blind)
+    return await SecureStorageManager.read(key: StorageKey.role) ==
+            userTypeToString(UserType.blind)
         ? UserType.blind
         : UserType.volunteer;
   }
@@ -48,8 +47,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   Future<void> sendEvaluation() async {
-    String phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
     print(point);
+    String accessToken =
+        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
     String path = "$API_URL/users/send_feedback/";
 
@@ -64,7 +64,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await storage.read(key: "access_token")}',
+        'Authorization': 'Bearer $accessToken',
       },
     );
 
