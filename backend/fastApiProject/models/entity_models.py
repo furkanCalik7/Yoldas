@@ -48,8 +48,8 @@ class User(BaseModel):
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9]\d{1,14}$")]
     isConsultant: Optional[bool] = False
     password: str
-    avg_rating: Optional[float] = 0
-    rating_count: Optional[int] = 0
+    avg_rating: Optional[float] = 4
+    rating_count: Optional[int] = 1
     notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
 
 
@@ -67,9 +67,9 @@ class Call(BaseModel):
     callee: CallUser
     start_time: datetime
     end_time: Optional[datetime]
-    duration: Optional[int] = 11 # seconds
+    duration: Optional[int] = None  # seconds
     # write call type
-    call_category: Optional[str] = "cooking"
+    call_category: Optional[str] = None
     # write call status
     # write call rating
     # write call feedback
