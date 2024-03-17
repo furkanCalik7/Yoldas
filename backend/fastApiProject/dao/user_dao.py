@@ -1,12 +1,12 @@
 from fastapi import HTTPException
 from google.cloud.firestore_v1 import FieldFilter
 import time
-from . import call_dao
+from . import call_dao, matcher_dao
 from ..models.entity_models import User, Call, CallUser
 from ..models.request_models import UpdateUserRequest
 from ..db_connection import firebase_auth
-from ..models.entity_models import User
 import logging
+from ..models import request_models
 
 db = firebase_auth.connect_db()
 logger = logging.getLogger(__name__)
@@ -41,8 +41,6 @@ def send_feedback(feedbackRequest, current_user: User):
 
     phone_number_of_feedback_sender = current_user["phone_number"]
     call = Call.model_validate(doc.to_dict())
-    print(call)
-    phone_number_of_update_user = 0
     if call.caller.phone_number == phone_number_of_feedback_sender:
         phone_number_of_update_user = call.callee.phone_number
     else:
@@ -51,7 +49,6 @@ def send_feedback(feedbackRequest, current_user: User):
     # update average rating
     doc_ref = db.collection("UserCollection").document(phone_number_of_update_user)
     doc = doc_ref.get()
-    print(f"doccc = {doc}")
     if not doc.exists:
         logger.error(f"User with phone number {phone_number_of_update_user} not found")
         raise HTTPException(status_code=404, detail=f"User with phone number {phone_number_of_update_user} not found")
@@ -151,8 +148,7 @@ def update_user_request(user_id, update_user_request):
 
     # Define a dictionary containing attributes to update
     attributes_to_update = {
-        'first_name': update_user_request.first_name,
-        'last_name': update_user_request.last_name,
+        'name': update_user_request.name,
         'phone_number': update_user_request.phone_number,
         'password': update_user_request.password,
         'isConsultant': update_user_request.isConsultant,
@@ -167,3 +163,45 @@ def update_user_request(user_id, update_user_request):
     doc_ref.update(user.model_dump())
     logger.info(f"User with id {user_id} successfully updated")
     return user.model_dump()
+
+
+def start_consultancy_call(startCallRequest, current_user):
+    # check if user exists
+    doc = db.collection("UserCollection").document(startCallRequest.phone_number).get()
+    if not doc.exists:
+        logger.error(f"User with phone number {startCallRequest.phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {startCallRequest.phone_number} not found")
+
+    callee = User.model_validate(doc.to_dict())
+    call = Call(
+        caller=CallUser(phone_number=current_user.phone_number),
+        callee=CallUser(phone_number=callee.phone_number),
+        start_time=time.time(),
+        isQuickCall=startCallRequest.isQuickCall,
+        category=startCallRequest.category,
+        isConsultancyCall=startCallRequest.isConsultancyCall
+    )
+    call_dao.create_call(call)
+    return call.model_dump()
+
+
+def start_call(startCallRequest: request_models.StartCallRequest, current_user):
+    # check if user exists
+    doc = db.collection("UserCollection").document(current_user["phone_number"]).get()
+    if not doc.exists:
+        logger.error(f"User with phone number {startCallRequest.phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {startCallRequest.phone_number} not found")
+
+    # check which type of call is requested
+    # according to the type of call, find an appropriate user
+    num_of_calls = 5
+    if startCallRequest.isConsultancyCall:
+        user_list = matcher_dao.find_consultant_user(num_of_calls, current_user)
+    elif startCallRequest.isQuickCall:
+        user_list = matcher_dao.find_quick_call_user(num_of_calls, current_user)
+    else:
+        user_list = matcher_dao.find_matching_ability_user(startCallRequest, num_of_calls, current_user)
+
+    logger.info(
+        f"{len(user_list)} users found for the caller with phone number {current_user["phone_number"]}")
+    return user_list  # TODO call the function that will start the actual call

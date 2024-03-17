@@ -31,3 +31,9 @@ class UpdateUserRequest(BaseModel):
     avg_rating: Optional[float] = None
     rating_count: Optional[int] = None
     notification_settings: Optional[NotificationSettings] = None
+
+
+class StartCallRequest(BaseModel):
+    isQuickCall: bool
+    category: Optional[Ability] = None
+    isConsultancyCall: Optional[bool] = False
