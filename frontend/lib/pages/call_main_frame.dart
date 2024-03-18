@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/socket_controller.dart';
+import 'package:frontend/controller/webrtc/signaling.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
@@ -22,19 +23,22 @@ class _CallMainFrameState extends State<CallMainFrame> {
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   IO.Socket? socket;
   late String callID;
+  Signaling signaling = Signaling();
 
   @override
   void initState() {
     _localRenderer.initialize();
     _remoteRenderer.initialize();
-    webRTCController.openUserMedia(_localRenderer, _remoteRenderer).then((value) {
+    webRTCController
+        .openUserMedia(_localRenderer, _remoteRenderer)
+        .then((value) {
       print("User Media Opened");
-      setState(() {});  
+      setState(() {});
     });
     webRTCController.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
       setState(() {});
-    }); 
+    });
     super.initState();
   }
 
@@ -76,17 +80,25 @@ class _CallMainFrameState extends State<CallMainFrame> {
                 ),
                 Row(children: [
                   ElevatedButton(
-                    onPressed: () {
+                    // onPressed: () {
+                    //   signaling.createRoom(_remoteRenderer).then((value) {
+                    //     callID = value;
+                    //     print("Call ID: $callID");
+                    //   });
+                    onPressed: () async {
+                      callID = await signaling.createRoom(_remoteRenderer);
+                      setState(() {});
+
                       // Add functionality for first button
-                      socketController.getConnection().then((value) {
-                        print("Socket: $value");
-                        webRTCController
-                            .requestCall(_remoteRenderer, value, "fast")
-                            .then((value) {
-                          callID = value;
-                          print("Call ID: $callID");
-                        });
-                      });
+                      // socketController.getConnection().then((value) {
+                      //   print("Socket: $value");
+                      //   webRTCController
+                      //       .requestCall(_remoteRenderer, value, "fast")
+                      //       .then((value) {
+                      //     callID = value;
+                      //     print("Call ID: $callID");
+                      //   });
+                      // });
                     },
                     child: Text('call'),
                   ),
@@ -96,8 +108,9 @@ class _CallMainFrameState extends State<CallMainFrame> {
                       socketController.getConnection().then((value) {
                         print("Socket: $value");
                         // if (callID ) {
-                          webRTCController.acceptCall(
-                              _remoteRenderer, value, callID);
+                        webRTCController.acceptCall(
+                            _remoteRenderer, value, callID);
+                        setState(() {});
                         // } else {
                         // print("Call ID: ${_textEditingController.text}");
                         // print("here");
@@ -110,15 +123,17 @@ class _CallMainFrameState extends State<CallMainFrame> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Add functionality for second button
-                      socketController.getConnection().then((value) {
-                        print("Socket: $value"); 
-                        print("Call ID: ${_textEditingController.text}");
-                        print("here");
-                        webRTCController.acceptCall(_remoteRenderer, value,
-                            _textEditingController.text);
-                        // }
-                      });
+                      // // Add functionality for second button
+                      // socketController.getConnection().then((value) {
+                      //   print("Socket: $value");
+                      //   print("Call ID: ${_textEditingController.text}");
+                      //   print("here");
+                      //   webRTCController.acceptCall(_remoteRenderer, value,
+                      //       _textEditingController.text);
+                      //   // }
+                      // });
+                      signaling.joinRoom(
+                          _textEditingController.text, _remoteRenderer);
                     },
                     child: Text('answer2'),
                   )

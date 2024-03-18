@@ -66,8 +66,8 @@ class WebRTCController {
 
     CallRequest callRequest = CallRequest(
         type: type,
-        phoneNumber: await storage.read(key: "phone_number") ?? "N/A"
-        );
+        phoneNumber: await storage.read(key: "phone_number") ?? "N/A",
+    );
 
     Completer<String> completer = Completer<String>();
     http.post(

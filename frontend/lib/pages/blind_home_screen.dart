@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/controller/test_page.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
@@ -24,7 +25,7 @@ class BlindHomeScreen extends StatelessWidget {
 
           TappableIcon(
             action: () { 
-              Navigator.pushNamed(context, CallMainFrame.routeName);
+              Navigator.pushNamed(context, MyHomePage.routeName);
             },
             iconData: Icons.search,
             size: 150,

@@ -1,0 +1,1 @@
+enum SignalType { offer, answer }
