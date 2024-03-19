@@ -26,9 +26,20 @@ class UpdateUserRequest(BaseModel):
     gender: Optional[Gender] = None
     role: Optional[Role] = None
     abilities: Optional[list[Ability]] = []
-    phone_number: Optional[Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
+    phone_number: Optional[
+        Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
     isConsultant: Optional[bool] = None
     password: Optional[str] = None
     avg_rating: Optional[float] = None
     rating_count: Optional[int] = None
     notification_settings: Optional[NotificationSettings] = None
+
+
+class CallRequest(BaseModel):
+    phone_number: str
+    type: str
+
+
+class CallAccept(BaseModel):
+    call_id: str
+    phone_number: str
