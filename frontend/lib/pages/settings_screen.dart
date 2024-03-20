@@ -4,6 +4,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password_screen.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -42,6 +43,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: Icon(Icons.language),
                 title: Text('Dil'),
                 value: Text('Türkçe'),
+                onPressed: (BuildContext context) {
+                  // change language
+                  changeLocale(context, 'en_US');
+
+                },
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {

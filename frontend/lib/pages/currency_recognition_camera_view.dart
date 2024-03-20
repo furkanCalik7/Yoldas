@@ -1,6 +1,5 @@
 import "package:camera/camera.dart";
 import "package:flutter/material.dart";
-import "package:frontend/controller/object_detection_controller.dart";
 import "package:frontend/controller/currency_recognizer_controller.dart";
 import "package:get/get.dart";
 
@@ -18,7 +17,7 @@ class _CurrencyRecognitionCameraViewState extends State<CurrencyRecognitionCamer
 
   @override
   void dispose() {
-    Get.delete<ObjectDetectionController>();
+    Get.delete<CurrencyRecognitionCameraView>();
     super.dispose();
   }
 
@@ -54,7 +53,7 @@ class _CurrencyRecognitionCameraViewState extends State<CurrencyRecognitionCamer
                           children: [
                             Container(
                               color: Colors.white,
-                              child: Text(controller.label,
+                              child: Text(controller.output,
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
