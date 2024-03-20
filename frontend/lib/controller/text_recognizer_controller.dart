@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/controller/base_controller.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:convert';
 import 'dart:developer';
@@ -145,7 +146,10 @@ class MLKitTextRecognizer {
   }
 
   Future<String> processImage(InputImage image) async {
+
+    flutterTTs.speak("Metin tanıma başlatılıyor.");
     final recognized = await recognizer.processImage(image);
+
 
     // remove the new line character from the recognized text
     var text = recognized.text.replaceAll("\n", " ");
@@ -159,13 +163,14 @@ class MLKitTextRecognizer {
   }
 }
 
-class TextRecognizerController extends GetxController {
+class TextRecognizerController extends GetxController implements BaseController {
 
   MLKitTextRecognizer textRecognizer = MLKitTextRecognizer();
 
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    initCamera();
+    cameras = await availableCameras();
+    initCamera(cameras[0]);
   }
 
   @override
@@ -191,12 +196,13 @@ class TextRecognizerController extends GetxController {
   var isCameraInitialized = false.obs;
   var isImageStreamActive = true.obs;
   var shouldRunTextRecognition = false;
+  var output = "";
 
-  Future<void> initCamera() async {
+  Future<void> initCamera(CameraDescription cameraDescription) async {
     if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
       controller = CameraController(
-        cameras[0],
+        cameraDescription,
         ResolutionPreset.max,
         enableAudio: false,
         imageFormatGroup: Platform.isAndroid
@@ -229,6 +235,16 @@ class TextRecognizerController extends GetxController {
     }
   }
 
+  void changeCameraDirection() {
+    CameraDescription cameraDescription;
+    if (controller.description.lensDirection == CameraLensDirection.back) {
+      cameraDescription = cameras[1];
+    } else {
+      cameraDescription = cameras[0];
+    }
+    initCamera(cameraDescription);
+  }
+
   // Called when the screen is tapped
   void onTapScreen() {
     isImageStreamActive.value = !isImageStreamActive.value;
@@ -237,6 +253,7 @@ class TextRecognizerController extends GetxController {
     if (isImageStreamActive.value) {
       controller.resumePreview();
       flutterTTs.stop();
+      flutterTTs.speak("Kamera Aktif");
     }
     else {
       controller.pausePreview();

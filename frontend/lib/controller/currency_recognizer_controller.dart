@@ -2,21 +2,22 @@ import 'dart:io';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:frontend/controller/base_controller.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:developer';
 import 'package:tflite_v2/tflite_v2.dart';
+import 'package:vibration/vibration.dart';
 
 import '../utility/dictionary.dart';
 
 
 
-class CurrencyRecognizerController extends GetxController {
-
-  var label = "";
+class CurrencyRecognizerController extends GetxController implements BaseController {
 
   late List<CameraDescription> cameras;
   late CameraImage cameraImage;
@@ -27,6 +28,7 @@ class CurrencyRecognizerController extends GetxController {
   var isCameraInitialized = false.obs;
   var isImageStreamActive = true.obs;
   var shouldRunTextRecognition = false;
+  var output = "";
 
   initTflite() async {
     var res = await Tflite.loadModel(
@@ -61,23 +63,24 @@ class CurrencyRecognizerController extends GetxController {
       if (confidence
           > 0.5) {
         print(detectedObject);
-        label = detectedObject;
+        output = detectedObject;
         update();
       }
       else {
-        label = "para bulunamadı";
+        output = "para bulunamadı";
         update();
       }
       flutterTts.awaitSpeakCompletion(true);
-      flutterTTs.speak(label);
+      flutterTTs.speak(output);
     }
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     initTflite();
-    initCamera();
+    cameras = await availableCameras();
+    initCamera(cameras[0]);
     flutterTts = FlutterTts();
   }
 
@@ -86,6 +89,8 @@ class CurrencyRecognizerController extends GetxController {
   void onClose() async {
     print("OnCLose function called");
     controller.dispose();
+    flutterTts.stop();
+    Tflite.close();
   }
 
   @override
@@ -94,10 +99,20 @@ class CurrencyRecognizerController extends GetxController {
     super.dispose();
   }
 
-  initCamera() async {
+  void changeCameraDirection() {
+    CameraDescription cameraDescription;
+    if (controller.description.lensDirection == CameraLensDirection.back) {
+      cameraDescription = cameras[1];
+    } else {
+      cameraDescription = cameras[0];
+    }
+    initCamera(cameraDescription);
+  }
+
+  initCamera(CameraDescription cameraDescription) async {
     if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
-      controller = CameraController(cameras[0], ResolutionPreset.max);
+      controller = CameraController(cameraDescription, ResolutionPreset.max);
       await controller.initialize().then((_) {
         controller.startImageStream((image) {
           if (isImageStreamActive.value && !disposed.value) {
@@ -130,6 +145,7 @@ class CurrencyRecognizerController extends GetxController {
     if (isImageStreamActive.value) {
       controller.resumePreview();
       flutterTTs.stop();
+      flutterTts.speak("Kamera Aktif");
     }
     else {
       controller.pausePreview();

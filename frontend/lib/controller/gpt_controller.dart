@@ -1,29 +1,35 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:frontend/controller/base_controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:simplytranslate/simplytranslate.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
-class GPTController extends GetxController {
+class GPTController extends GetxController implements BaseController  {
+
   late CameraController controller;
   late List<CameraDescription> cameras;
   late CameraImage cameraImage;
   var isCameraInitialized = false.obs;
   var isImageStreamActive = true.obs;
   late FlutterTts flutterTts;
-  final gt = SimplyTranslator(EngineType.google);
   var output = "";
-  final dio = Dio();
+
+  final String prompt;
+  GPTController(
+      {
+        required this.prompt,
+      });
+
 
   Future<String> fetchResponse(File imageFile) async {
+    flutterTts.speak("Resim tanıma işlemi başlatılıyor");
     String openaiApiKey = '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';
     String openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
 
@@ -35,7 +41,7 @@ class GPTController extends GetxController {
         {
           'role': 'user',
           'content': [
-            {'type': 'text', 'text': 'Bu resimde ne var?'},
+            {'type': 'text', 'text': prompt},
             {
               'type': 'image_url',
               'image_url': {
@@ -76,9 +82,10 @@ class GPTController extends GetxController {
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    initCamera();
+    cameras = await availableCameras();
+    initCamera(cameras[0]);
     flutterTts = FlutterTts();
   }
 
@@ -88,9 +95,8 @@ class GPTController extends GetxController {
     flutterTts.stop();
   }
 
-  void onDispose() {
-    controller.dispose();
-    flutterTts.stop();
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> resizeImage(File imageFile, int desiredWidth, int desiredHeight) async {
@@ -100,17 +106,26 @@ class GPTController extends GetxController {
     resizedFile.writeAsBytesSync(img.encodeJpg(resizedImage));
   }
 
-  initCamera() async {
+  initCamera(CameraDescription cameraDescription) async {
     if (await Permission.camera.request().isGranted) {
-      cameras = await availableCameras();
-      controller = CameraController(cameras[0], ResolutionPreset.max);
+      controller = CameraController(cameraDescription, ResolutionPreset.max);
       await controller.initialize();
       isCameraInitialized.value = true;
       update();
     }
   }
 
-  predictImage() async {
+  void changeCameraDirection() {
+    CameraDescription cameraDescription;
+    if (controller.description.lensDirection == CameraLensDirection.back) {
+      cameraDescription = cameras[1];
+    } else {
+      cameraDescription = cameras[0];
+    }
+    initCamera(cameraDescription);
+  }
+
+  processImage() async {
     XFile file = await controller.takePicture();
     controller.pausePreview();
     File imageFile = File(file.path);
@@ -142,9 +157,10 @@ class GPTController extends GetxController {
       flutterTts.stop();
       output = "";
       update();
+      flutterTts.speak("Kamera Aktif");
     }
     else {
-      predictImage();
+      processImage();
     }
   }
 }
