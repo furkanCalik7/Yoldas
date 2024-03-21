@@ -20,7 +20,7 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     AIModelSelectionPage(),
-    const BlindHomeScreen(),
+    BlindHomeScreen(),
     const SettingsScreen(),
   ];
   @override

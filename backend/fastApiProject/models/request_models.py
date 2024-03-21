@@ -25,7 +25,8 @@ class UpdateUserRequest(BaseModel):
     gender: Optional[Gender] = None
     role: Optional[Role] = None
     abilities: Optional[list[Ability]] = []
-    phone_number: Optional[Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
+    phone_number: Optional[
+        Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
     isConsultant: Optional[bool] = None
     password: Optional[str] = None
     avg_rating: Optional[float] = None
@@ -37,3 +38,13 @@ class StartCallRequest(BaseModel):
     isQuickCall: bool
     category: Optional[Ability] = None
     isConsultancyCall: Optional[bool] = False
+
+
+class CallRequest(BaseModel):
+    phone_number: str
+    type: str
+
+
+class CallAccept(BaseModel):
+    call_id: str
+    phone_number: str
