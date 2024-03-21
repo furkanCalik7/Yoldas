@@ -25,7 +25,7 @@ class BlindHomeScreen extends StatelessWidget {
 
           TappableIcon(
             action: () { 
-              Navigator.pushNamed(context, MyHomePage.routeName);
+              Navigator.pushNamed(context, CallMainFrame.routeName);
             },
             iconData: Icons.search,
             size: 150,

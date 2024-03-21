@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/socket_controller.dart';
 import 'package:frontend/controller/webrtc/signaling.dart';
-import 'package:frontend/controller/webrtc/web_rtc_controller2.dart';
+import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -14,8 +14,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Signaling signaling = Signaling();
-  RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
 
@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   // signaling.openUserMedia(_localRenderer, _remoteRenderer).then((value) {
                   //   setState((){});
+                  // });
                   
                   webRTCController.openUserMedia(_localRenderer, _remoteRenderer).then((value) {
                     setState((){});  
@@ -76,18 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 8,
               ),
               ElevatedButton(
-                onPressed: () async {
-                  // socketController.getConnection().then((value) {
-                  //   print("Socket: $value");
-                  //   webRTCController.createRoom(
-                  //       _remoteRenderer, value, "fast");
-                  // }); 
+                onPressed: () async { 
                   await webRTCController.createRoom(
-                      _remoteRenderer, "fast");
-                  // webRTCController.requestCall(_remoteRenderer);
-                  // roomId = await signaling.createRoom(_remoteRenderer);
-                  // textEditingController.text = roomId!;
-                  // setState(() {});
+                      _remoteRenderer, "fast"); 
                 },
                 child: Text("Create room"),
               ),
@@ -95,22 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 8,
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Add roomId
-                  // signaling.joinRoom(
-                  //   textEditingController.text.trim(),
-                  //   _remoteRenderer,
-                  // );
+                onPressed: () {   
                   webRTCController.joinRoom(
                       _remoteRenderer, textEditingController.text);
-                    
-
-                  // socketController.getConnection().then((value) {
-                  //   print("Socket: $value");
-                  //   print("Call ID: ${textEditingController.text}");
-                  //   print("here");
-                    
-                  // });
                 },
                 child: Text("Join room"),
               ),
