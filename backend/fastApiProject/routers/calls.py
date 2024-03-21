@@ -25,7 +25,7 @@ async def call_reques(_call_request: CallRequest):
 @router.post("/call/accept")
 async def call_accept(_call_accept: CallAccept):
     call_id, phone_number = _call_accept.call_id, _call_accept.phone_number
-    logger.info(f"call accept with call_id {call_id} and user_id {phone_number}")
+    logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
     signal = get_signal(call_id, CallUserType.CALLER)
     accept_call(call_id, phone_number)
     return {"offer": signal}

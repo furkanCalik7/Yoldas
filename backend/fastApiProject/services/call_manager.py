@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-def create_call(phone_number: str, call_type: str) -> dict:
+def create_call(phone_number: str, call_type: str) -> str:
     call = Call(
         caller=CallUser(
             phone_number=phone_number,
