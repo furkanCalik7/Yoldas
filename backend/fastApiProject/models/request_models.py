@@ -21,8 +21,7 @@ class FeedbackRequest(BaseModel):
 
 
 class UpdateUserRequest(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    name: Optional[str] = None
     gender: Optional[Gender] = None
     role: Optional[Role] = None
     abilities: Optional[list[Ability]] = []
@@ -32,3 +31,9 @@ class UpdateUserRequest(BaseModel):
     avg_rating: Optional[float] = None
     rating_count: Optional[int] = None
     notification_settings: Optional[NotificationSettings] = None
+
+
+class StartCallRequest(BaseModel):
+    isQuickCall: bool
+    category: Optional[Ability] = None
+    isConsultancyCall: Optional[bool] = False

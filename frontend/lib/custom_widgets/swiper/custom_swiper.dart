@@ -22,7 +22,7 @@ class CustomSwiper extends StatelessWidget {
               print("tapped to ${titles[index]}");
             },
             iconData: icons[index],
-            size: 150,
+            size: 200,
             text: titles[index],
             textColor: Colors.black,
             iconColor: Colors.white
@@ -36,9 +36,11 @@ class CustomSwiper extends StatelessWidget {
           )),
       control: const SwiperControl(),
       itemCount: titles.length,
-      layout: SwiperLayout.TINDER,
-      itemHeight: 300,
-      itemWidth: 300,
+      layout: SwiperLayout.DEFAULT,
+      itemHeight: 100.0,
+      itemWidth: 300.0,
+      scale: 0.8,
+
     );
   }
 }

@@ -20,7 +20,7 @@ class TextHead extends StatelessWidget {
 }
 
 class ProfileText extends StatelessWidget {
-  const ProfileText({super.key, required this.line, this.maxFontWidth = 250});
+  const ProfileText({super.key, required this.line, this.maxFontWidth = 300});
 
   final String line;
   final double maxFontWidth;

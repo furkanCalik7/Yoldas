@@ -1,6 +1,5 @@
 import "package:camera/camera.dart";
 import "package:flutter/material.dart";
-import "package:frontend/controller/scan_controller.dart";
 import "package:frontend/controller/text_recognizer_controller.dart";
 import "package:get/get.dart";
 

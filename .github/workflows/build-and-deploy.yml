@@ -19,5 +19,5 @@ jobs:
           script: |
             cd Yoldas/backend
             git checkout master
-            git pull
+            git pull git@github.com:furkancalik7/Yoldas.git
             bash start.sh

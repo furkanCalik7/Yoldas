@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/utility/secure_storage.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -20,8 +20,8 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:vibration/vibration.dart';
 
 import '../config.dart';
-import '../firebase_options.dart';
 import '../models/user_data.dart';
+import '../firebase_options.dart';
 
 class SMSCodePage extends StatefulWidget {
   static const String routeName = "/pin_code_verification_screen";
@@ -85,11 +85,9 @@ class _SMSCodePageState extends State<SMSCodePage> {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     _auth = FirebaseAuth.instance;
-    print('Initialized default app $app');
     _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
-        print("credentiaaaaaaaaal: " + credential.toString());
         await _auth.signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -98,7 +96,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
       codeSent: (String verificationId, int? resendToken) async {
         verificationIdx.value = verificationId;
         print("successfully sent");
-        print("verificationId: " + verificationId);
       },
       timeout: const Duration(seconds: 60),
       codeAutoRetrievalTimeout: (verificationId) {
@@ -140,12 +137,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
     String hashedPassword = data["user"]["password"];
 
     if (response.statusCode == 200) {
-      final storage = new FlutterSecureStorage();
-      await storage.write(key: "name", value: name);
-      await storage.write(
-          key: "password", value: password); // TODO change with hashed password
-      await storage.write(key: "phone_number", value: phoneNumber);
-      await storage.write(key: "role", value: userType.toString());
+      await SecureStorageManager.write(key: StorageKey.name, value: name);
+      await SecureStorageManager.write(
+          key: StorageKey.password, value: password);
+      await SecureStorageManager.write(
+          key: StorageKey.phone_number, value: phoneNumber);
+      await SecureStorageManager.write(
+          key: StorageKey.role, value: userTypeToString(userType!));
     }
 
     return response.statusCode;

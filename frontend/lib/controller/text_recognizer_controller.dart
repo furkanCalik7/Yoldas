@@ -1,21 +1,15 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/controller/base_controller.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'package:frontend/utility/dictionary.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
-import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:flutter/services.dart';
 
@@ -86,63 +80,97 @@ class MLKitTextRecognizer {
   MLKitTextRecognizer() {
     recognizer = TextRecognizer();
     flutterTTs.setSpeechRate(0.7);
+    flutterTTs.setLanguage("tr-TR");
+    flutterTTs.setPitch(1);
+    flutterTTs.setVoice({"name": "tr-tr-x-ama-local", "locale": "tr-TR"});
   }
 
   void dispose() {
     recognizer.close();
   }
 
-  void spellcheck(String exampleText) async {
-    var endpoint = "https://api.bing.microsoft.com/v7.0/spellcheck";
-    var url = Uri.parse("$endpoint?mkt=en-US&mode=proof&text=${Uri.encodeComponent(exampleText)}");
+  Future<String> spellcheck(String text) async {
+    String openaiApiKey = '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';
+    String openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
 
-    String apiKey = "0213527169d74afaacd7d4e196319321";
+    int length = text.length;
 
-    var data = {'text': exampleText};
+
+    var requestBody = jsonEncode({
+      'model': 'gpt-3.5-turbo-0125',
+      'messages': [
+        {
+          'role': 'system',
+          'content': [
+            {'type': 'text', 'text': 'Türkçe dilindeki yazıda bulunan yanlış karakterleri düzelten bir asistansın.'},
+          ],
+        },
+        {
+          'role': 'user',
+          'content': [
+            {'type': 'text', 'text': text},
+          ],
+        },
+      ],
+      'max_tokens': 1000
+    });
+
+    final headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $openaiApiKey"
+    };
 
     try {
-      var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Ocp-Apim-Subscription-Key': apiKey,
-        },
-        body: data,
-        encoding: Encoding.getByName('utf-8'),
+      final response = await http.post(
+        Uri.parse(openaiApiUrl),
+        headers: headers,
+        body: requestBody,
       );
 
       if (response.statusCode == 200) {
-        // Handle the successful response
-        var responseData = json.decode(response.body);
-        print(responseData);
+        print('Response: ${response.body}');
+
+        var decodedJson = jsonDecode(response.body);
+        var generatedText = decodedJson['choices'][0]['message']['content'];
+        return generatedText;
+        // Handle response here
       } else {
-        // Handle errors
-        print("Error: ${response.statusCode}");
+        print(response.body);
+        print('Request failed with status: ${response.statusCode}');
+        return 'request failed';
       }
     } catch (e) {
-      // Handle exceptions
-      print("Exception: $e");
+      print('Request failed with error: $e');
+      return '';
     }
   }
 
-
-
   Future<String> processImage(InputImage image) async {
-    final recognized = await recognizer.processImage(image);
-    log(recognized.text);
 
-    flutterTTs.speak(recognized.text);
+    flutterTTs.speak("Metin tanıma başlatılıyor.");
+    final recognized = await recognizer.processImage(image);
+
+
+    // remove the new line character from the recognized text
+    var text = recognized.text.replaceAll("\n", " ");
+    log(text);
+    var out = await spellcheck(text);
+    
+    var encoded = utf8.decode(out.runes.toList());
+    log(encoded);
+    flutterTTs.speak(encoded);
     return recognized.text;
   }
 }
 
-class TextRecognizerController extends GetxController {
+class TextRecognizerController extends GetxController implements BaseController {
 
   MLKitTextRecognizer textRecognizer = MLKitTextRecognizer();
 
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    initCamera();
+    cameras = await availableCameras();
+    initCamera(cameras[0]);
   }
 
   @override
@@ -168,12 +196,13 @@ class TextRecognizerController extends GetxController {
   var isCameraInitialized = false.obs;
   var isImageStreamActive = true.obs;
   var shouldRunTextRecognition = false;
+  var output = "";
 
-  Future<void> initCamera() async {
+  Future<void> initCamera(CameraDescription cameraDescription) async {
     if (await Permission.camera.request().isGranted) {
       cameras = await availableCameras();
       controller = CameraController(
-        cameras[0],
+        cameraDescription,
         ResolutionPreset.max,
         enableAudio: false,
         imageFormatGroup: Platform.isAndroid
@@ -206,6 +235,16 @@ class TextRecognizerController extends GetxController {
     }
   }
 
+  void changeCameraDirection() {
+    CameraDescription cameraDescription;
+    if (controller.description.lensDirection == CameraLensDirection.back) {
+      cameraDescription = cameras[1];
+    } else {
+      cameraDescription = cameras[0];
+    }
+    initCamera(cameraDescription);
+  }
+
   // Called when the screen is tapped
   void onTapScreen() {
     isImageStreamActive.value = !isImageStreamActive.value;
@@ -214,6 +253,7 @@ class TextRecognizerController extends GetxController {
     if (isImageStreamActive.value) {
       controller.resumePreview();
       flutterTTs.stop();
+      flutterTTs.speak("Kamera Aktif");
     }
     else {
       controller.pausePreview();
