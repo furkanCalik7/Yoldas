@@ -54,7 +54,13 @@ class AIModelSelectionPage extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => AIModelView(
-              controller: GPTController(prompt: 'Bu resimde ne var?'),
+              controller: GPTController(prompt: 'Belgedeki içeriği özetleyecek bir şekilde '
+                  'açıklayın, içerikte bulunan önemli detayları aktarın. Sunulan bilgilerin kapsamlı'
+                  ' bir özetini sağlayarak tüm önemli noktaların doğru bir şekilde iletilmesini sağlayın. '
+                  'Ayrıca, belgenin düzenini ve biçimlendirmesini açıklayarak yapısını'
+                  ' anlamaya yardımcı olun. Fatura ve fiş gibi belgelerde bulunan toplam tutar'
+                  ' gibi önemli sayıları doğru bir şekilde belirtin.'
+                  ' Resimde belge bulunmuyorsa sadece "Belge bulunamadı" yazın.'),
               title: "Belge Tanıma",
             ),
           ),
