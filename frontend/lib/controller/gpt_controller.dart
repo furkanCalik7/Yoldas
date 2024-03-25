@@ -51,7 +51,7 @@ class GPTController extends GetxController implements BaseController  {
           ],
         },
       ],
-      'max_tokens': 200
+      'max_tokens': 256
     });
 
     final headers = {
@@ -119,8 +119,10 @@ class GPTController extends GetxController implements BaseController  {
     CameraDescription cameraDescription;
     if (controller.description.lensDirection == CameraLensDirection.back) {
       cameraDescription = cameras[1];
+      flutterTts.speak("Ön Kamera Aktif");
     } else {
       cameraDescription = cameras[0];
+      flutterTts.speak("Arka Kamera Aktif");
     }
     initCamera(cameraDescription);
   }
@@ -139,10 +141,11 @@ class GPTController extends GetxController implements BaseController  {
     Map<String, dynamic> decodedJson = jsonDecode(response);
 
     String generatedText = decodedJson['choices'][0]['message']['content'];
-    print("Generated Text: $generatedText");
-    output = generatedText;
+    var encoded = utf8.decode(generatedText.runes.toList());
+    output = encoded;
+    print("Generated Text: $encoded");
     update();
-    flutterTts.speak(generatedText);
+    flutterTts.speak(encoded);
 
 
   }
