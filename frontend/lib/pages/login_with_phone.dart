@@ -7,11 +7,12 @@ import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
+import 'package:frontend/utility/api_manager.dart';
 import 'package:frontend/utility/auth_behavior.dart';
 import 'package:frontend/utility/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/utility/secure_storage_manager.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import '../custom_widgets/custom_phoneNumberInput.dart';
 import '../models/user_data.dart';
@@ -39,8 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
     print(password_controller.text);
     print(phoneNumber);
 
-    var response = await http.post(
-      Uri.parse(path),
+    var response = await ApiManager.post(
+      path: "/users/login",
       body: {
         'grant_type': '',
         'username': phoneNumber,
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'client_id': '',
         'client_secret': '',
       },
-      headers: {'content-type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded',
     );
 
     if (response.statusCode == 200) {
@@ -67,9 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
       await SecureStorageManager.write(
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
-          key: StorageKey.email, value: user['email']);
-      await SecureStorageManager.write(
           key: StorageKey.password, value: password_controller.text);
+      await SecureStorageManager.writeList(
+          key: StorageKey.abilities, value: user['abilities']);
 
       String phoneNumber = user['phone_number'];
       UserType userType =

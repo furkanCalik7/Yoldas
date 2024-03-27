@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -40,13 +41,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               SettingsTile.navigation(
+                leading: Icon(Icons.edit_attributes),
+                title: Text('Yetenekler'),
+                onPressed: (BuildContext context) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => AbilitiesPage()));
+                },
+              ),
+              SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('Dil'),
                 value: Text('Türkçe'),
                 onPressed: (BuildContext context) {
                   // change language
                   changeLocale(context, 'en_US');
-
                 },
               ),
               SettingsTile.switchTile(

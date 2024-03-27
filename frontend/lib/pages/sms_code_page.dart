@@ -5,7 +5,8 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/utility/api_manager.dart';
+import 'package:frontend/utility/secure_storage_manager.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -106,7 +107,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
 
   Future<int> register() async {
     String name = widget.user.name;
-    String mail = widget.user.mail;
     String password = widget.user.password;
     String phoneNumber = widget.user.phoneNumber;
 
@@ -120,15 +120,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
     Map<String, dynamic> requestBody = {
       "name": name,
       "role": userTypeToString(userType!),
-      "email": mail,
       "phone_number": phoneNumber,
       "password": password,
     };
 
-    final response = await http.post(
-      Uri.parse(path),
-      body: jsonEncode(requestBody),
-      headers: {'Content-Type': 'application/json'},
+    final response = await ApiManager.post(
+      path: "/users/register",
+      body: requestBody,
     );
 
     Map data = jsonDecode(response.body);
