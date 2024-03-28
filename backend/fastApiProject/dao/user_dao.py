@@ -34,12 +34,14 @@ def register_user(user: User):
 
 
 def send_feedback(feedbackRequest, current_user: User):
+    logger.info(f"send_feedback with feedbackRequest {feedbackRequest} called in DAO")
     doc = db.collection("CallCollection").document(feedbackRequest.callID).get()
     if not doc.exists:
         logger.error(f"Call with {feedbackRequest.callID} not found")
         raise HTTPException(status_code=404, detail=f"User with phone number {feedbackRequest.callID} not found")
 
     phone_number_of_feedback_sender = current_user["phone_number"]
+    print(f"CALL is {doc.to_dict}")
     call = Call.model_validate(doc.to_dict())
     if call.caller.phone_number == phone_number_of_feedback_sender:
         phone_number_of_update_user = call.callee.phone_number
@@ -202,6 +204,12 @@ def start_call(startCallRequest: request_models.StartCallRequest, current_user):
     else:
         user_list = matcher_dao.find_matching_ability_user(startCallRequest, num_of_calls, current_user)
 
-    logger.info(
-        f"{len(user_list)} users found for the caller with phone number {current_user["phone_number"]}")
+    # logger.info(
+    # f"{len(user_list)} users found for the caller with phone number {current_user["phone_number"]}")
     return user_list  # TODO call the function that will start the actual call
+
+
+def get_all_abilities():
+    doc_ref = db.collection("AbilityCollection").document("2hcB6d7Yxys0oIPTEGqT")
+    doc = doc_ref.get()
+    return doc.to_dict()
