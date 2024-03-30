@@ -24,9 +24,9 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
       duration: Duration(seconds: 4),
     );
     _rotationAnimation =
-        Tween<double>(begin: math.pi / 8, end: -math.pi / 16).animate(_animationController);
+        Tween<double>(begin: math.pi / 16, end: -math.pi / 16).animate(_animationController);
     _positionAnimation = Tween<Offset>(
-      begin: Offset(0,_radius),
+      begin: Offset(0,0),
       end: Offset(0, _radius),
     ).animate(
       CurvedAnimation(
@@ -46,10 +46,9 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         forceMaterialTransparency: true,
-
       ),
       body: Center(
         child: Column(
@@ -65,15 +64,16 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
                   ),
                   child: RotationTransition(
                     turns: _rotationAnimation,
-                    child: Icon(Icons.search_rounded, size: 70),
+                    child: Image.asset("assets/search_icon.png", width: 100, height: 100,)
                   ),
                 );
               },
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 40),
             Text(
-              'Searching for a volunteer...',
-              style: TextStyle(fontSize: 25),
+              'Uygun gönüllü aranıyor...',
+              style: TextStyle(fontSize: 25,
+              fontWeight: FontWeight.bold),
             ),
           ],
         ),
