@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 class VolunteerSearchScreen extends StatefulWidget {
   @override
@@ -13,12 +14,16 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   late AnimationController _animationController;
   late Animation<double> _rotationAnimation;
   late Animation<Offset> _positionAnimation;
+  late FlutterTts flutterTts;
 
   double _radius = 30.0; // Radius of circular path
 
   @override
   void initState() {
     super.initState();
+    flutterTts = FlutterTts();
+    flutterTts.setLanguage("tr-TR");
+    flutterTts.speak("Uygun gönüllü aranıyor");
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 4),
@@ -47,9 +52,6 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[100],
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +66,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
                   ),
                   child: RotationTransition(
                     turns: _rotationAnimation,
-                    child: Image.asset("assets/search_icon.png", width: 100, height: 100,)
+                    child: Image.asset("assets/search_icon.png", width: 125, height: 125,)
                   ),
                 );
               },
@@ -74,6 +76,19 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               'Uygun gönüllü aranıyor...',
               style: TextStyle(fontSize: 25,
               fontWeight: FontWeight.bold),
+            ),
+            // add hang up button
+            SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.call_end, size: 50, color: Colors.white),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(redIconButtonColor),
+                shape: MaterialStateProperty.all(CircleBorder()),
+                padding: MaterialStateProperty.all(EdgeInsets.all(10)),
+              ),
             ),
           ],
         ),
