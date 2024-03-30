@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-
+import 'package:frontend/custom_widgets/colors.dart';
 class VolunteerSearchScreen extends StatefulWidget {
   @override
   _VolunteerSearchScreenState createState() => _VolunteerSearchScreenState();
@@ -26,7 +26,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
     _rotationAnimation =
         Tween<double>(begin: math.pi / 16, end: -math.pi / 16).animate(_animationController);
     _positionAnimation = Tween<Offset>(
-      begin: Offset(0,0),
+      begin: Offset(0, 0),
       end: Offset(0, _radius),
     ).animate(
       CurvedAnimation(
@@ -46,7 +46,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blue[100],
       appBar: AppBar(
         forceMaterialTransparency: true,
       ),
