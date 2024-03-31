@@ -1,4 +1,4 @@
-import 'package:frontend/utility/enum/signal_type.dart';
+import 'package:frontend/util/enum/signal_type.dart';
 
 class Signal {
   Signal({required this.type, required this.sdp});

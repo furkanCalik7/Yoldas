@@ -3,7 +3,7 @@ import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_form.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/types.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key, required this.userType});

@@ -1,14 +1,12 @@
 import 'package:frontend/config.dart';
-import 'package:frontend/controller/socket_controller.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/utility/types.dart';
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/util/types.dart';
+import 'package:frontend/util/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Login {
   // Login function
@@ -69,10 +67,6 @@ class Login {
       await SecureStorageManager.write(
           key: StorageKey.password, value: password);
 
-      SocketController socketController = SocketController.instance;
-      await socketController.connect();
-      IO.Socket socket = await socketController.connect();
-
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
@@ -83,7 +77,7 @@ class Login {
       // Rest of your code for successful response
       Navigator.pushNamedAndRemoveUntil(context, mainFrameRootName, (r) {
         return false;
-      }); 
+      });
       // TODO: Bu senaryo bana cok sacma geldi, bır daha bak
     } else {
       // Print the response body in case of an error

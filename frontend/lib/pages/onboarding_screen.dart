@@ -5,7 +5,7 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/register_screen.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/types.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});

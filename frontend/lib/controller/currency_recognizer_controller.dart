@@ -13,7 +13,7 @@ import 'dart:developer';
 import 'package:tflite_v2/tflite_v2.dart';
 import 'package:vibration/vibration.dart';
 
-import '../utility/dictionary.dart';
+import '../util/dictionary.dart';
 
 
 

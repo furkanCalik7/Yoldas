@@ -213,3 +213,13 @@ def get_all_abilities():
     doc_ref = db.collection("AbilityCollection").document("2hcB6d7Yxys0oIPTEGqT")
     doc = doc_ref.get()
     return doc.to_dict()
+
+
+def get_fcm_tokens(phone_number: str):
+    fcm_tokens = db.collection("UserCollection").document(phone_number).collection("fcm_tokens")
+    return [token_ref.to_dict() for token_ref in fcm_tokens.get()]
+
+
+def delete_fcm_token(phone_number: str, token):
+    fcm_token = db.collection("UserCollection").document(phone_number).collection("fcm_tokens").document(token)
+    fcm_token.delete()
