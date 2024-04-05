@@ -50,7 +50,7 @@ class Login {
     );
 
     if (response.statusCode == 200) {
-      Map data = jsonDecode(response.body);
+      Map data = jsonDecode(utf8.decode(response.bodyBytes));
       Map user = data['user'];
 
       await SecureStorageManager.write(

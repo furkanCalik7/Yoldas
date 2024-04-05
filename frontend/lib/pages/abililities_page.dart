@@ -20,16 +20,53 @@ class AbilitiesPage extends StatefulWidget {
 }
 
 class _AbilitiesPageState extends State<AbilitiesPage> {
-  List<String> possibleAbilities = [
-    'sports',
-    'cooking',
-  ];
+  List<String> possibleAbilities = [];
 
   List<String> userAbilities = [];
   String phoneNumber = "";
   String bearerToken = "";
 
   String? selectedAbility; // Changed to nullable
+
+  void readUserInfo() async {
+    bearerToken =
+        await SecureStorageManager.read(key: StorageKey.access_token) ?? "";
+    userAbilities =
+        await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
+    phoneNumber =
+        await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    readUserInfo();
+    getAllAbilities();
+    super.initState();
+  }
+
+  void getAllAbilities() async {
+    String path = '/users/get_all_abilities}';
+    Map<String, String> headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+    };
+
+    http.Response response = await ApiManager.get(
+      path,
+      headers,
+    );
+
+    if (response.statusCode == 200) {
+      // Manually decode the response body using UTF-8 encoding
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      setState(() {
+        possibleAbilities = List.from(responseBody.values.toList());
+      });
+    } else {
+      print('ERROR: Status code: ${response.statusCode}');
+    }
+  }
 
   void selectAbility(String? ability) {
     setState(() {
@@ -85,22 +122,6 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
         ),
       );
     }
-  }
-
-  void readUserInfo() async {
-    bearerToken =
-        await SecureStorageManager.read(key: StorageKey.access_token) ?? "";
-    userAbilities =
-        await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
-    phoneNumber =
-        await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    readUserInfo();
-    super.initState();
   }
 
   @override

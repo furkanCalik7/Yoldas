@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/config.dart';
 
@@ -92,7 +93,7 @@ class ApiManager {
       if (response.statusCode == 200) {
         return response;
       } else {
-        return http.Response('Failed to put data', 500);
+        return http.Response('Failed to put data', response.statusCode);
       }
     } on Exception catch (e) {
       print('Exception: $e');
