@@ -37,7 +37,11 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
 
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const EvaluationPage()),
+        MaterialPageRoute(
+            builder: (context) => const EvaluationPage(
+                  callId:
+                      "2w0KxysanozQK3mwfI7g", // this will be provided after call ends.
+                )),
         (route) => false);
   }
 

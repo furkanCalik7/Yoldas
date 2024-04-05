@@ -37,7 +37,6 @@ void main() async {
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
         CallMainFrame.routeName: (context) => const CallMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
-        EvaluationPage.routeName: (context) => const EvaluationPage(),
         TextRecognitionCameraView.routeName: (context) =>
             TextRecognitionCameraView(),
         CurrencyRecognitionCameraView.routeName: (context) =>
