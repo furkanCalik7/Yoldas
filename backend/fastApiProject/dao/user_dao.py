@@ -139,7 +139,7 @@ def get_user_by_rating_average(low, high):
     return user_list
 
 
-def update_user_request(user_id, update_user_request):
+def update_user_request(user_id, update_user_request : UpdateUserRequest):
     doc_ref = db.collection("UserCollection").document(user_id)
     doc = doc_ref.get()
     if not doc.exists:
@@ -155,7 +155,8 @@ def update_user_request(user_id, update_user_request):
         'password': update_user_request.password,
         'isConsultant': update_user_request.isConsultant,
         'role': update_user_request.role,
-        'notification_settings': update_user_request.notification_settings
+        'notification_settings': update_user_request.notification_settings,
+        'abilities': update_user_request.abilities
     }
 
     # Iterate over the dictionary and update user attributes if the value is not None
