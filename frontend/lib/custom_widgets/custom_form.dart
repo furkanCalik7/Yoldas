@@ -42,7 +42,6 @@ class _CustomFormState extends State<CustomForm> {
   // PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   final nameController = TextEditingController();
-  final mailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -51,11 +50,6 @@ class _CustomFormState extends State<CustomForm> {
 
   bool evaluateName(String name) {
     // TODO: implement evaluateName
-    return false;
-  }
-
-  bool evaluateMail(String mail) {
-    // TODO: implement evaluateMail
     return false;
   }
 
@@ -78,7 +72,6 @@ class _CustomFormState extends State<CustomForm> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     nameController.dispose();
-    mailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     phoneNumberController.dispose();
@@ -88,10 +81,8 @@ class _CustomFormState extends State<CustomForm> {
   UserData createUser(String phoneNumber) {
     String name = nameController.text;
     String password = passwordController.text;
-    String mail = mailController.text;
 
-    return UserData(
-        name: name, mail: mail, password: password, phoneNumber: phoneNumber);
+    return UserData(name: name, password: password, phoneNumber: phoneNumber);
   }
 
   @override
@@ -124,19 +115,6 @@ class _CustomFormState extends State<CustomForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Lütfen adınızı giriniz';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            CustomTextFormField(
-              icon: Icons.mail,
-              hintText: "E-posta",
-              obscureText: false,
-              controller: mailController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Lütfen e-posta adresinizi giriniz';
                 }
                 return null;
               },

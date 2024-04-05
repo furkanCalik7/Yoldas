@@ -2,6 +2,7 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
+import "package:frontend/utility/api_manager.dart";
 import 'package:frontend/utility/secure_storage_manager.dart';
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
@@ -15,9 +16,10 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({Key? key}) : super(key: key);
+  const EvaluationPage({Key? key, required this.callId}) : super(key: key);
 
   static const String routeName = "/evaluation";
+  final String callId;
 
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
@@ -51,21 +53,17 @@ class _EvaluationPageState extends State<EvaluationPage> {
     String accessToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
-    String path = "$API_URL/users/send_feedback/";
+    String path = "/users/send_feedback/";
 
     Map<String, dynamic> requestBody = {
       "rating": point,
-      "callID": "NxSbReykcZHYqWa4WpU8",
+      "callID": widget.callId,
     };
 
-    final response = await http.post(
-      Uri.parse(path),
-      body: jsonEncode(requestBody),
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
+    final response = await ApiManager.post(
+      path: path,
+      bearerToken: accessToken,
+      body: requestBody,
     );
 
     if (response.statusCode == 200) {
@@ -103,7 +101,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     point = rating;
                   });
                 },
-                allowHalfRating: true,
+                allowHalfRating: false,
                 initialRating: 3,
                 itemCount: 5,
                 itemSize: 60.0,
