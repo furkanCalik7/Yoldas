@@ -2,7 +2,7 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/utility/secure_storage_manager.dart';
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import "package:frontend/pages/blind_main_frame.dart";
