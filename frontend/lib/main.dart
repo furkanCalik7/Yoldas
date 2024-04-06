@@ -14,6 +14,7 @@ import "package:frontend/pages/onboarding_screen.dart";
 import 'package:frontend/pages/sms_code_page.dart';
 import 'package:frontend/pages/text_recognition_view.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
+import 'package:frontend/pages/volunteer_search_screen.dart';
 import 'package:frontend/pages/welcome.dart';
 
 import 'firebase_options.dart';
@@ -33,6 +34,7 @@ void main() async {
       initialRoute: '/',
       routes: {
         '/': (context) => const InitializationPage(),
+        //'/': (context) => const BlindMainFrame(),
         //'/': (context) => const CallMainFrame(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
@@ -42,11 +44,12 @@ void main() async {
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
         CallMainFrame.routeName: (context) => const CallMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
-        EvaluationPage.routeName: (context) => const EvaluationPage(),
         TextRecognitionCameraView.routeName: (context) =>
             TextRecognitionCameraView(),
         CurrencyRecognitionCameraView.routeName: (context) =>
             CurrencyRecognitionCameraView(),
+        VolunteerSearchScreen.routeName: (context) =>
+            VolunteerSearchScreen(),
       },
     ),
   );

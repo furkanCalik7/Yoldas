@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/utility/secure_storage_manager.dart';
 import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';

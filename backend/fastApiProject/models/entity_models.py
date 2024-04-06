@@ -28,12 +28,6 @@ class Role(str, Enum):
     volunteer = "volunteer"
     blind = "blind"
 
-
-class Ability(str, Enum):
-    cooking = "cooking"
-    sports = "sports"
-
-
 class NotificationSettings(BaseModel):
     callNotifications: bool
     messageNotifications: bool
@@ -46,7 +40,7 @@ class User(BaseModel):
     # id: Optional[UUID] = uuid4()
     name: str
     role: Role
-    abilities: Optional[list[Ability]] = []
+    abilities: Optional[list[str]] = []
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9]\d{1,14}$")]
     isConsultant: Optional[bool] = False
     password: str
