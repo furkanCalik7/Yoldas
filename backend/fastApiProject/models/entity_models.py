@@ -46,7 +46,7 @@ class User(BaseModel):
     password: str
     avg_rating: Optional[float] = 4
     rating_count: Optional[int] = 1
-    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)                                                                                messageNotifications=False)
+    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
 
 
 class Signal(BaseModel):
