@@ -1,23 +1,24 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/pages/notification_screen.dart';
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
+  // TODO: call kit cantroller here
   print("Handling a background message: ${message.messageId}");
   print("Title: ${message.notification?.title}");
   print("Body: ${message.notification?.body}");
   print("Payload: ${message.data}");
 
+  // notification test page - to be removed 
   navigationKey.currentState
       ?.pushNamed(NotificationScreen.routeName, arguments: message);
 }
 
 void handleMessage(RemoteMessage? message) {
+  // TODO: Call kit controller here
   if (message == null) return;
   navigationKey.currentState
       ?.pushNamed(NotificationScreen.routeName, arguments: message);
@@ -28,18 +29,15 @@ void handleMessage(RemoteMessage? message) {
   print("Payload: ${message?.data}");
 }
 
+void handleFrondgroundMessage(RemoteMessage remoteMessage) {
+      final notification = remoteMessage.notification;
+      if (notification == null) return;
+      // TODO: notification behavior here when the app is awake
+}
+
 class NotificationHandler {
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _db = FirebaseFirestore.instance;
-
-  final _androidNotificationChannel = const AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    description:
-        'This channel is used for important notifications.', // description
-    importance: Importance.defaultImportance,
-  );
-  final _localNotifications = FlutterLocalNotificationsPlugin();
 
   Future<void> initializeNotifications(String phoneNumber) async {
     await _firebaseMessaging.requestPermission(provisional: true);
@@ -47,7 +45,6 @@ class NotificationHandler {
     print("FCM Token: $fcmToken");
     await saveTokenToDatabase(phoneNumber, fcmToken);
     initPushNotification();
-    initLocalNotification();
   }
 
   Future<void> saveTokenToDatabase(String phoneNumber, String? token) async {
@@ -63,24 +60,6 @@ class NotificationHandler {
     });
   }
 
-  Future initLocalNotification() async {
-    const iOs = IOSInitializationSettings();
-    const android = AndroidInitializationSettings('@drawable/ic_launcher');
-    const settings = InitializationSettings(android: android, iOS: iOs);
-
-    await _localNotifications.initialize(
-      settings,
-      onSelectNotification: (payload) async {
-        if (payload == null) return;
-        final message = RemoteMessage.fromMap(jsonDecode(payload));
-        handleMessage(message);
-      },
-    );
-    final platform = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-    await platform?.createNotificationChannel(_androidNotificationChannel);
-  }
-
   Future initPushNotification() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
@@ -89,26 +68,15 @@ class NotificationHandler {
       sound: true,
     );
 
+    // If the app is not launch and the user launch app via notification,
     FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    // hatirlamiyourm
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    // If the app is in the background
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+    // If the app is open
     FirebaseMessaging.onMessage.listen((message) {
-      final notification = message.notification;
-      if (notification == null) return;
-
-      print("local notification");
-      _localNotifications.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-              _androidNotificationChannel.id, _androidNotificationChannel.name,
-              channelDescription: _androidNotificationChannel.description,
-              icon: '@drawable/ic_launcher'),
-        ),
-        payload: jsonEncode({message.toMap()}),
-      );
+      handleFrondgroundMessage(message);      
     });
   }
 }
