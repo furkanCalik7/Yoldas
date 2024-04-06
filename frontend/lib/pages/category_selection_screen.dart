@@ -5,6 +5,7 @@ import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
+import 'package:frontend/pages/volunteer_search_screen.dart';
 
 const List<IconData> icons = [
   Icons.psychology,
@@ -43,7 +44,9 @@ class CategorySelectionScreen extends StatelessWidget {
             ),
             ButtonMain(
               text: "Aramayı Başlat",
-              action: () {},
+              action: () {
+                Navigator.pushNamed(context, VolunteerSearchScreen.routeName);
+              },
               height: 100,
               width: 350,
               fontSize: 40,
