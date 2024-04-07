@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/controller/gpt_controller.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/pages/ai_model_view.dart';
-import 'package:frontend/pages/currency_recognition_camera_view.dart';
-import 'package:frontend/pages/text_recognition_view.dart';
 
 import '../controller/currency_recognizer_controller.dart';
-import '../custom_widgets/appbars/appbar_custom.dart';
 import '../custom_widgets/buttons/button_main.dart';
 import '../custom_widgets/swiper/custom_swiper.dart';
 

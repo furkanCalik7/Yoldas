@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/custom_widgets/colors.dart';
-import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
-import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/register_screen.dart';
 import 'package:frontend/util/types.dart';
 

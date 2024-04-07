@@ -1,8 +1,6 @@
-import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
-import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
