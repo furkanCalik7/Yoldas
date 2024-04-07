@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utility/login.dart';
+import 'package:frontend/util/login.dart';
 
 class InitializationPage extends StatefulWidget {
   const InitializationPage({Key? key}) : super(key: key);

@@ -1,19 +1,15 @@
-import "dart:convert";
-
 import "package:flutter/material.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
-import "package:frontend/utility/api_manager.dart";
-import 'package:frontend/utility/secure_storage_manager.dart';
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
+import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import "package:frontend/pages/blind_main_frame.dart";
 import "package:frontend/pages/complaint_page.dart";
 import "package:frontend/pages/volunteer_main_frame.dart";
-import "package:frontend/utility/types.dart";
-import "package:frontend/config.dart";
-import "package:http/http.dart" as http;
-import 'package:frontend/custom_widgets/colors.dart';
-import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import "package:frontend/util/api_manager.dart";
+import 'package:frontend/util/secure_storage.dart';
+import "package:frontend/util/types.dart";
 
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({Key? key, required this.callId}) : super(key: key);

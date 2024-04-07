@@ -1,7 +1,9 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+
 class VolunteerSearchScreen extends StatefulWidget {
   @override
   _VolunteerSearchScreenState createState() => _VolunteerSearchScreenState();
@@ -28,8 +30,8 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
       vsync: this,
       duration: Duration(seconds: 4),
     );
-    _rotationAnimation =
-        Tween<double>(begin: math.pi / 16, end: -math.pi / 16).animate(_animationController);
+    _rotationAnimation = Tween<double>(begin: math.pi / 16, end: -math.pi / 16)
+        .animate(_animationController);
     _positionAnimation = Tween<Offset>(
       begin: Offset(0, 0),
       end: Offset(0, _radius),
@@ -65,17 +67,19 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
                     math.sin(_rotationAnimation.value * 4) * _radius,
                   ),
                   child: RotationTransition(
-                    turns: _rotationAnimation,
-                    child: Image.asset("assets/search_icon.png", width: 125, height: 125,)
-                  ),
+                      turns: _rotationAnimation,
+                      child: Image.asset(
+                        "assets/search_icon.png",
+                        width: 125,
+                        height: 125,
+                      )),
                 );
               },
             ),
             SizedBox(height: 40),
             Text(
               'Uygun gönüllü aranıyor...',
-              style: TextStyle(fontSize: 25,
-              fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
             // add hang up button
             SizedBox(height: 40),

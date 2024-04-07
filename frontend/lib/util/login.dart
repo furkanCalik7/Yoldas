@@ -1,13 +1,12 @@
-import 'package:frontend/config.dart';
-import 'package:frontend/pages/welcome.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/utility/types.dart';
-import 'package:frontend/utility/secure_storage_manager.dart';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
-import 'package:frontend/utility/api_manager.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 
 class Login {
   // Login function
@@ -65,6 +64,7 @@ class Login {
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
           key: StorageKey.password, value: password);
+
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);
 

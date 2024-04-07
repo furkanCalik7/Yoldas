@@ -53,6 +53,7 @@ class Signal(BaseModel):
     sdp: str
     type: str
 
+
 class CallUser(BaseModel):
     phone_number: str
     signal: Optional[Signal] = None
