@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
+import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
 
@@ -19,7 +20,7 @@ class BlindHomeScreen extends StatelessWidget {
           ),
           TappableIcon(
             action: () {
-              Navigator.pushNamed(context, VolunteerSearchScreen.routeName);
+              Navigator.pushNamed(context, CallMainFrame.routeName);
             },
             iconData: Icons.search,
             size: 150,

@@ -4,9 +4,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:frontend/config.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 typedef void StreamStateCallback(MediaStream stream);
@@ -35,29 +36,21 @@ class WebRTCController {
     callCollection = db.collection('CallCollection');
   }
 
-  Future<void> createRoom(
-      RTCVideoRenderer remoteRenderer, String type) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
+  Future<void> startCall(RTCVideoRenderer remoteRenderer, String type) async {
+    String accessToken =
+        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
     print('(debug) Create PeerConnection with configuration: $configuration');
-    // Signal signal = Signal(type: SignalType.offer, sdp: offer.sdp!);
 
-    CallRequest callRequest = CallRequest(
-        type: type,
-        phoneNumber: await storage.read(key: "phone_number") ?? "N/A");
+    CallRequest callRequest = CallRequest(type: type);
 
-    http.Response test = await http.post(
-        Uri.parse(
-          "$API_URL/calls/call",
-        ),
-        body: jsonEncode(callRequest.toJSON()),
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ${await storage.read(key: "access_token")}'
-        });
-    var response = test.body;
+    final response = await ApiManager.post(
+      path: "/calls/call",
+      bearerToken: accessToken,
+      body: callRequest.toJSON(),
+    );
 
-    var callJson = jsonDecode(response);
+    var callJson = jsonDecode(response.body);
     var callId = callJson["call_id"];
     DocumentReference roomRef = callCollection.doc(callId);
 
@@ -70,21 +63,16 @@ class WebRTCController {
       peerConnection?.addTrack(track, localStream!);
     });
 
-    // Code for collecting ICE candidates below
     var callerCandidatesCollection = roomRef.collection('callerCandidates');
 
     peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
       print('(debug) Got candidate: ${candidate.toMap()}');
       callerCandidatesCollection.add(candidate.toMap());
     };
-    // Finish Code for collecting ICE candidate
 
-    // Add code for creating a room
     RTCSessionDescription offer = await peerConnection!.createOffer();
     await peerConnection!.setLocalDescription(offer);
     print('(debug) Created offer: $offer');
-
-    // Map<String, dynamic> roomWithOffer = {'offer': offer.toMap()};
 
     var roomSnapshot = await roomRef.get();
     var data = roomSnapshot.data() as Map<String, dynamic>;
@@ -111,8 +99,6 @@ class WebRTCController {
             answerData['type'],
           );
 
-          // await Future.delayed(Duration(seconds: 2));
-          // sleep(Duration(seconds: 2));
           print("(debug) Someone tried to connect: ${answer.toMap()}");
           await peerConnection?.setRemoteDescription(answer);
         }
@@ -136,8 +122,7 @@ class WebRTCController {
     });
   }
 
-  Future<void> joinRoom(
-      RTCVideoRenderer remoteVideo, String roomId) async {
+  Future<void> acceptCall(RTCVideoRenderer remoteVideo, String roomId) async {
     DocumentReference roomRef = callCollection.doc(roomId);
 
     print('(debug) Create PeerConnection with configuration: $configuration');
@@ -170,18 +155,14 @@ class WebRTCController {
     };
 
     CallAccept callAccept = CallAccept(
-        callID: roomId,
-        phoneNumber: await storage.read(key: "phone_number") ?? "N/A");
+      callID: roomId,
+    );
 
-    http.Response response = await http.post(
-        Uri.parse(
-          "$API_URL/calls/call/accept",
-        ),
-        body: jsonEncode(callAccept.toJSON()),
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ${await storage.read(key: "access_token")}'
-        });
+    http.Response response = await ApiManager.post(
+      path: "/calls/call/accept",
+      bearerToken: await storage.read(key: "access_token"),
+      body: callAccept.toJSON(),
+    );
 
     var signal = jsonDecode(response.body)['offer'];
     RTCSessionDescription offer = RTCSessionDescription(
@@ -197,7 +178,6 @@ class WebRTCController {
       data["callee"]["signal"] = answer.toMap();
       await roomRef.update(data);
     });
-
 
     // Listening for remote ICE candidates below
     roomRef.collection('callerCandidates').snapshots().listen((snapshot) {

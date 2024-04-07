@@ -76,14 +76,14 @@ class _CallMainFrameState extends State<CallMainFrame> {
                 Row(children: [
                   ElevatedButton(
                     onPressed: () async {
-                      await webRTCController.createRoom(
+                      await webRTCController.startCall(
                           _remoteRenderer, "fast");
                     },
                     child: Text('call'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      webRTCController.joinRoom(
+                      webRTCController.acceptCall(
                           _remoteRenderer, _textEditingController.text);
                       setState(() {});
                     },

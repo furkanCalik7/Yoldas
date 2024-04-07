@@ -1,10 +1,9 @@
 class CallAccept {
-  CallAccept({required this.callID, required this.phoneNumber});
+  CallAccept({required this.callID});
 
   String callID;
-  String phoneNumber;
 
   toJSON() {
-    return {'call_id': callID, 'phone_number': phoneNumber};
+    return {'call_id': callID};
   }
 }

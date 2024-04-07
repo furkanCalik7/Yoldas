@@ -1,17 +1,11 @@
-
-
 class CallRequest {
-  CallRequest(
-      {required this.type, required this.phoneNumber});
+  CallRequest({required this.type});
 
   String type;
-  String phoneNumber;
-  
 
   toJSON() {
     return {
       'type': type,
-      "phone_number": phoneNumber
     };
   }
 }

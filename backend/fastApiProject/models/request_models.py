@@ -40,10 +40,8 @@ class StartCallRequest(BaseModel):
 
 
 class CallRequest(BaseModel):
-    phone_number: str
     type: str
 
 
 class CallAccept(BaseModel):
     call_id: str
-    phone_number: str
