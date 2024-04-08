@@ -33,14 +33,10 @@ class UpdateUserRequest(BaseModel):
     notification_settings: Optional[NotificationSettings] = None
 
 
-class StartCallRequest(BaseModel):
+class CallRequest(BaseModel):
     isQuickCall: bool
     category: Optional[str] = None
     isConsultancyCall: Optional[bool] = False
-
-
-class CallRequest(BaseModel):
-    type: str
 
 
 class CallAccept(BaseModel):

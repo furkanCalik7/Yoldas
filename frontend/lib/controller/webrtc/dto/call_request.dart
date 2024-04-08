@@ -1,11 +1,21 @@
 class CallRequest {
-  CallRequest({required this.type});
+  CallRequest({
+    required this.isQuickCall,
+    this.category,
+    this.isConsultancyCall,
+  });
 
-  String type;
+  bool isQuickCall;
+  String? category;
+  bool? isConsultancyCall;
 
-  toJSON() {
-    return {
-      'type': type,
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['isQuickCall'] = isQuickCall;
+    if (category != null) data['category'] = category;
+    if (isConsultancyCall != null) {
+      data['isConsultancyCall'] = isConsultancyCall;
+    }
+    return data;
   }
 }

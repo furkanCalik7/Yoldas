@@ -42,3 +42,4 @@ def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
 
 def get_phone_number_from_call(call_id: str, call_user_type: CallUserType) -> str:
     pass
+
