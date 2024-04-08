@@ -63,10 +63,6 @@ async def login_for_access_token(
 ):
     return user_manager.login_for_access_token(form_data)
 
-@router.post("/start_call")
-async def start_call(startCallRequest: request_models.StartCallRequest,
-                     current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
-    return user_manager.start_call(startCallRequest, current_user)
 
 @router.get("/get_all_abilities}")
 async def get_all_abilities():

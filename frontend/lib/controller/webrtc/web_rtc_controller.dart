@@ -30,9 +30,10 @@ class WebRTCController {
   StreamStateCallback? onAddRemoteStream;
   FlutterSecureStorage storage = const FlutterSecureStorage();
   late CollectionReference callCollection;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  late String callId;
 
   WebRTCController() {
-    FirebaseFirestore db = FirebaseFirestore.instance;
     callCollection = db.collection('CallCollection');
   }
 
@@ -42,16 +43,16 @@ class WebRTCController {
 
     print('(debug) Create PeerConnection with configuration: $configuration');
 
-    CallRequest callRequest = CallRequest(type: type);
+    CallRequest callRequest = CallRequest(isQuickCall: true, category: type, isConsultancyCall: false);
 
     final response = await ApiManager.post(
       path: "/calls/call",
       bearerToken: accessToken,
-      body: callRequest.toJSON(),
+      body: callRequest.toJson(),
     );
 
     var callJson = jsonDecode(response.body);
-    var callId = callJson["call_id"];
+    callId = callJson["call_id"];
     DocumentReference roomRef = callCollection.doc(callId);
 
     peerConnection = await createPeerConnection(configuration);
@@ -124,6 +125,7 @@ class WebRTCController {
 
   Future<void> acceptCall(RTCVideoRenderer remoteVideo, String roomId) async {
     DocumentReference roomRef = callCollection.doc(roomId);
+    callId = roomId;
 
     print('(debug) Create PeerConnection with configuration: $configuration');
     peerConnection = await createPeerConnection(configuration);
@@ -201,7 +203,7 @@ class WebRTCController {
     RTCVideoRenderer remoteVideo,
   ) async {
     var stream = await navigator.mediaDevices
-        .getUserMedia({'video': true, 'audio': false});
+        .getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
     localStream = stream;
@@ -209,32 +211,72 @@ class WebRTCController {
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
 
-  // Future<void> hangUp(RTCVideoRenderer localVideo) async {
-  //   List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
-  //   tracks.forEach((track) {
-  //     track.stop();
-  //   });
+  Future<void> hangUp(RTCVideoRenderer localVideo) async {
+    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+    tracks.forEach((track) {
+      track.stop();
+    });
 
-  //   if (remoteStream != null) {
-  //     remoteStream!.getTracks().forEach((track) => track.stop());
-  //   }
-  //   if (peerConnection != null) peerConnection!.close();
+    if (remoteStream != null) {
+      remoteStream!.getTracks().forEach((track) => track.stop());
+    }
+    if (peerConnection != null) peerConnection!.close();
 
-  //   if (roomId != null) {
-  //     var db = FirebaseFirestore.instance;
-  //     var roomRef = db.collection('rooms').doc(roomId);
-  //     var calleeCandidates = await roomRef.collection('calleeCandidates').get();
-  //     calleeCandidates.docs.forEach((document) => document.reference.delete());
+    var callRef = db.collection('CallCollection').doc(callId);
+    var calleeCandidates = await callRef.collection('calleeCandidates').get();
+    calleeCandidates.docs.forEach((document) => document.reference.delete());
 
-  //     var callerCandidates = await roomRef.collection('callerCandidates').get();
-  //     callerCandidates.docs.forEach((document) => document.reference.delete());
+    var callerCandidates = await callRef.collection('callerCandidates').get();
+    callerCandidates.docs.forEach((document) => document.reference.delete());
 
-  //     await roomRef.delete();
-  //   }
+    await callRef.delete();
 
-  //   localStream!.dispose();
-  //   remoteStream?.dispose();
-  // }
+    localStream!.dispose();
+    remoteStream?.dispose();
+  }
+
+  void switchVideo() async {
+    if (localStream == null) throw Exception('Stream is not initialized');
+
+    final videoTrack = localStream!
+        .getVideoTracks()
+        .firstWhere((track) => track.kind == 'video');
+    await Helper.switchCamera(videoTrack);
+  }
+
+  Future<void> toggleVideo(bool isOn) async {
+    for (var track in localStream!.getVideoTracks()) {
+      track.enabled = isOn;
+    }
+  }
+
+  Future<void> toggleAudio(bool isOn) async {
+    for (var track in localStream!.getAudioTracks()) {
+      track.enabled = isOn;
+    }
+  }
+
+  Future<void> toogleSpeaker(bool isOn) async {
+    for (var track in remoteStream!.getAudioTracks()) {
+      track.enabled = isOn;
+    }
+  }
+
+  Future<void> toggleTorch(bool isOn) async {
+    if (localStream == null) throw Exception('Stream is not initialized');
+
+    final videoTrack = localStream!
+        .getVideoTracks()
+        .firstWhere((track) => track.kind == 'video');
+    final has = await videoTrack.hasTorch();
+    if (has) {
+      print('[TORCH] Current camera supports torch mode');
+      await videoTrack.setTorch(isOn);
+      print('[TORCH] Torch state is now ${isOn ? 'on' : 'off'}');
+    } else {
+      print('[TORCH] Current camera does not support torch mode');
+    }
+  }
 
   void registerPeerConnectionListeners() {
     peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
