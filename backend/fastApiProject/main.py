@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from .routers import users
-from .services.sockets import socket_app
+from .routers import users, sockets, calls
 
 app = FastAPI()
 
 app.include_router(users.router)
+app.include_router(calls.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/", app=socket_app)
+app.mount("/", app=sockets.socket_app)
 
 
 @app.get("/")

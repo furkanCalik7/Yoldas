@@ -1,12 +1,12 @@
-import 'package:frontend/config.dart';
-import 'package:frontend/pages/welcome.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/utility/types.dart';
-import 'package:frontend/utility/secure_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 
 class Login {
   // Login function
@@ -15,7 +15,7 @@ class Login {
     // for test purposes
     await Future.delayed(Duration(seconds: 1));
 
-    String path = "$API_URL/users/login";
+    // String path = "$API_URL/users/login";
     String phoneNumber;
     String password;
 
@@ -35,8 +35,8 @@ class Login {
       return;
     }
 
-    var response = await http.post(
-      Uri.parse(path),
+    var response = await ApiManager.post(
+      path: "/users/login",
       body: {
         'grant_type': '',
         'username': phoneNumber,
@@ -45,11 +45,11 @@ class Login {
         'client_id': '',
         'client_secret': '',
       },
-      headers: {'content-type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded',
     );
 
     if (response.statusCode == 200) {
-      Map data = jsonDecode(response.body);
+      Map data = jsonDecode(utf8.decode(response.bodyBytes));
       Map user = data['user'];
 
       await SecureStorageManager.write(
@@ -63,9 +63,10 @@ class Login {
       await SecureStorageManager.write(
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
-          key: StorageKey.email, value: user['email']);
-      await SecureStorageManager.write(
           key: StorageKey.password, value: password);
+
+      await SecureStorageManager.writeList(
+          key: StorageKey.abilities, value: user['abilities']);
 
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
@@ -78,7 +79,6 @@ class Login {
       Navigator.pushNamedAndRemoveUntil(context, mainFrameRootName, (r) {
         return false;
       });
-      ;
     } else {
       // Print the response body in case of an error
       print("Error: ${response.body}");

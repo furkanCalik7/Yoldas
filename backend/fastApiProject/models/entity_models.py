@@ -7,6 +7,8 @@ from pydantic import BaseModel, EmailStr
 from pydantic import StringConstraints
 from typing_extensions import Annotated
 
+from fastApiProject.shared.constants import CallStatus
+
 
 class Token(BaseModel):
     access_token: str
@@ -26,12 +28,6 @@ class Role(str, Enum):
     volunteer = "volunteer"
     blind = "blind"
 
-
-class Ability(str, Enum):
-    cooking = "cooking"
-    sports = "sports"
-
-
 class NotificationSettings(BaseModel):
     callNotifications: bool
     messageNotifications: bool
@@ -43,7 +39,7 @@ class NotificationSettings(BaseModel):
 class User(BaseModel):
     name: str
     role: Role
-    abilities: Optional[list[Ability]] = []
+    abilities: Optional[list[str]] = []
     phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9]\d{1,14}$")]
     isConsultant: Optional[bool] = False
     password: str
@@ -52,23 +48,21 @@ class User(BaseModel):
     notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
     complaints: Optional[list[str]] = []
 
+class Signal(BaseModel):
+    sdp: str
+    type: str
+
+
 class CallUser(BaseModel):
     phone_number: str
-    # Interactive Connectivity Establishment
-    ice_candidates: Optional[list] = []
-    # Session Description Protocol
-    sdp: Optional[dict] = {}
+    signal: Optional[Signal] = None
 
 
-# TODO: implement feedback model
 class Call(BaseModel):
     caller: CallUser
-    callee: CallUser
-    start_time: datetime
-    end_time: Optional[datetime]
-    duration: Optional[int] = None  # seconds
-    # write call type
-    call_category: Optional[str] = None
-    # write call status
-    # write call rating
-    # write call feedback
+    callee: Optional[CallUser] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    duration: Optional[int] = 0
+    call_category: Optional[str] = "fast"
+    status: Optional[CallStatus] = CallStatus.WAITING.value

@@ -33,6 +33,7 @@ def find_consultant_user(num_of_calls: int, caller: User):
 
     return consultant_list[:num_of_calls]
 
+
 def find_quick_call_user(num_of_calls: int, caller: User):
     # get avg_rating and return num_of_calls number of users with the highest rating except the caller
     docs = (
@@ -54,8 +55,7 @@ def find_quick_call_user(num_of_calls: int, caller: User):
     return volunteer_list[:num_of_calls]
 
 
-
-def find_matching_ability_user(startCallRequest: request_models.StartCallRequest, num_of_calls: int, caller: User):
+def find_matching_ability_user(startCallRequest: request_models.CallRequest, num_of_calls: int, caller: User):
     # get all users with matching abilities and the highest rating except the caller
     docs = (
         db.collection("UserCollection")

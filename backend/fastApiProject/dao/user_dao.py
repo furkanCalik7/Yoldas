@@ -139,7 +139,7 @@ def get_user_by_rating_average(low, high):
     return user_list
 
 
-def update_user_request(user_id, update_user_request):
+def update_user_request(user_id, update_user_request: UpdateUserRequest):
     doc_ref = db.collection("UserCollection").document(user_id)
     doc = doc_ref.get()
     if not doc.exists:
@@ -155,7 +155,8 @@ def update_user_request(user_id, update_user_request):
         'password': update_user_request.password,
         'isConsultant': update_user_request.isConsultant,
         'role': update_user_request.role,
-        'notification_settings': update_user_request.notification_settings
+        'notification_settings': update_user_request.notification_settings,
+        'abilities': update_user_request.abilities
     }
 
     # Iterate over the dictionary and update user attributes if the value is not None
@@ -167,42 +168,42 @@ def update_user_request(user_id, update_user_request):
     return user.model_dump()
 
 
-def start_consultancy_call(startCallRequest, current_user):
+def start_consultancy_call(callRequest, current_user):
     # check if user exists
-    doc = db.collection("UserCollection").document(startCallRequest.phone_number).get()
+    doc = db.collection("UserCollection").document(callRequest.phone_number).get()
     if not doc.exists:
-        logger.error(f"User with phone number {startCallRequest.phone_number} not found")
-        raise HTTPException(status_code=404, detail=f"User with phone number {startCallRequest.phone_number} not found")
+        logger.error(f"User with phone number {callRequest.phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {callRequest.phone_number} not found")
 
     callee = User.model_validate(doc.to_dict())
     call = Call(
         caller=CallUser(phone_number=current_user.phone_number),
         callee=CallUser(phone_number=callee.phone_number),
         start_time=time.time(),
-        isQuickCall=startCallRequest.isQuickCall,
-        category=startCallRequest.category,
-        isConsultancyCall=startCallRequest.isConsultancyCall
+        isQuickCall=callRequest.isQuickCall,
+        category=callRequest.category,
+        isConsultancyCall=callRequest.isConsultancyCall
     )
     call_dao.create_call(call)
     return call.model_dump()
 
 
-def start_call(startCallRequest: request_models.StartCallRequest, current_user):
+def start_call(CallRequest: request_models.CallRequest, current_user):
     # check if user exists
     doc = db.collection("UserCollection").document(current_user["phone_number"]).get()
     if not doc.exists:
-        logger.error(f"User with phone number {startCallRequest.phone_number} not found")
-        raise HTTPException(status_code=404, detail=f"User with phone number {startCallRequest.phone_number} not found")
+        logger.error(f"User with phone number {CallRequest.phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {CallRequest.phone_number} not found")
 
     # check which type of call is requested
     # according to the type of call, find an appropriate user
     num_of_calls = 5
-    if startCallRequest.isConsultancyCall:
+    if CallRequest.isConsultancyCall:
         user_list = matcher_dao.find_consultant_user(num_of_calls, current_user)
-    elif startCallRequest.isQuickCall:
+    elif CallRequest.isQuickCall:
         user_list = matcher_dao.find_quick_call_user(num_of_calls, current_user)
     else:
-        user_list = matcher_dao.find_matching_ability_user(startCallRequest, num_of_calls, current_user)
+        user_list = matcher_dao.find_matching_ability_user(CallRequest, num_of_calls, current_user)
 
     # logger.info(
     # f"{len(user_list)} users found for the caller with phone number {current_user["phone_number"]}")
@@ -242,3 +243,12 @@ def send_complaint(complaintRequest, current_user):
     user.complaints.append(complaintRequest.complaint)
     doc_ref.set(user.model_dump())
     return user.model_dump()
+
+def get_fcm_tokens(phone_number: str):
+    fcm_tokens = db.collection("UserCollection").document(phone_number).collection("fcm_tokens")
+    return [token_ref.to_dict() for token_ref in fcm_tokens.get()]
+
+
+def delete_fcm_token(phone_number: str, token):
+    fcm_token = db.collection("UserCollection").document(phone_number).collection("fcm_tokens").document(token)
+    fcm_token.delete()

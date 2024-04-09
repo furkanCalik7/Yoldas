@@ -9,7 +9,7 @@ import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/utility/secure_storage.dart';
+import 'package:frontend/util/secure_storage.dart';
 
 class EditProfileSheet extends StatefulWidget {
   const EditProfileSheet({super.key});
@@ -23,30 +23,20 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   // final SecureStorageManager storageManager = SecureStorageManager();
 
   String current_name = "";
-  String current_email = "";
   String current_phoneNumber = "";
   String current_password = "";
 
   String bearerToken = "";
 
   final newNameController = TextEditingController();
-  final newMailController = TextEditingController();
   final newPasswordController = TextEditingController();
   final newPhoneNumberController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Future _getFieldsFromStorage() async {
-    // current_name = await storage.read(key: "name") ?? "N/A";
-    // current_email = await storage.read(key: "email") ?? "N/A";
-    // current_phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
-    // current_password = await storage.read(key: "password") ?? "N/A";
-    // bearerToken = await storage.read(key: "access_token") ?? "N/A";
-
     current_name =
         await SecureStorageManager.read(key: StorageKey.name) ?? "N/A";
-    current_email =
-        await SecureStorageManager.read(key: StorageKey.email) ?? "N/A";
     current_phoneNumber =
         await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
     current_password =
@@ -67,7 +57,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     newNameController.dispose();
-    newMailController.dispose();
     newPasswordController.dispose();
     newPhoneNumberController.dispose();
     super.dispose();
@@ -79,7 +68,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     print("Current phone number: $current_phoneNumber");
 
     String newPassword = newPasswordController.text;
-    String newMail = newMailController.text;
     String newName = newNameController.text;
 
     bool somethingChanged = false;
@@ -88,11 +76,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
 
     if (newName != "" && newName != current_name) {
       userUpdateObj["name"] = newName;
-      somethingChanged = true;
-    }
-
-    if (newMail != "" && newMail != current_email) {
-      userUpdateObj["mail"] = newMail;
       somethingChanged = true;
     }
 
@@ -111,7 +94,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       return;
     }
 
-    // TODO : Currently it doesnt update email in database, fix it when backend is updated
     String jsonBody = jsonEncode(userUpdateObj);
 
     String apiUrl = '$API_URL/users/update/$current_phoneNumber';
@@ -130,18 +112,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       print('PUT request successful');
       print('Response body: ${response.body}');
 
-      //TODO: Update the local storage with the correct key names when the backend is updated
-      // if (newName != "") await storage.write(key: "name", value: newName);
-      // if (newMail != "") await storage.write(key: "email", value: newMail);
-      // if (newPassword != "")
-      //   await storage.write(key: "password", value: newPassword);
-
       if (newName != "") {
         await SecureStorageManager.write(key: StorageKey.name, value: newName);
       }
-      if (newMail != "") {
-        await SecureStorageManager.write(key: StorageKey.email, value: newMail);
-      }
+
       if (newPassword != "") {
         await SecureStorageManager.write(
             key: StorageKey.password, value: newPassword);
@@ -171,7 +145,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   @override
   Widget build(BuildContext context) {
     newNameController.text = current_name;
-    newMailController.text = current_email;
     newPasswordController.text = current_password;
     newPhoneNumberController.text = current_phoneNumber;
 
@@ -189,16 +162,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
             icon: Icons.person,
             obscureText: false,
             controller: newNameController,
-            validator: (value) {
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          CustomTextFormField(
-            icon: Icons.mail,
-            obscureText: false,
-            enabled: false,
-            controller: newMailController,
             validator: (value) {
               return null;
             },

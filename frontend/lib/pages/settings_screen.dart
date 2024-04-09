@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
+import 'package:frontend/util/secure_storage_manager.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password_screen.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:frontend/util/types.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,6 +19,23 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
   bool darkThemeEnabled = false;
+  UserType userType = UserType.blind;
+
+  void updateUserType() async {
+    userType =
+        await SecureStorageManager.read(key: StorageKey.role) == "volunteer"
+            ? UserType.volunteer
+            : UserType.blind;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateUserType();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -39,6 +59,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       builder: (BuildContext context) => ChangePasswordPage()));
                 },
               ),
+              if (userType == UserType.volunteer)
+                SettingsTile.navigation(
+                  leading: Icon(Icons.edit_attributes),
+                  title: Text('Yetenekler'),
+                  onPressed: (BuildContext context) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AbilitiesPage()));
+                  },
+                ),
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text('Dil'),
@@ -46,7 +75,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: (BuildContext context) {
                   // change language
                   changeLocale(context, 'en_US');
-
                 },
               ),
               SettingsTile.switchTile(

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend/custom_widgets/colors.dart';
 
 class TextContainerCustom extends StatelessWidget {
   final String text;

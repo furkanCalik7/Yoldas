@@ -1,19 +1,12 @@
-import 'dart:io';
-import 'dart:async';
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:frontend/controller/base_controller.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:developer';
 import 'package:tflite_v2/tflite_v2.dart';
-import 'package:vibration/vibration.dart';
-
-import '../utility/dictionary.dart';
 
 
 
