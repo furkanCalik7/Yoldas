@@ -37,3 +37,7 @@ class StartCallRequest(BaseModel):
     isQuickCall: bool
     category: Optional[Ability] = None
     isConsultancyCall: Optional[bool] = False
+
+class ComplaintRequest(BaseModel):
+    complaint: str
+    callID: str
