@@ -30,7 +30,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
       vsync: this,
       duration: Duration(seconds: 4),
     );
-    _rotationAnimation = Tween<double>(begin: math.pi / 16, end: -math.pi / 16)
+    _rotationAnimation = Tween<double>(begin: math.pi / 32, end: -math.pi / 32)
         .animate(_animationController);
     _positionAnimation = Tween<Offset>(
       begin: Offset(0, 0),
@@ -63,8 +63,8 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               builder: (context, child) {
                 return Transform.translate(
                   offset: Offset(
-                    math.cos(_rotationAnimation.value * 4) * _radius,
-                    math.sin(_rotationAnimation.value * 4) * _radius,
+                    math.cos(_rotationAnimation.value * 8) * _radius,
+                    math.sin(_rotationAnimation.value * 8) * _radius,
                   ),
                   child: RotationTransition(
                       turns: _rotationAnimation,
