@@ -14,7 +14,7 @@ class CallMainFrame extends StatefulWidget {
 }
 
 class _CallMainFrameState extends State<CallMainFrame> {
-  String calleeName = "Callee Name";
+  String calleeName = "";
   late WebRTCController webRTCController;
 
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
@@ -25,7 +25,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
 
   @override
   void initState() {
-    webRTCController = WebRTCController();
+    webRTCController = WebRTCController(updateCalleeName: updateCalleeName);
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     webRTCController
@@ -48,7 +48,11 @@ class _CallMainFrameState extends State<CallMainFrame> {
     super.dispose();
   }
 
-  void moveToEvaluationScreen() {}
+  void updateCalleeName(String name) {
+    setState(() {
+      calleeName = name;
+    });
+  }
 
   // TODO; Delete later
   TextEditingController _textEditingController = TextEditingController();
@@ -81,7 +85,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
         break;
       case ButtonType.HangUp:
         // Handle HangUp button state change
-        webRTCController.hangUp(_localRenderer);
+        webRTCController.hangUp();
         setState(() {});
         print("HangUp button pressed");
         break;

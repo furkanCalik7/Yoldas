@@ -28,6 +28,7 @@ class WebRTCController {
       }
     ]
   };
+  Function(String) updateCalleeName;
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? remoteStream;
@@ -45,8 +46,9 @@ class WebRTCController {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
       callerCandidatesSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? hangupSubscription;
+  StreamSubscription<DocumentSnapshot<Object?>>? calleeSubscription;
 
-  WebRTCController() {
+  WebRTCController({required this.updateCalleeName}) {
     callCollection = db.collection('CallCollection');
   }
 
@@ -143,6 +145,14 @@ class WebRTCController {
         }
       });
     });
+    // TODO: simdilik boyle birakiyorum ama bu acaba callee nin adimi olmali yoksa baska static bi seymi 
+    
+    calleeSubscription = callRef.snapshots().listen((snapshot) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data["callee"] != null) {
+        updateCalleeName(data['callee']['name']);
+      }
+    });
     _registerFirestoreListeners();
     return callRequestResponse;
   }
@@ -227,6 +237,12 @@ class WebRTCController {
         );
       });
     });
+    calleeSubscription = callRef.snapshots().listen((snapshot) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data["caller"] != null) {
+        updateCalleeName(data['caller']['name']);
+      }
+    });
     _registerFirestoreListeners();
     return callAcceptResponse;
   }
@@ -243,8 +259,7 @@ class WebRTCController {
         .getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
-    localStream = stream; 
-
+    localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
@@ -378,6 +393,7 @@ class WebRTCController {
                 )),
         (route) => false);
     hangupSubscription?.cancel();
+    calleeSubscription?.cancel();
   }
 
   void _registerFirestoreListeners() {
@@ -390,5 +406,5 @@ class WebRTCController {
         _moveToNextScreen();
       }
     });
-  }
+  } 
 }
