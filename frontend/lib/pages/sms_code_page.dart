@@ -5,17 +5,17 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
-import 'package:frontend/utility/auth_behavior.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/auth_behavior.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:vibration/vibration.dart';
 
@@ -85,11 +85,9 @@ class _SMSCodePageState extends State<SMSCodePage> {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     _auth = FirebaseAuth.instance;
-    print('Initialized default app $app');
     _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
-        print("credentiaaaaaaaaal: " + credential.toString());
         await _auth.signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -98,7 +96,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
       codeSent: (String verificationId, int? resendToken) async {
         verificationIdx.value = verificationId;
         print("successfully sent");
-        print("verificationId: " + verificationId);
       },
       timeout: const Duration(seconds: 60),
       codeAutoRetrievalTimeout: (verificationId) {
@@ -109,7 +106,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
 
   Future<int> register() async {
     String name = widget.user.name;
-    String mail = widget.user.mail;
     String password = widget.user.password;
     String phoneNumber = widget.user.phoneNumber;
 
@@ -123,15 +119,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
     Map<String, dynamic> requestBody = {
       "name": name,
       "role": userTypeToString(userType!),
-      "email": mail,
       "phone_number": phoneNumber,
       "password": password,
     };
 
-    final response = await http.post(
-      Uri.parse(path),
-      body: jsonEncode(requestBody),
-      headers: {'Content-Type': 'application/json'},
+    final response = await ApiManager.post(
+      path: "/users/register",
+      body: requestBody,
     );
 
     Map data = jsonDecode(response.body);
@@ -140,12 +134,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
     String hashedPassword = data["user"]["password"];
 
     if (response.statusCode == 200) {
-      final storage = new FlutterSecureStorage();
-      await storage.write(key: "name", value: name);
-      await storage.write(
-          key: "password", value: password); // TODO change with hashed password
-      await storage.write(key: "phone_number", value: phoneNumber);
-      await storage.write(key: "role", value: userType.toString());
+      await SecureStorageManager.write(key: StorageKey.name, value: name);
+      await SecureStorageManager.write(
+          key: StorageKey.password, value: password);
+      await SecureStorageManager.write(
+          key: StorageKey.phone_number, value: phoneNumber);
+      await SecureStorageManager.write(
+          key: StorageKey.role, value: userTypeToString(userType!));
     }
 
     return response.statusCode;

@@ -1,28 +1,29 @@
-import 'package:frontend/config.dart';
-import 'package:frontend/pages/welcome.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/utility/types.dart';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 
 class Login {
   // Login function
   static Future<void> tryLoginWithoutSMSVerification(
       BuildContext context) async {
     // for test purposes
+    // TODO: remove please
     await Future.delayed(Duration(seconds: 1));
 
-    String path = "$API_URL/users/login";
+    // String path = "$API_URL/users/login";
     String phoneNumber;
     String password;
 
-    FlutterSecureStorage storage = const FlutterSecureStorage();
-
-    phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
-    password = await storage.read(key: "password") ?? "N/A";
+    phoneNumber =
+        await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
+    password =
+        await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
 
     if (phoneNumber == "N/A" || password == "N/A") {
       print("No phone number or password found in storage");
@@ -35,8 +36,8 @@ class Login {
       return;
     }
 
-    var response = await http.post(
-      Uri.parse(path),
+    var response = await ApiManager.post(
+      path: "/users/login",
       body: {
         'grant_type': '',
         'username': phoneNumber,
@@ -45,23 +46,28 @@ class Login {
         'client_id': '',
         'client_secret': '',
       },
-      headers: {'content-type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded',
     );
 
     if (response.statusCode == 200) {
-      Map data = jsonDecode(response.body);
+      Map data = jsonDecode(utf8.decode(response.bodyBytes));
       Map user = data['user'];
 
-      // local storage writing
-      FlutterSecureStorage storage = const FlutterSecureStorage();
+      await SecureStorageManager.write(
+          key: StorageKey.access_token, value: data['access_token']);
+      await SecureStorageManager.write(
+          key: StorageKey.token_type, value: data['token_type']);
+      await SecureStorageManager.write(
+          key: StorageKey.name, value: user['name']);
+      await SecureStorageManager.write(
+          key: StorageKey.role, value: user['role']);
+      await SecureStorageManager.write(
+          key: StorageKey.phone_number, value: user['phone_number']);
+      await SecureStorageManager.write(
+          key: StorageKey.password, value: password);
 
-      storage.write(key: "access_token", value: data['access_token']);
-      storage.write(key: "token_type", value: data['token_type']);
-      storage.write(key: "name", value: user['name']);
-      storage.write(key: "role", value: user['role']);
-      storage.write(key: "phone_number", value: user['phone_number']);
-      storage.write(key: "email", value: user['email']);
-      storage.write(key: "password", value: password);
+      await SecureStorageManager.writeList(
+          key: StorageKey.abilities, value: user['abilities']);
 
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
@@ -74,7 +80,6 @@ class Login {
       Navigator.pushNamedAndRemoveUntil(context, mainFrameRootName, (r) {
         return false;
       });
-      ;
     } else {
       // Print the response body in case of an error
       print("Error: ${response.body}");

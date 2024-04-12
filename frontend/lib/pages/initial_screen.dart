@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/utility/login.dart';
+import 'package:frontend/util/login.dart';
 
 class InitializationPage extends StatefulWidget {
   const InitializationPage({Key? key}) : super(key: key);
@@ -10,8 +9,6 @@ class InitializationPage extends StatefulWidget {
 }
 
 class _InitializationPageState extends State<InitializationPage> {
-  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-
   @override
   void initState() {
     super.initState();

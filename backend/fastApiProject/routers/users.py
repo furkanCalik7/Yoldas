@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-@router.get("/users/role")
+@router.get("/role")
 async def get_user_role(current_user_role: Annotated[entity_models.User, Depends(user_manager.get_current_user_role)]):
     logger.info(f"get_user_role for user with phoneNumber {entity_models.User.uid} called")
     return current_user_role
@@ -51,9 +51,10 @@ async def register_user(user: entity_models.User):
 
 
 @router.put("/update/{user_id}")
-async def update_user(update_user_request: request_models.UpdateUserRequest, user_id: str):
-    logger.info(f"update_user with user_id {user_id} called")
-    return user_manager.update_user_request(user_id, update_user_request)
+async def update_user(update_user_request: request_models.UpdateUserRequest,
+                      current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    #logger.info(f"update_user with user_id {current_user["phone_number"]} called")
+    return user_manager.update_user_request(current_user["phone_number"], update_user_request)
 
 
 @router.post("/login")
@@ -62,3 +63,8 @@ async def login_for_access_token(
 ):
     return user_manager.login_for_access_token(form_data)
 
+
+@router.get("/get_all_abilities}")
+async def get_all_abilities():
+    logger.info(f"get_all_abilities called")
+    return user_manager.get_all_abilities()

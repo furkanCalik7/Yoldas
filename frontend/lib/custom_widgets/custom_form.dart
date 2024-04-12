@@ -8,13 +8,13 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_phoneNumberInput.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/pages/sms_code_page.dart';
-import 'package:frontend/utility/auth_behavior.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/auth_behavior.dart';
+import 'package:frontend/util/types.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_data.dart';
-import 'package:frontend/firebase_options.dart';
+import '../firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CustomForm extends StatefulWidget {
@@ -42,7 +42,6 @@ class _CustomFormState extends State<CustomForm> {
   // PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   final nameController = TextEditingController();
-  final mailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -51,11 +50,6 @@ class _CustomFormState extends State<CustomForm> {
 
   bool evaluateName(String name) {
     // TODO: implement evaluateName
-    return false;
-  }
-
-  bool evaluateMail(String mail) {
-    // TODO: implement evaluateMail
     return false;
   }
 
@@ -78,7 +72,6 @@ class _CustomFormState extends State<CustomForm> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     nameController.dispose();
-    mailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     phoneNumberController.dispose();
@@ -88,10 +81,8 @@ class _CustomFormState extends State<CustomForm> {
   UserData createUser(String phoneNumber) {
     String name = nameController.text;
     String password = passwordController.text;
-    String mail = mailController.text;
 
-    return UserData(
-        name: name, mail: mail, password: password, phoneNumber: phoneNumber);
+    return UserData(name: name, password: password, phoneNumber: phoneNumber);
   }
 
   @override
@@ -111,9 +102,10 @@ class _CustomFormState extends State<CustomForm> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: formColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CustomTextFormField(
               icon: Icons.person,
@@ -123,19 +115,6 @@ class _CustomFormState extends State<CustomForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Lütfen adınızı giriniz';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            CustomTextFormField(
-              icon: Icons.mail,
-              hintText: "E-posta",
-              obscureText: false,
-              controller: mailController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Lütfen e-posta adresinizi giriniz';
                 }
                 return null;
               },

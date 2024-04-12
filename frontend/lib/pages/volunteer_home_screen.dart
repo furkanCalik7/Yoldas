@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
-import 'package:frontend/custom_widgets/text_widgets/text_container_custom.dart';
 
-import '../custom_widgets/colors.dart';
 import '../custom_widgets/text_widgets/text_container.dart';
 
 class VolunteerHomeScreen extends StatelessWidget {

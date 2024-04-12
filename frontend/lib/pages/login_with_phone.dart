@@ -5,16 +5,14 @@ import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
-import 'package:frontend/utility/auth_behavior.dart';
-import 'package:frontend/utility/types.dart';
-import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/auth_behavior.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'package:frontend/custom_widgets/custom_text_field.dart';
 
 import '../custom_widgets/custom_phoneNumberInput.dart';
 import '../models/user_data.dart';
@@ -37,13 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
   PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   Future _login(String phoneNumber) async {
-    String path = API_URL + "/users/login";
+    String path = "$API_URL/users/login";
 
-    print(password_controller.text);
-    print(phoneNumber);
-
-    var response = await http.post(
-      Uri.parse(path),
+    var response = await ApiManager.post(
+      path: "/users/login",
       body: {
         'grant_type': '',
         'username': phoneNumber,
@@ -52,24 +47,27 @@ class _LoginScreenState extends State<LoginScreen> {
         'client_id': '',
         'client_secret': '',
       },
-      headers: {'content-type': 'application/x-www-form-urlencoded'},
+      contentType: 'application/x-www-form-urlencoded',
     );
 
     if (response.statusCode == 200) {
-      Map data = jsonDecode(response.body);
+      Map data = jsonDecode(utf8.decode(response.bodyBytes));
       Map user = data['user'];
 
-      // local storage writing
-      FlutterSecureStorage storage = const FlutterSecureStorage();
-
-      storage.write(key: "access_token", value: data['access_token']);
-      storage.write(key: "token_type", value: data['token_type']);
-
-      storage.write(key: "name", value: user['name']);
-      storage.write(key: "email", value: user['email']);
-      storage.write(key: "role", value: user['role']);
-      storage.write(key: "phone_number", value: user['phone_number']);
-      storage.write(key: "password", value: password_controller.text);
+      await SecureStorageManager.write(
+          key: StorageKey.access_token, value: data['access_token']);
+      await SecureStorageManager.write(
+          key: StorageKey.token_type, value: data['token_type']);
+      await SecureStorageManager.write(
+          key: StorageKey.name, value: user['name']);
+      await SecureStorageManager.write(
+          key: StorageKey.role, value: user['role']);
+      await SecureStorageManager.write(
+          key: StorageKey.phone_number, value: user['phone_number']);
+      await SecureStorageManager.write(
+          key: StorageKey.password, value: password_controller.text);
+      await SecureStorageManager.writeList(
+          key: StorageKey.abilities, value: user['abilities']);
 
       String phoneNumber = user['phone_number'];
       UserType userType =

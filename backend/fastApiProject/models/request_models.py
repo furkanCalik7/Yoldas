@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from pydantic import BaseModel, StringConstraints, AfterValidator
 
 from fastApiProject.models import entity_models
-from fastApiProject.models.entity_models import Gender, Role, Ability, NotificationSettings
+from fastApiProject.models.entity_models import Gender, Role, NotificationSettings
 
 
 class LoginRequest(BaseModel):
@@ -21,14 +21,28 @@ class FeedbackRequest(BaseModel):
 
 
 class UpdateUserRequest(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    name: Optional[str] = None
     gender: Optional[Gender] = None
     role: Optional[Role] = None
-    abilities: Optional[list[Ability]] = []
-    phone_number: Optional[Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
+    abilities: Optional[list[str]] = []
+    phone_number: Optional[
+        Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\+90)?[0-9]{10}$")]] = None
     isConsultant: Optional[bool] = None
     password: Optional[str] = None
     avg_rating: Optional[float] = None
     rating_count: Optional[int] = None
     notification_settings: Optional[NotificationSettings] = None
+
+
+class CallRequest(BaseModel):
+    isQuickCall: bool
+    category: Optional[str] = None
+    isConsultancyCall: Optional[bool] = False
+
+
+class CallAccept(BaseModel):
+    call_id: str
+
+
+class CallHangup(BaseModel):
+    call_id: str

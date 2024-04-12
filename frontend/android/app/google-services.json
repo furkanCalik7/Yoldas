@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "765583587533",
+    "firebase_url": "https://yoldas-73fe5-default-rtdb.firebaseio.com",
+    "project_id": "yoldas-73fe5",
+    "storage_bucket": "yoldas-73fe5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765583587533:android:9e943f27b0c1b4e93bd184",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5gE6g9Dbqs6AX-R4CWQGqJFk6n2droEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

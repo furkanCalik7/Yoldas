@@ -34,6 +34,9 @@ def get_password_hash(password):
 
 def register_user(user: entity_models.User):
     logger.info(f"register_user with user {user} called")
+    if user.role == "volunteer" and user.isConsultant:
+        logger.error(f"Volunteer cannot be a consultant")
+        raise HTTPException(status_code=400, detail=f"Volunteer cannot be a consultant")
     user.password = get_password_hash(user.password)
     return user_dao.register_user(user)
 
@@ -75,7 +78,7 @@ def login(loginRequest: request_models.LoginRequest):
 
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    logger.info(f"get_current_user with token {token} called")
+    logger.info(f"get_current_user with token {token}")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -172,8 +175,18 @@ def get_user_by_rating_average(low, high):
     return user_dao.get_user_by_rating_average(low, high)
 
 
-def update_user_request(user_id, update_user_request):
+def update_user_request(user_id, update_user_req_obj):
     logger.info(f"update_user_request with user_id {user_id} called")
-    if update_user_request.password:
-        update_user_request.password = get_password_hash(password=update_user_request.password)
-    return user_dao.update_user_request(user_id, update_user_request)
+    if update_user_req_obj.password:
+        update_user_req_obj.password = get_password_hash(password=update_user_req_obj.password)
+    return user_dao.update_user_request(user_id, update_user_req_obj)
+
+
+# Start Call endpoint
+def start_call(startCallRequest: request_models.CallRequest, current_user):
+    logger.info(f"start_call with startCallRequest {startCallRequest} called")
+    return user_dao.start_call(startCallRequest, current_user)
+
+def get_all_abilities():
+    logger.info(f"get all abilities called in manager")
+    return user_dao.get_all_abilities()
