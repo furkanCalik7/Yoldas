@@ -252,7 +252,7 @@ class WebRTCController {
   /// Hang up the call and perform necessary cleanup.
   ///
   /// [localVideo]: Renderer for local video.
-  Future<void> hangUp(RTCVideoRenderer localVideo) async {
+  Future<void> hangUp() async {
     disposeSubsciptions();
     CallHangup callHangup = CallHangup(callId: callId);
 
@@ -265,11 +265,11 @@ class WebRTCController {
     if (response.statusCode != 200) {
       throw Exception('Failed to hang up call');
     }
-    await _closePeerConnection(localVideo);
+    // await _closePeerConnection();
   }
 
-  Future<void> _closePeerConnection(RTCVideoRenderer localRenderer) async {
-    List<MediaStreamTrack> tracks = localRenderer.srcObject!.getTracks();
+  Future<void> _closePeerConnection() async {
+    List<MediaStreamTrack> tracks = localStream!.getTracks();
     tracks.forEach((track) {
       track.stop();
     });
@@ -386,7 +386,7 @@ class WebRTCController {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
       if (data["status"] == CallStatus.FINISHED) {
-        // _closePeerConnection(local);
+        _closePeerConnection();
         _moveToNextScreen();
       }
     });
