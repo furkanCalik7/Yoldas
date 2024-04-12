@@ -15,7 +15,8 @@ class CallMainFrame extends StatefulWidget {
 
 class _CallMainFrameState extends State<CallMainFrame> {
   String calleeName = "Callee Name";
-  WebRTCController webRTCController = WebRTCController();
+  late WebRTCController webRTCController;
+
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   IO.Socket? socket;
@@ -24,6 +25,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
 
   @override
   void initState() {
+    webRTCController = WebRTCController();
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     webRTCController
@@ -45,6 +47,8 @@ class _CallMainFrameState extends State<CallMainFrame> {
     _textEditingController.dispose();
     super.dispose();
   }
+
+  void moveToEvaluationScreen() {}
 
   // TODO; Delete later
   TextEditingController _textEditingController = TextEditingController();
@@ -93,6 +97,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
 
   @override
   Widget build(BuildContext context) {
+    webRTCController.setContext(context);
     return Scaffold(
       body: SafeArea(
         child: Stack(

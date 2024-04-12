@@ -2,13 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
+import 'package:frontend/controller/webrtc/dto/call_accept_response.dart';
+import 'package:frontend/controller/webrtc/dto/call_hangup.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
+import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
+import 'package:frontend/pages/evaluation_page.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
-import 'package:http/http.dart' as http;
 
 typedef void StreamStateCallback(MediaStream stream);
 
@@ -23,7 +28,6 @@ class WebRTCController {
       }
     ]
   };
-
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? remoteStream;
@@ -32,18 +36,25 @@ class WebRTCController {
   late CollectionReference callCollection;
   FirebaseFirestore db = FirebaseFirestore.instance;
   late String callId;
+  late BuildContext context;
 
   WebRTCController() {
     callCollection = db.collection('CallCollection');
   }
 
-  Future<void> startCall(RTCVideoRenderer remoteRenderer, String type) async {
+  /// Start a call with the given parameters.
+  ///
+  /// [remoteRenderer]: Renderer for remote video.
+  /// [type]: Type of call.
+  Future<CallRequestResponse> startCall(
+      RTCVideoRenderer remoteRenderer, String type) async {
     String accessToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
     print('(debug) Create PeerConnection with configuration: $configuration');
 
-    CallRequest callRequest = CallRequest(isQuickCall: true, category: type, isConsultancyCall: false);
+    CallRequest callRequest = CallRequest(
+        isQuickCall: true, category: type, isConsultancyCall: false);
 
     final response = await ApiManager.post(
       path: "/calls/call",
@@ -51,9 +62,11 @@ class WebRTCController {
       body: callRequest.toJson(),
     );
 
-    var callJson = jsonDecode(response.body);
-    callId = callJson["call_id"];
-    DocumentReference roomRef = callCollection.doc(callId);
+    CallRequestResponse callRequestResponse =
+        CallRequestResponse.fromJSON(jsonDecode(response.body));
+
+    callId = callRequestResponse.callID;
+    DocumentReference callRef = callCollection.doc(callRequestResponse.callID);
 
     peerConnection = await createPeerConnection(configuration);
 
@@ -64,7 +77,7 @@ class WebRTCController {
       peerConnection?.addTrack(track, localStream!);
     });
 
-    var callerCandidatesCollection = roomRef.collection('callerCandidates');
+    var callerCandidatesCollection = callRef.collection('callerCandidates');
 
     peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
       print('(debug) Got candidate: ${candidate.toMap()}');
@@ -75,10 +88,10 @@ class WebRTCController {
     await peerConnection!.setLocalDescription(offer);
     print('(debug) Created offer: $offer');
 
-    var roomSnapshot = await roomRef.get();
+    var roomSnapshot = await callRef.get();
     var data = roomSnapshot.data() as Map<String, dynamic>;
     data['caller']['signal'] = offer.toMap();
-    await roomRef.update(data);
+    await callRef.update(data);
     peerConnection?.onTrack = (RTCTrackEvent event) {
       print('(debug) Got remote track: ${event.streams[0]}');
 
@@ -87,7 +100,7 @@ class WebRTCController {
         remoteStream?.addTrack(track);
       });
     };
-    roomRef.snapshots().listen((snapshot) async {
+    callRef.snapshots().listen((snapshot) async {
       print('(debug) Got updated room: ${snapshot.data()}');
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -106,7 +119,7 @@ class WebRTCController {
       }
     });
     // Listen for remote Ice candidates below
-    roomRef.collection('calleeCandidates').snapshots().listen((snapshot) {
+    callRef.collection('calleeCandidates').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
           Map<String, dynamic> data = change.doc.data() as Map<String, dynamic>;
@@ -121,10 +134,17 @@ class WebRTCController {
         }
       });
     });
+    _registerFirestoreListeners();
+    return callRequestResponse;
   }
 
-  Future<void> acceptCall(RTCVideoRenderer remoteVideo, String roomId) async {
-    DocumentReference roomRef = callCollection.doc(roomId);
+  /// Accept an incoming call with the given parameters.
+  ///
+  /// [remoteVideo]: Renderer for remote video.
+  /// [roomId]: ID of the room.
+  Future<CallAcceptResponse> acceptCall(
+      RTCVideoRenderer remoteVideo, String roomId) async {
+    DocumentReference callRef = callCollection.doc(roomId);
     callId = roomId;
 
     print('(debug) Create PeerConnection with configuration: $configuration');
@@ -137,7 +157,7 @@ class WebRTCController {
     });
 
     // Code for collecting ICE candidates below
-    var calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+    var calleeCandidatesCollection = callRef.collection('calleeCandidates');
     peerConnection!.onIceCandidate = (RTCIceCandidate? candidate) {
       if (candidate == null) {
         print('(debug) onIceCandidate: complete!');
@@ -160,32 +180,33 @@ class WebRTCController {
       callID: roomId,
     );
 
-    http.Response response = await ApiManager.post(
+    final response = await ApiManager.post(
       path: "/calls/call/accept",
       bearerToken: await storage.read(key: "access_token"),
       body: callAccept.toJSON(),
     );
 
-    var signal = jsonDecode(response.body)['offer'];
+    var signal = jsonDecode(response.body)['signal'];
+    CallAcceptResponse callAcceptResponse =
+        CallAcceptResponse.fromJSON(jsonDecode(response.body));
     RTCSessionDescription offer = RTCSessionDescription(
       signal['sdp'],
       signal['type'],
     );
 
-    var roomSnapshot = await roomRef.get();
+    var roomSnapshot = await callRef.get();
     var data = roomSnapshot.data() as Map<String, dynamic>;
     await peerConnection?.setRemoteDescription(offer);
     peerConnection?.createAnswer().then((answer) async {
       peerConnection?.setLocalDescription(answer);
       data["callee"]["signal"] = answer.toMap();
-      await roomRef.update(data);
+      await callRef.update(data);
     });
 
     // Listening for remote ICE candidates below
-    roomRef.collection('callerCandidates').snapshots().listen((snapshot) {
+    callRef.collection('callerCandidates').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((document) {
         var data = document.doc.data() as Map<String, dynamic>;
-        print(data);
         print('(debug) Got new remote ICE candidate: $data');
         peerConnection!.addCandidate(
           RTCIceCandidate(
@@ -196,8 +217,14 @@ class WebRTCController {
         );
       });
     });
+    _registerFirestoreListeners();
+    return callAcceptResponse;
   }
 
+  /// Open user media for local and remote videos.
+  ///
+  /// [localVideo]: Renderer for local video.
+  /// [remoteVideo]: Renderer for remote video.
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
@@ -211,8 +238,26 @@ class WebRTCController {
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
 
+  /// Hang up the call and perform necessary cleanup.
+  ///
+  /// [localVideo]: Renderer for local video.
   Future<void> hangUp(RTCVideoRenderer localVideo) async {
-    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+    CallHangup callHangup = CallHangup(callId: callId);
+
+    final response = await ApiManager.post(
+      path: "/calls/call/hangup",
+      bearerToken: await storage.read(key: "access_token"),
+      body: callHangup.toJSON(),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to hang up call');
+    }
+    await _closePeerConnection(localVideo);
+  }
+
+  Future<void> _closePeerConnection(RTCVideoRenderer localRenderer) async {
+    List<MediaStreamTrack> tracks = localRenderer.srcObject!.getTracks();
     tracks.forEach((track) {
       track.stop();
     });
@@ -229,7 +274,7 @@ class WebRTCController {
     var callerCandidates = await callRef.collection('callerCandidates').get();
     callerCandidates.docs.forEach((document) => document.reference.delete());
 
-    await callRef.delete();
+    // await callRef.delete();
 
     localStream!.dispose();
     remoteStream?.dispose();
@@ -300,5 +345,30 @@ class WebRTCController {
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
+  }
+
+  void setContext(BuildContext context) {
+    this.context = context;
+  }
+
+  void _moveToNextScreen() {
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EvaluationPage(
+                  callId: callId,
+                )),
+        (route) => false);
+  }
+
+  void _registerFirestoreListeners() {
+    DocumentReference callRef = callCollection.doc(callId);
+    callRef.snapshots().listen((snapshot) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+      if (data["status"] == CallStatus.FINISHED) {
+        _moveToNextScreen();
+      }
+    });
   }
 }
