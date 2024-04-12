@@ -38,6 +38,14 @@ class WebRTCController {
   late String callId;
   late BuildContext context;
 
+  // Subsciptions
+  StreamSubscription<DocumentSnapshot<Object?>>? answerSubscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+      calleeCandidatesSubscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+      callerCandidatesSubscription;
+  StreamSubscription<DocumentSnapshot<Object?>>? hangupSubscription;
+
   WebRTCController() {
     callCollection = db.collection('CallCollection');
   }
@@ -100,7 +108,7 @@ class WebRTCController {
         remoteStream?.addTrack(track);
       });
     };
-    callRef.snapshots().listen((snapshot) async {
+    answerSubscription = callRef.snapshots().listen((snapshot) async {
       print('(debug) Got updated room: ${snapshot.data()}');
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -119,7 +127,8 @@ class WebRTCController {
       }
     });
     // Listen for remote Ice candidates below
-    callRef.collection('calleeCandidates').snapshots().listen((snapshot) {
+    calleeCandidatesSubscription =
+        callRef.collection('calleeCandidates').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
           Map<String, dynamic> data = change.doc.data() as Map<String, dynamic>;
@@ -204,7 +213,8 @@ class WebRTCController {
     });
 
     // Listening for remote ICE candidates below
-    callRef.collection('callerCandidates').snapshots().listen((snapshot) {
+    callerCandidatesSubscription =
+        callRef.collection('callerCandidates').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((document) {
         var data = document.doc.data() as Map<String, dynamic>;
         print('(debug) Got new remote ICE candidate: $data');
@@ -233,7 +243,8 @@ class WebRTCController {
         .getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
-    localStream = stream;
+    localStream = stream; 
+
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
@@ -242,6 +253,7 @@ class WebRTCController {
   ///
   /// [localVideo]: Renderer for local video.
   Future<void> hangUp(RTCVideoRenderer localVideo) async {
+    disposeSubsciptions();
     CallHangup callHangup = CallHangup(callId: callId);
 
     final response = await ApiManager.post(
@@ -278,6 +290,12 @@ class WebRTCController {
 
     localStream!.dispose();
     remoteStream?.dispose();
+  }
+
+  void disposeSubsciptions() {
+    answerSubscription?.cancel();
+    calleeCandidatesSubscription?.cancel();
+    callerCandidatesSubscription?.cancel();
   }
 
   void switchVideo() async {
@@ -359,14 +377,16 @@ class WebRTCController {
                   callId: callId,
                 )),
         (route) => false);
+    hangupSubscription?.cancel();
   }
 
   void _registerFirestoreListeners() {
-    DocumentReference callRef = callCollection.doc(callId);
-    callRef.snapshots().listen((snapshot) {
+    hangupSubscription =
+        callCollection.doc(callId).snapshots().listen((snapshot) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
       if (data["status"] == CallStatus.FINISHED) {
+        // _closePeerConnection(local);
         _moveToNextScreen();
       }
     });
