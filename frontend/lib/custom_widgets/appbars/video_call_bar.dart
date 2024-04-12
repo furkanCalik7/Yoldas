@@ -5,7 +5,7 @@ import 'package:frontend/custom_widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/pages/evaluation_page.dart';
 
-enum ButtonType { MIC, Video, Speaker, Camera, HangUp}
+enum ButtonType { MIC, Video, Speaker, Camera, HangUp }
 
 class TransparentVideoCallBar extends StatefulWidget {
   final Function(ButtonType, bool) onButtonStateChanged;
@@ -39,17 +39,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
   }
 
   void navigateToEvaluationPage() {
-    // end call
-    print("Call ended");
-
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const EvaluationPage(
-                  callId:
-                      "2w0KxysanozQK3mwfI7g", // this will be provided after call ends.
-                )),
-        (route) => false);
+    widget.onButtonStateChanged(ButtonType.HangUp, false);
   }
 
   void toggleSpeaker() {

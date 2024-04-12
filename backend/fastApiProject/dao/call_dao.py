@@ -1,8 +1,9 @@
 import logging
+from datetime import datetime
 
 from ..db_connection import firebase_auth
 from ..models.entity_models import Call, CallUser, Signal
-from ..shared.constants import CallUserType
+from ..shared.constants import CallUserType, CallStatus
 
 db = firebase_auth.connect_db()
 logger = logging.getLogger(__name__)
@@ -15,19 +16,17 @@ def register_call(call: Call) -> str:
     return call_col_ref[1].id
 
 
-def register_callee(call_id: str, callee: CallUser):
+def start_call(call_id: str, callee: CallUser):
     call_col_ref = db.collection("CallCollection").document(call_id)
     doc = call_col_ref.get()
     if doc.exists:
         call_dict = doc.to_dict()
         call_dict['callee'] = callee.model_dump()
+        call_dict['start_time'] = datetime.now()
+        call_dict['status'] = CallStatus.IN_CALL.name
         call_col_ref.set(call_dict)
     else:
         print(f"call {call_id} does not exist.")
-
-
-def update_signaling(call_id: str, call_user_type: CallUserType, signaling: dict) -> None:
-    pass
 
 
 def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
@@ -40,6 +39,14 @@ def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
         print(f"call {call_id} does not exist.")
 
 
-def get_phone_number_from_call(call_id: str, call_user_type: CallUserType) -> str:
-    pass
-
+def hangup_call(call_id: str):
+    call_col_ref = db.collection("CallCollection").document(call_id)
+    doc = call_col_ref.get()
+    if doc.exists:
+        call_dict = doc.to_dict()
+        call_dict['end_time'] = datetime.now()
+        call_dict['duration'] = (call_dict["end_time"].replace(tzinfo=None) - call_dict["start_time"].replace(tzinfo=None)).total_seconds()
+        call_dict['status'] = CallStatus.FINISHED.name
+        call_col_ref.set(call_dict)
+    else:
+        print(f"call {call_id} does not exist.")
