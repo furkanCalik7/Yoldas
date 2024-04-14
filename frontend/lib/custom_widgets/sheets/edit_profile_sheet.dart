@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/custom_switch.dart';
 import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/utility/secure_storage_manager.dart';
+import 'package:frontend/utility/types.dart';
 
 class EditProfileSheet extends StatefulWidget {
   const EditProfileSheet({super.key});
@@ -25,8 +27,12 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   String current_name = "";
   String current_phoneNumber = "";
   String current_password = "";
+  UserType? current_userType;
+  bool consultancy_status = false;
 
   String bearerToken = "";
+
+  bool somethingChanged = false;
 
   final newNameController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -43,6 +49,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
     bearerToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+    consultancy_status =
+        await SecureStorageManager.read(key: StorageKey.isConsultant) == "true";
+    current_userType = stringToUserType(
+        await SecureStorageManager.read(key: StorageKey.role) ?? "N/A");
 
     setState(() {});
   }
@@ -63,14 +73,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   }
 
   Future<void> _updateProfile() async {
-    await _getFieldsFromStorage();
-
     print("Current phone number: $current_phoneNumber");
 
     String newPassword = newPasswordController.text;
     String newName = newNameController.text;
-
-    bool somethingChanged = false;
 
     Map<String, dynamic> userUpdateObj = HashMap();
 
@@ -83,6 +89,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       userUpdateObj["password"] = newPassword;
       somethingChanged = true;
     }
+
+    userUpdateObj["isConsultant"] = consultancy_status;
 
     if (somethingChanged == false) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,6 +123,9 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       if (newName != "") {
         await SecureStorageManager.write(key: StorageKey.name, value: newName);
       }
+
+      await SecureStorageManager.write(
+          key: StorageKey.isConsultant, value: consultancy_status.toString());
 
       if (newPassword != "") {
         await SecureStorageManager.write(
@@ -176,6 +187,26 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
               return null;
             },
           ),
+          const SizedBox(height: 20),
+          if (current_userType == UserType.blind)
+            Row(
+              children: [
+                const Text(
+                  "Danışmanlık Durumu:",
+                  style: TextStyle(fontSize: 15),
+                ),
+                const SizedBox(width: 20),
+                CustomSwitch(
+                  value: consultancy_status,
+                  onChanged: (newValue) {
+                    setState(() {
+                      consultancy_status = newValue;
+                    });
+                    somethingChanged = true;
+                  },
+                ),
+              ],
+            ),
           const Spacer(),
           ButtonMain(
               text: "Profili Güncelle",

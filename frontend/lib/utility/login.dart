@@ -65,6 +65,8 @@ class Login {
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
           key: StorageKey.password, value: password);
+      await SecureStorageManager.write(
+          key: StorageKey.isConsultant, value: user['isConsultant'].toString());
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);
 
