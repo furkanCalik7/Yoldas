@@ -66,6 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
           key: StorageKey.password, value: password_controller.text);
+      await SecureStorageManager.write(
+          key: StorageKey.isConsultant, value: user['isConsultant'].toString());
+
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);
 
