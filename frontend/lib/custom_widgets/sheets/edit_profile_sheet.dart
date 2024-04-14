@@ -10,8 +10,8 @@ import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import 'package:frontend/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/utility/secure_storage_manager.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 
 class EditProfileSheet extends StatefulWidget {
   const EditProfileSheet({super.key});

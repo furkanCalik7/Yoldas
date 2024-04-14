@@ -54,10 +54,19 @@ dependencies:
   google_mlkit_text_recognition: ^0.11.0
   firebase_core: ^2.24.2
   firebase_auth: ^4.15.3
+  socket_io_client: ^2.0.3+1
+  flutter_webrtc: ^0.9.48+hotfix.1
+  rxdart: ^0.27.7
+  cloud_firestore: ^4.14.0
+
   tflite_v2: ^1.0.0
   flutter_vision: ^1.1.4
   simplytranslate: ^1.2.4
   flutter_beep: ^1.0.0
+  firebase_messaging: ^14.7.21
+  flutter_local_notifications: ^9.8.0+1
+  flutter_callkit_incoming: ^2.0.3
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

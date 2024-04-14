@@ -5,15 +5,15 @@ import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/custom_text_field.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/sms_code_page.dart';
-import 'package:frontend/utility/api_manager.dart';
-import 'package:frontend/utility/auth_behavior.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/auth_behavior.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:http/http.dart' as http;
-import 'package:frontend/utility/secure_storage_manager.dart';
-import 'package:frontend/custom_widgets/custom_text_field.dart';
+
 import '../custom_widgets/custom_phoneNumberInput.dart';
 import '../models/user_data.dart';
 
@@ -35,10 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   PhoneNumber number = PhoneNumber(isoCode: 'TR');
 
   Future _login(String phoneNumber) async {
-    String path = API_URL + "/users/login";
-
-    print(password_controller.text);
-    print(phoneNumber);
+    String path = "$API_URL/users/login";
 
     var response = await ApiManager.post(
       path: "/users/login",

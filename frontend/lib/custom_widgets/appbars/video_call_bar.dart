@@ -1,10 +1,17 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/pages/evaluation_page.dart';
 
+enum ButtonType { MIC, Video, Speaker, Camera, HangUp }
+
 class TransparentVideoCallBar extends StatefulWidget {
-  const TransparentVideoCallBar({Key? key}) : super(key: key);
+  final Function(ButtonType, bool) onButtonStateChanged;
+
+  const TransparentVideoCallBar({Key? key, required this.onButtonStateChanged})
+      : super(key: key);
 
   @override
   _TransparentVideoCallBarState createState() =>
@@ -32,17 +39,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
   }
 
   void navigateToEvaluationPage() {
-    // end call
-    print("Call ended");
-
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const EvaluationPage(
-                  callId:
-                      "2w0KxysanozQK3mwfI7g", // this will be provided after call ends.
-                )),
-        (route) => false);
+    widget.onButtonStateChanged(ButtonType.HangUp, false);
   }
 
   void toggleSpeaker() {
@@ -54,6 +51,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
       }
       isSpeakerOn = !isSpeakerOn;
     });
+    widget.onButtonStateChanged(ButtonType.Speaker, isSpeakerOn);
   }
 
   void toggleVideo() {
@@ -67,6 +65,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
       }
       isVideoOn = !isVideoOn;
     });
+    widget.onButtonStateChanged(ButtonType.Video, isVideoOn);
   }
 
   void toggleMic() {
@@ -80,6 +79,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
       }
       isMicOn = !isMicOn;
     });
+    widget.onButtonStateChanged(ButtonType.MIC, isMicOn);
   }
 
   void flipCamera() {
@@ -91,6 +91,7 @@ class _TransparentVideoCallBarState extends State<TransparentVideoCallBar> {
       }
       isCameraFront = !isCameraFront;
     });
+    widget.onButtonStateChanged(ButtonType.Camera, isCameraFront);
   }
 
   @override

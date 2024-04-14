@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
-import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
-import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 
@@ -15,7 +12,7 @@ class BlindHomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           TappableIcon(
@@ -26,7 +23,7 @@ class BlindHomeScreen extends StatelessWidget {
             size: 150,
             text: "Hızlı Arama",
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           TappableIcon(

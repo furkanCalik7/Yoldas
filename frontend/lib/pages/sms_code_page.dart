@@ -5,24 +5,23 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utility/api_manager.dart';
-import 'package:frontend/utility/secure_storage_manager.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/text_widgets/text_container.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
-import 'package:frontend/utility/auth_behavior.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/auth_behavior.dart';
+import 'package:frontend/util/secure_storage.dart';
+import 'package:frontend/util/types.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:vibration/vibration.dart';
 
 import '../config.dart';
-import '../models/user_data.dart';
 import '../firebase_options.dart';
+import '../models/user_data.dart';
 
 class SMSCodePage extends StatefulWidget {
   static const String routeName = "/pin_code_verification_screen";

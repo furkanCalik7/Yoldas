@@ -3,9 +3,6 @@ import "package:flutter/material.dart";
 import "package:frontend/controller/base_controller.dart";
 import "package:get/get.dart";
 import "package:vibration/vibration.dart";
-import "dart:io";
-
-import "../controller/gpt_controller.dart";
 
 class AIModelView extends StatefulWidget {
   const AIModelView(

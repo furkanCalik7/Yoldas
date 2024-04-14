@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
-import 'package:frontend/utility/secure_storage_manager.dart';
+import 'package:frontend/util/secure_storage_manager.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password_screen.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:frontend/utility/types.dart';
+import 'package:frontend/util/types.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

@@ -1,16 +1,14 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/config.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_dropdown.dart';
 import 'package:frontend/custom_widgets/custom_listView.dart';
-import 'package:frontend/utility/secure_storage_manager.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage_manager.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/utility/api_manager.dart';
 
 class AbilitiesPage extends StatefulWidget {
   const AbilitiesPage({super.key});
