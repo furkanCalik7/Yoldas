@@ -166,7 +166,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
         children: [
           const Text(
             "Güncellemek istediğiniz alanları doldurunuz",
-            style: TextStyle(fontSize: 15),
+            style: TextStyle(
+              fontSize: 15,
+              color: textColorLight,
+            ),
           ),
           const SizedBox(height: 20),
           CustomTextFormField(
@@ -176,6 +179,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
             validator: (value) {
               return null;
             },
+            hintText: "Ad Soyad",
           ),
           const SizedBox(height: 20),
           CustomTextFormField(
@@ -186,6 +190,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
             validator: (value) {
               return null;
             },
+            hintText: "Telefon Numarası",
           ),
           const SizedBox(height: 20),
           if (current_userType == UserType.blind)
@@ -193,7 +198,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
               children: [
                 const Text(
                   "Danışmanlık Durumu:",
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: textColorLight,
+                  ),
                 ),
                 const SizedBox(width: 20),
                 CustomSwitch(

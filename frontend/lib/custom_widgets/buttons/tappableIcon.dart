@@ -8,8 +8,8 @@ class TappableIcon extends StatelessWidget {
       required this.action,
       required this.iconData,
       required this.size,
-      this.textColor = Colors.white,
-      this.iconColor = tappableIconColor,
+      this.textColor = textColorLight,
+      this.iconColor = secondaryColor,
       this.text = ""});
 
   final IconData iconData;
@@ -22,38 +22,32 @@ class TappableIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        child: Container(
-          height: size * 1.6,
-          padding: EdgeInsets.all(size / 10),
-          decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: gradiendColor2.withOpacity(0.8),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3), // changes position of shadow
-                ),
-              ],
-              color: iconColor,
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          child: Column(
-            children: [
-              Text(
-                text,
-                style: GoogleFonts.robotoSlab(
-                    color: textColor,
-                    fontSize: size / 5,
-                    fontWeight: FontWeight.bold),
-              ),
-              Icon(
-                iconData,
-                size: size,
-              ),
-            ],
-          ),
+      child: Container(
+        height: size * 1.6,
+        padding: EdgeInsets.all(size / 10),
+        decoration: BoxDecoration(
+            color: iconColor,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Column(
+          children: [
+            Text(
+              text,
+              style: GoogleFonts.robotoSlab(
+                  color: textColor,
+                  fontSize: size / 5,
+                  fontWeight: FontWeight.bold),
+            ),
+            Icon(
+              iconData,
+              size: size,
+              color: textColorLight,
+            ),
+          ],
         ),
-        onTap: () {
-          action();
-        });
+      ),
+      onTap: () {
+        action();
+      },
+    );
   }
 }

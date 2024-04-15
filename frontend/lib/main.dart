@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/currency_recognition_camera_view.dart';
+import 'package:frontend/pages/evaluation_page.dart';
 import 'package:frontend/pages/initial_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/notification_screen.dart';
@@ -46,8 +47,7 @@ void main() async {
             TextRecognitionCameraView(),
         CurrencyRecognitionCameraView.routeName: (context) =>
             CurrencyRecognitionCameraView(),
-        VolunteerSearchScreen.routeName: (context) =>
-            VolunteerSearchScreen(),
+        VolunteerSearchScreen.routeName: (context) => VolunteerSearchScreen(),
         NotificationScreen.routeName: (context) => const NotificationScreen(),
       },
     ),

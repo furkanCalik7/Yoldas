@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class CustomListView extends StatefulWidget {
   final List<String> list;
@@ -21,15 +22,18 @@ class _CustomListViewState extends State<CustomListView> {
       itemCount: widget.list.length,
       itemBuilder: (context, index) {
         return Container(
-          margin: EdgeInsets.only(bottom: 10),
+          margin: EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            color: secondaryColor,
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ListTile(
-            title: Text(widget.list[index]),
+            title: Text(
+              widget.list[index],
+              style: TextStyle(color: textColorLight),
+            ),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
+              icon: Icon(Icons.cancel, color: Colors.white),
               onPressed: () {
                 setState(() {
                   widget.onDelete(index);

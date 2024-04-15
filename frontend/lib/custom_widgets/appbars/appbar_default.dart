@@ -14,8 +14,9 @@ class AppbarDefault extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: const TextHead(
         line: "YOLDAS",
+        size: 35,
       ),
-      backgroundColor: defaultButtonColor,
+      backgroundColor: secondaryColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(0),

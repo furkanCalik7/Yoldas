@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class TextHead extends StatelessWidget {
-  const TextHead({super.key, required this.line});
+  const TextHead({super.key, required this.line, this.size = 60});
+
+  final String line;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      line,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.libreBaskerville(
+        fontSize: size,
+        fontWeight: FontWeight.bold,
+        color: textColorLight,
+      ),
+    );
+  }
+}
+
+class AppBarText extends StatelessWidget {
+  const AppBarText({super.key, required this.line});
 
   final String line;
 
@@ -11,9 +32,10 @@ class TextHead extends StatelessWidget {
     return Text(
       line,
       textAlign: TextAlign.center,
-      style: GoogleFonts.wendyOne(
-        fontSize: 60,
+      style: GoogleFonts.roboto(
+        fontSize: 30,
         fontWeight: FontWeight.bold,
+        color: textColorLight,
       ),
     );
   }
@@ -55,6 +77,7 @@ class SubTitleText extends StatelessWidget {
       style: GoogleFonts.russoOne(
         fontSize: 50,
         fontWeight: FontWeight.bold,
+        color: textColorLight,
       ),
     );
   }

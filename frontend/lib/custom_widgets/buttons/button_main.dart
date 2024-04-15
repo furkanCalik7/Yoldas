@@ -10,7 +10,7 @@ class ButtonMain extends StatelessWidget {
       this.height = 40,
       this.width = 200,
       this.fontSize = 0.0,
-      this.buttonColor = defaultButtonColor});
+      this.buttonColor = tertiaryColor});
 
   final String text;
   final Function action;
@@ -45,7 +45,7 @@ class ButtonMain extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: textColorDark,
           ),
         ),
       ),
