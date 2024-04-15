@@ -187,6 +187,14 @@ def start_call(startCallRequest: request_models.CallRequest, current_user):
     logger.info(f"start_call with startCallRequest {startCallRequest} called")
     return user_dao.start_call(startCallRequest, current_user)
 
+
+# Get All Abilities endpoint
 def get_all_abilities():
     logger.info(f"get all abilities called in manager")
     return user_dao.get_all_abilities()
+
+
+# Send Complaint endpoint
+def send_complaint(complaintRequest, current_user):
+    logger.info(f"send_complaint with complaintRequest {complaintRequest} called")
+    return user_dao.send_complaint(complaintRequest, current_user)
