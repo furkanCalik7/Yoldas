@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 typedef void StreamStateCallback(MediaStream stream);
@@ -23,6 +25,12 @@ class Signaling {
   String? roomId;
   String? currentRoomText;
   StreamStateCallback? onAddRemoteStream;
+
+  // Subsciptions
+  late StreamSubscription<DocumentSnapshot<Object?>> answerSubscription;
+  late StreamSubscription<QuerySnapshot<Map<String, dynamic>>> calleeCandidatesSubscription;
+  late StreamSubscription<QuerySnapshot<Map<String, dynamic>>> callerCandidatesSubscription;
+  
 
   Future<String> createRoom(RTCVideoRenderer remoteRenderer) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -71,7 +79,7 @@ class Signaling {
     };
 
     // Listening for remote session description below
-    roomRef.snapshots().listen((snapshot) async {
+    answerSubscription = roomRef.snapshots().listen((snapshot) async {
       print('(debug) Got updated room: ${snapshot.data()}');
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -89,7 +97,7 @@ class Signaling {
     // Listening for remote session description above
 
     // Listen for remote Ice candidates below
-    roomRef.collection('calleeCandidates').snapshots().listen((snapshot) {
+    calleeCandidatesSubscription = roomRef.collection('calleeCandidates').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
           Map<String, dynamic> data = change.doc.data() as Map<String, dynamic>;
@@ -166,7 +174,7 @@ class Signaling {
       // Finished creating SDP answer
 
       // Listening for remote ICE candidates below
-      roomRef.collection('callerCandidates').snapshots().listen((snapshot) {
+      callerCandidatesSubscription = roomRef.collection('callerCandidates').snapshots().listen((snapshot) {
         snapshot.docChanges.forEach((document) {
           var data = document.doc.data() as Map<String, dynamic>;
           print(data);

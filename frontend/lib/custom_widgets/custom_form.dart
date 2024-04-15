@@ -101,7 +101,7 @@ class _CustomFormState extends State<CustomForm> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: formColor,
+          color: secondaryColor,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
@@ -170,7 +170,7 @@ class _CustomFormState extends State<CustomForm> {
                           )));
                 }
               },
-              text: 'Submit',
+              text: 'Kayıt Ol',
             )
           ],
         ),

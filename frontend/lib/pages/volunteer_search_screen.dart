@@ -30,7 +30,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
       vsync: this,
       duration: Duration(seconds: 4),
     );
-    _rotationAnimation = Tween<double>(begin: math.pi / 16, end: -math.pi / 16)
+    _rotationAnimation = Tween<double>(begin: math.pi / 32, end: -math.pi / 32)
         .animate(_animationController);
     _positionAnimation = Tween<Offset>(
       begin: Offset(0, 0),
@@ -53,7 +53,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[100],
+      backgroundColor: primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -63,15 +63,15 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               builder: (context, child) {
                 return Transform.translate(
                   offset: Offset(
-                    math.cos(_rotationAnimation.value * 4) * _radius,
-                    math.sin(_rotationAnimation.value * 4) * _radius,
+                    math.cos(_rotationAnimation.value * 8) * _radius,
+                    math.sin(_rotationAnimation.value * 8) * _radius,
                   ),
                   child: RotationTransition(
                       turns: _rotationAnimation,
                       child: Image.asset(
                         "assets/search_icon.png",
-                        width: 125,
-                        height: 125,
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        height: MediaQuery.of(context).size.width * 0.75,
                       )),
                 );
               },
@@ -79,10 +79,17 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
             SizedBox(height: 40),
             Text(
               'Uygun gönüllü aranıyor...',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: textColorLight,
+              ),
             ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+            ),
+
             // add hang up button
-            SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);

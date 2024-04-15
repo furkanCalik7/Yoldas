@@ -13,6 +13,7 @@ class Login {
   static Future<void> tryLoginWithoutSMSVerification(
       BuildContext context) async {
     // for test purposes
+    // TODO: remove please
     await Future.delayed(Duration(seconds: 1));
 
     // String path = "$API_URL/users/login";
@@ -38,12 +39,8 @@ class Login {
     var response = await ApiManager.post(
       path: "/users/login",
       body: {
-        'grant_type': '',
         'username': phoneNumber,
         'password': password,
-        'scope': '',
-        'client_id': '',
-        'client_secret': '',
       },
       contentType: 'application/x-www-form-urlencoded',
     );

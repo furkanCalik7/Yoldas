@@ -66,6 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
           key: StorageKey.phone_number, value: user['phone_number']);
       await SecureStorageManager.write(
           key: StorageKey.password, value: password_controller.text);
+      await SecureStorageManager.write(
+          key: StorageKey.isConsultant, value: user['isConsultant'].toString());
+
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);
 
@@ -128,7 +131,9 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: formColor, borderRadius: BorderRadius.circular(20)),
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(0),
+                ),
                 child: Column(
                   children: [
                     Column(
@@ -138,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Telefon Numarası",
                           style: TextStyle(
                             fontSize: 20,
+                            color: textColorLight,
                           ),
                         ),
                         customPhoneNumberInput,
@@ -146,7 +152,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -154,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Şifre",
                           style: TextStyle(
                             fontSize: 20,
+                            color: textColorLight,
                           ),
                         ),
                         CustomTextFormField(
@@ -170,40 +176,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    ButtonMain(
-                        text: "Giriş Yap",
-                        action: () {
-                          String phoneNumber =
-                              customPhoneNumberInput.getPhoneNumber();
-                          _login(phoneNumber);
-                        })
-
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     formKey.currentState?.validate();
-                    //   },
-                    //   child: Text('Validate'),
-                    // ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     getPhoneNumber('+15417543010');
-                    //   },
-                    //   child: Text('Update'),
-                    // ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     formKey.currentState?.save();
-                    //   },
-                    //   child: Text('Save'),
-                    // ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(
+              height: 30,
+            ),
+            ButtonMain(
+              text: "Giriş Yap",
+              action: () {
+                String phoneNumber = customPhoneNumberInput.getPhoneNumber();
+                _login(phoneNumber);
+              },
+            )
           ],
         ),
       ),

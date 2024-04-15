@@ -17,12 +17,11 @@ const List<String> models = [
 const List<IconData> icons = [
   Icons.money,
   Icons.text_fields,
-  Icons.file_copy,
+  Icons.document_scanner,
   Icons.image,
 ];
 
 class AIModelSelectionPage extends StatelessWidget {
-
   int selectedIndex = 0;
 
   void navigateToModel(context, index) {
@@ -51,13 +50,14 @@ class AIModelSelectionPage extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => AIModelView(
-              controller: GPTController(prompt: 'Belgedeki içeriği özetleyecek bir şekilde '
-                  'açıklayın, içerikte bulunan önemli detayları aktarın. Sunulan bilgilerin kapsamlı'
-                  ' bir özetini sağlayarak tüm önemli noktaların doğru bir şekilde iletilmesini sağlayın. '
-                  'Ayrıca, belgenin düzenini ve biçimlendirmesini açıklayarak yapısını'
-                  ' anlamaya yardımcı olun. Fatura ve fiş gibi belgelerde bulunan toplam tutar'
-                  ' gibi önemli sayıları doğru bir şekilde belirtin.'
-                  ' Resimde belge bulunmuyorsa sadece "Belge bulunamadı" yazın.'),
+              controller: GPTController(
+                  prompt: 'Belgedeki içeriği özetleyecek bir şekilde '
+                      'açıklayın, içerikte bulunan önemli detayları aktarın. Sunulan bilgilerin kapsamlı'
+                      ' bir özetini sağlayarak tüm önemli noktaların doğru bir şekilde iletilmesini sağlayın. '
+                      'Ayrıca, belgenin düzenini ve biçimlendirmesini açıklayarak yapısını'
+                      ' anlamaya yardımcı olun. Fatura ve fiş gibi belgelerde bulunan toplam tutar'
+                      ' gibi önemli sayıları doğru bir şekilde belirtin.'
+                      ' Resimde belge bulunmuyorsa sadece "Belge bulunamadı" yazın.'),
               title: "Belge Tanıma",
             ),
           ),
@@ -80,8 +80,6 @@ class AIModelSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     selectedIndex = 0;
 
-
-
     CustomSwiper customSwiper = CustomSwiper(
       titles: models,
       icons: icons,
@@ -90,25 +88,27 @@ class AIModelSelectionPage extends StatelessWidget {
       },
     );
 
-    return Column(
+    return Container(
+      margin: const EdgeInsets.all(20),
+      child: Column(
         children: [
-          Container(
-            height: 350,
-            child: customSwiper,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.1,
           ),
+          customSwiper,
           const SizedBox(
             height: 50,
           ),
           ButtonMain(
             text: "Başlat",
+            height: MediaQuery.of(context).size.height * 0.075,
+            width: MediaQuery.of(context).size.width * 0.5,
             action: () {
               navigateToModel(context, selectedIndex);
             },
-            height: 100,
-            width: 350,
-            fontSize: 40,
           ),
         ],
-      );
+      ),
+    );
   }
 }

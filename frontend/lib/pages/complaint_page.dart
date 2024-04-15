@@ -27,6 +27,7 @@ class ComplaintPage extends StatelessWidget {
                       "Şikayetinizi buraya yazabilirsiniz.",
                       style: TextStyle(
                         fontSize: 20,
+                        color: textColorLight,
                       ),
                     ),
                     const SizedBox(
