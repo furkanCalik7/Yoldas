@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..models import entity_models, request_models
@@ -8,7 +8,6 @@ from ..services import user_manager
 import logging
 
 router = APIRouter(prefix="/users", )
-from firebase_admin import auth
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -18,6 +17,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 async def get_user_role(current_user_role: Annotated[entity_models.User, Depends(user_manager.get_current_user_role)]):
     logger.info(f"get_user_role for user with phoneNumber {entity_models.User.uid} called")
     return current_user_role
+
 
 @router.get("/get_user_by_phone_number/{phone_number}")
 async def get_user_by_phone_number(phone_number: str):
@@ -37,10 +37,28 @@ async def get_user_by_rating_average(low: int, high: int):
     return user_manager.get_user_by_rating_average(low, high)
 
 
-@router.post("/send_feedback/")
+@router.post("/send_feedback")
 async def send_feedback(feedbackRequest: request_models.FeedbackRequest,
                         current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     return user_manager.send_feedback(feedbackRequest, current_user)
+
+
+@router.post("/send_complaint")
+async def send_complaint(complaintRequest: request_models.ComplaintRequest,
+                         current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    return user_manager.send_complaint(complaintRequest, current_user)
+
+
+@router.post("/start_call")
+async def start_call(startCallRequest: request_models.StartCallRequest,
+                     current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    return user_manager.start_call(startCallRequest, current_user)
+
+
+@router.get("/get_all_abilities")
+async def get_all_abilities():
+    logger.info(f"get_all_abilities called")
+    return user_manager.get_all_abilities()
 
 
 @router.post("/register")
@@ -54,16 +72,9 @@ async def delete_user(user_id: str):
     logger.info(f"delete_user with user_id {user_id} called")
     return user_manager.delete_user(user_id)
 
-@router.put("/update/{user_id}")
-async def update_user(update_user_request: request_models.UpdateUserRequest,
-                      current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
-    #logger.info(f"update_user with user_id {current_user["phone_number"]} called")
-    return user_manager.update_user_request(current_user["phone_number"], update_user_request)
-
-
 @router.post("/login")
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
     return user_manager.login_for_access_token(form_data)
 
@@ -72,3 +83,9 @@ async def login_for_access_token(
 async def get_all_abilities():
     logger.info(f"get_all_abilities called")
     return user_manager.get_all_abilities()
+
+@router.put("/update/{user_id}")
+async def update_user(update_user_request: request_models.UpdateUserRequest,
+                      current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    logger.info(f"update_user with user_id {current_user["phone_number"]} called")
+    return user_manager.update_user_request(current_user["phone_number"], update_user_request)

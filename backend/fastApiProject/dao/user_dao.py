@@ -227,6 +227,34 @@ def get_all_abilities():
     return doc.to_dict()
 
 
+def send_complaint(complaintRequest, current_user):
+    doc = db.collection("CallCollection").document(complaintRequest.callID).get()
+    if not doc.exists:
+        logger.error(f"Call with {complaintRequest.callID} not found")
+        raise HTTPException(status_code=404, detail=f"Call with {complaintRequest.callID} not found")
+
+    #TODO: validate here once call object is finalized.
+    call = doc.to_dict()
+
+    if call["caller"]["phone_number"] == current_user["phone_number"]:
+        phone_number_of_complaint_receiver = call["callee"]["phone_number"]
+    else:
+        logger.error(f"User with phone number {current_user['phone_number']} is not the caller of the call")
+        raise HTTPException(status_code=400, detail=f"User with phone number {current_user['phone_number']} is not the caller of the call")
+
+    # Get the user object which the complaint is about
+    doc_ref = db.collection("UserCollection").document(phone_number_of_complaint_receiver)
+    doc = doc_ref.get()
+    if not doc.exists:
+        logger.error(f"User with phone number {phone_number_of_complaint_receiver} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {phone_number_of_complaint_receiver} not found")
+
+    user = User.model_validate(doc.to_dict())
+    # append the complaint to the list.
+    user.complaints.append(complaintRequest.complaint)
+    doc_ref.set(user.model_dump())
+    return user.model_dump()
+
 def get_fcm_tokens(phone_number: str):
     fcm_tokens = db.collection("UserCollection").document(phone_number).collection("fcm_tokens")
     return [token_ref.to_dict() for token_ref in fcm_tokens.get()]
