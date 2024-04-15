@@ -41,6 +41,10 @@ def register_user(user: entity_models.User):
     return user_dao.register_user(user)
 
 
+def delete_user(user_id):
+    return user_dao.delete_user(user_id)
+
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     logger.info(f"create_access_token with data {data} called")
     to_encode = data.copy()
