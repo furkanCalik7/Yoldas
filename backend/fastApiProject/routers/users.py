@@ -67,6 +67,10 @@ async def register_user(user: entity_models.User):
     # If there is a missing or wrong input, it returns appropriate response.
     return user_manager.register_user(user)
 
+@router.delete("/delete/{user_id}")
+async def delete_user(user_id: str):
+    logger.info(f"delete_user with user_id {user_id} called")
+    return user_manager.delete_user(user_id)
 
 @router.post("/login")
 async def login_for_access_token(
@@ -74,6 +78,11 @@ async def login_for_access_token(
 ):
     return user_manager.login_for_access_token(form_data)
 
+
+@router.get("/get_all_abilities}")
+async def get_all_abilities():
+    logger.info(f"get_all_abilities called")
+    return user_manager.get_all_abilities()
 
 @router.put("/update/{user_id}")
 async def update_user(update_user_request: request_models.UpdateUserRequest,

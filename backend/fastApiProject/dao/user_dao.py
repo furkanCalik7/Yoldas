@@ -33,6 +33,17 @@ def register_user(user: User):
     return {"user": user.model_dump()}
 
 
+def delete_user(user_id):
+    doc_ref = db.collection("UserCollection").document(user_id)
+    doc = doc_ref.get()
+    if not doc.exists:
+        logger.error(f"User with id {user_id} not found")
+        raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
+    doc_ref.delete()
+    logger.info(f"User with id {user_id} successfully deleted")
+    return {"message": "User with phone number" + user_id + " successfully deleted"}
+
+
 def send_feedback(feedbackRequest, current_user: User):
     logger.info(f"send_feedback with feedbackRequest {feedbackRequest} called in DAO")
     doc = db.collection("CallCollection").document(feedbackRequest.callID).get()
