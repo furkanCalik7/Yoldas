@@ -11,10 +11,8 @@ class BlindHomeScreen extends StatelessWidget {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           TappableIcon(
             action: () {
               Navigator.pushNamed(context, CallMainFrame.routeName);
@@ -22,9 +20,6 @@ class BlindHomeScreen extends StatelessWidget {
             iconData: Icons.search,
             size: 150,
             text: "Hızlı Arama",
-          ),
-          const SizedBox(
-            height: 50,
           ),
           TappableIcon(
             action: () {

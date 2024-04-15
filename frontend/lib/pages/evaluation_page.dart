@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/widgets.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
@@ -85,10 +86,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
         title: "Değerlendirme",
       ),
       body: Container(
+        padding: const EdgeInsets.all(20.0),
         decoration: getBackgroundDecoration(),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               const SubTitleText(line: "Görüşmeyi Değerlendirin"),
               RatingBar.builder(
@@ -103,7 +105,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 itemSize: 60.0,
                 itemBuilder: (context, _) => const Icon(
                   Icons.star,
-                  color: Colors.yellow,
+                  color: tertiaryColor,
+                  shadows: [Shadow(color: tertiaryColor, blurRadius: 20)],
                 ),
               ),
               Row(
@@ -131,8 +134,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
               ),
               ButtonMain(
                 text: "Şikayet Et",
-                height: 75,
                 fontSize: 30.0,
+                height: 75,
+                buttonColor: Colors.red,
                 action: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) => ComplaintPage()));

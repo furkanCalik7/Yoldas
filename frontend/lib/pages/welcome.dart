@@ -17,36 +17,40 @@ class Welcome extends StatelessWidget {
       body: Container(
         decoration: getBackgroundDecoration(),
         child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)),
-                margin: EdgeInsets.fromLTRB(0, 100, 0, 30),
-                child: Icon(
-                  Icons.blind,
-                  size: 200.0,
+          child: Center(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  decoration: BoxDecoration(
+                      color: primaryColor.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(20)),
+                  margin: EdgeInsets.fromLTRB(0, 100, 0, 20),
+                  child: Icon(
+                    Icons.blind,
+                    size: 200.0,
+                    color: tertiaryColor,
+                  ),
                 ),
-              ),
-              Center(
-                child: TextHead(line: "YOLDAS"),
-              ),
-              ButtonBig(
-                  text: "Giris Yap",
-                  action: () {
-                    Navigator.pushNamed(context, LoginScreen.routeName);
-                  }),
-              SizedBox(
-                height: 20.0,
-              ),
-              ButtonBig(
-                  text: "Kaydol",
-                  action: () {
-                    Navigator.pushNamed(context, OnboardingScreen.routeName);
-                  })
-            ],
+                TextHead(line: "YOLDAS"),
+                SizedBox(
+                  height: 50.0,
+                ),
+                ButtonBig(
+                    text: "Giris Yap",
+                    action: () {
+                      Navigator.pushNamed(context, LoginScreen.routeName);
+                    }),
+                SizedBox(
+                  height: 20.0,
+                ),
+                ButtonBig(
+                    text: "Kaydol",
+                    action: () {
+                      Navigator.pushNamed(context, OnboardingScreen.routeName);
+                    })
+              ],
+            ),
           ),
         ),
       ),

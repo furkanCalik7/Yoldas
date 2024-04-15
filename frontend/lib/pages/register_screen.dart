@@ -17,22 +17,19 @@ class RegisterScreen extends StatelessWidget {
       appBar: const AppbarDefault(),
       body: Container(
         decoration: getBackgroundDecoration(),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const TextContainer(text: "Kayıt Ol"),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  margin: const EdgeInsets.all(20),
-                  child: CustomForm(
-                    userType: userType,
-                  ),
+        height: double.infinity,
+        width: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const TextContainer(text: "Kayıt Ol"),
+              Container(
+                margin: const EdgeInsets.all(20),
+                child: CustomForm(
+                  userType: userType,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

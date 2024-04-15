@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class CustomDropdown extends StatefulWidget {
   final List<String> items;
@@ -34,8 +35,12 @@ class _CustomDropdownState extends State<CustomDropdown> {
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.symmetric(horizontal: 10),
       ),
+      dropdownColor: primaryColor,
       value: selectedValue,
-      hint: Text(widget.hintText),
+      hint: Text(
+        widget.hintText,
+        style: const TextStyle(color: textColorLight),
+      ),
       onChanged: (newValue) {
         setState(() {
           selectedValue = newValue!;
@@ -45,7 +50,10 @@ class _CustomDropdownState extends State<CustomDropdown> {
       items: widget.items.map((item) {
         return DropdownMenuItem(
           value: item,
-          child: Text(item),
+          child: Text(
+            item,
+            style: const TextStyle(color: textColorLight),
+          ),
         );
       }).toList(),
     );

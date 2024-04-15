@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField(
@@ -25,10 +26,16 @@ class CustomTextFormField extends StatelessWidget {
       enabled: enabled,
       controller: controller,
       obscureText: obscureText,
+      style: const TextStyle(
+        color: textColorLight,
+      ),
       decoration: InputDecoration(
-        prefixIcon: Icon(icon),
+        prefixIcon: Icon(
+          icon,
+          color: textColorLight,
+        ),
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.black54),
+        hintStyle: TextStyle(color: textColorLight.withOpacity(0.5)),
       ),
       validator: (value) => validator(value),
       onChanged: (value) {
