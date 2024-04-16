@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/pages/abililities_page.dart';
 
 import '../custom_widgets/text_widgets/text_container.dart';
+import '../util/secure_storage.dart';
 
-class VolunteerHomeScreen extends StatelessWidget {
-  final String username;
-  final List<String> categories;
-  final DateTime joinDate;
+class VolunteerHomeScreen extends StatefulWidget {
 
-  // Named constructor
-  VolunteerHomeScreen(
-      String username,
-      DateTime date,
-      List<String> categories,
-      )   : this.username = username,
-        this.joinDate = date,
-        this.categories = categories;
+  @override
+  State<VolunteerHomeScreen> createState() => _VolunteerHomeScreenState();
+}
+
+class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
+
+  String username = "";
+  List<String> categories = [];
+  String phoneNumber = "";
+
+  getUserInfo() async{
+
+    username = await SecureStorageManager.read(key: StorageKey.name) ?? "";
+    categories = await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
+    phoneNumber = await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getUserInfo();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       child: Column(
         children: [
-          TextContainer(text: "Hos Geldiniz"),
+          Image.asset("assets/home_image.png",),
           Container(
-            height: 150,
+            height: 100,
             width: 300,
             decoration: BoxDecoration(
               color: textContainerColor, borderRadius: BorderRadius.circular(30),
@@ -34,21 +50,21 @@ class VolunteerHomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    username,
+                    "Merhaba $username",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 36,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
                     ),
+
                   ),
                   Text(
-                    "${joinDate.day}-${joinDate.month}-${joinDate.year} tarihinden beri üyesiniz",
+                    phoneNumber,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
                     ),
+
                   ),
                 ],
               ),
@@ -89,11 +105,11 @@ class VolunteerHomeScreen extends StatelessWidget {
                     ),
                   )).toList(),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
                 SizedBox(height: 20,),
-                ButtonMain(text: "Ekle/Kaldır", action: () {}, width: 250, height: 50, buttonColor: gradiendColor2,),
+                ButtonMain(text: "Ekle/Kaldır", action: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => AbilitiesPage()));
+                }, width: 250, height: 50, buttonColor: gradiendColor2,),
               ],
             ),
           )
