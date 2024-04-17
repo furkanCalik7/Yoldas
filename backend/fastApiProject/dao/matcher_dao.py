@@ -11,6 +11,25 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
+def find_potential_callees(CallRequest: request_models.CallRequest, current_user):
+    # check if user exists
+    doc = db.collection("UserCollection").document(current_user["phone_number"]).get()
+    if not doc.exists:
+        logger.error(f"User with phone number {CallRequest.phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {CallRequest.phone_number} not found")
+
+    # check which type of call is requested
+    # according to the type of call, find an appropriate user
+    num_of_calls = 5
+    if CallRequest.isConsultancyCall:
+        user_list = find_consultant_user(num_of_calls, current_user)
+    elif CallRequest.isQuickCall:
+        user_list = find_quick_call_user(num_of_calls, current_user)
+    else:
+        user_list = find_matching_ability_user(CallRequest, num_of_calls, current_user)
+    return user_list
+
+
 def find_consultant_user(num_of_calls: int, caller: User):
     # From UserCollection, get all users with isConsultant = True
     docs = (
@@ -21,6 +40,7 @@ def find_consultant_user(num_of_calls: int, caller: User):
     consultant_list = list(docs)
     if not consultant_list:
         logger.error(f"No consultant found")
+        ## Review note: returning here http exception seems wrong since this is a dao class - instead not found exception
         raise HTTPException(status_code=404, detail=f"No consultant found")
     # from the consultant_list, return num_of_calls number of users with the highest rating except the caller
     consultant_list = [User.model_validate(user.to_dict()) for user in consultant_list]

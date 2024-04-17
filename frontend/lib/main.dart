@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/currency_recognition_camera_view.dart';
 import 'package:frontend/pages/initial_screen.dart';
@@ -26,6 +27,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  print("API Location: $API_URL");
   runApp(
     MaterialApp(
       initialRoute: '/',

@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_callkit_incoming/entities/entities.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:frontend/main.dart';
-import 'package:frontend/pages/notification_screen.dart';
-import 'package:uuid/uuid.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:uuid/uuid.dart';
 
 String? currentUuid;
 
@@ -19,7 +16,7 @@ Future<void> showCallkitIncoming() async {
 
   final params = CallKitParams(
     id: uuid,
-    nameCaller: 'Görme Engelli',
+    nameCaller: 'Görme Engelli birisinin yardımıza ihtiyacı var.',
     appName: 'Callkit',
     avatar: 'assets/profile.jpg',
     type: 1,
@@ -29,8 +26,8 @@ Future<void> showCallkitIncoming() async {
     missedCallNotification: const NotificationParams(
       showNotification: false,
       isShowCallback: false,
-      subtitle: 'Missed call',
-      callbackText: 'Call back',
+      subtitle: 'Cevapsız çağrı',
+      callbackText: 'Geri ara',
     ),
     extra: <String, dynamic>{'userId': '1a2b3c4d'},
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
@@ -66,37 +63,29 @@ Future<void> showCallkitIncoming() async {
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   // TODO: call kit cantroller here
   print("Handling a background message: ${message.messageId}");
-  print("Title: ${message.notification?.title}");
-  print("Body: ${message.notification?.body}");
   print("Payload: ${message.data}");
   await showCallkitIncoming();
-
 }
 
 void handleMessage(RemoteMessage? message) async {
   // TODO: Call kit controller here
 
   print("Handling a message: ${message?.messageId}");
-  print("Title: ${message?.notification?.title}");
-  print("Body: ${message?.notification?.body}");
   print("Payload: ${message?.data}");
 }
 
-
-void handleFrondgroundMessage(RemoteMessage remoteMessage) async{
-
-      print("Handling a foreground message: ${remoteMessage.messageId}");
-      final notification = remoteMessage.notification;
-      if (notification == null) return;
-      await showCallkitIncoming();
-      // TODO: notification behavior here when the app is awake
+void handleFrondgroundMessage(RemoteMessage remoteMessage) async {
+  print("Handling a foreground message: ${remoteMessage.messageId}");
+  print("Handling a foreground message: ${remoteMessage.data}");
+  await showCallkitIncoming();
+  // TODO: notification behavior here when the app is awake
 }
 
 class NotificationHandler {
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _db = FirebaseFirestore.instance;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initializeNotifications(String phoneNumber) async {
     await _firebaseMessaging.requestPermission(provisional: true);
@@ -122,14 +111,13 @@ class NotificationHandler {
   Future initPushNotification() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
+      alert: false,
+      badge: false,
+      sound: false,
     );
 
     // If the app is not launch and the user launch app via notification,
     FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
-    // hatirlamiyourm
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     // If the app is in the background
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
@@ -142,26 +130,26 @@ class NotificationHandler {
       print("Event: ${event?.event}");
       switch (event!.event) {
         case Event.actionCallIncoming:
-        // TODO: received an incoming call
+          // TODO: received an incoming call
           break;
         case Event.actionCallStart:
           // TODO: started an outgoing call
           // TODO: show screen calling in Flutter
           break;
         case Event.actionCallAccept:
-        // TODO: accepted an incoming call
-        // TODO: show screen calling in Flutter
+          // TODO: accepted an incoming call
+          // TODO: show screen calling in Flutter
           print("Call accepted");
           break;
         case Event.actionCallDecline:
-        // TODO: declined an incoming call
+          // TODO: declined an incoming call
           print("Call declined");
           break;
         case Event.actionCallEnded:
-        // TODO: ended an incoming/outgoing call
+          // TODO: ended an incoming/outgoing call
           break;
         case Event.actionCallTimeout:
-        // TODO: missed an incoming call
+          // TODO: missed an incoming call
           // cancel the notification
           flutterLocalNotificationsPlugin.cancelAll();
           print("Notification canceled");
@@ -170,30 +158,30 @@ class NotificationHandler {
 
           break;
         case Event.actionCallCallback:
-        // only Android - click action `Call back` from missed call notification
+          // only Android - click action `Call back` from missed call notification
           break;
         case Event.actionCallToggleHold:
-        // only iOS
+          // only iOS
           break;
         case Event.actionCallToggleMute:
-        // only iOS
+          // only iOS
           break;
         case Event.actionCallToggleDmtf:
-        // only iOS
+          // only iOS
           break;
         case Event.actionCallToggleGroup:
-        // only iOS
+          // only iOS
           break;
         case Event.actionCallToggleAudioSession:
-        // only iOS
+          // only iOS
           break;
         case Event.actionDidUpdateDevicePushTokenVoip:
-        // only iOS
+          // only iOS
           break;
         case Event.actionCallCustom:
-        // for custom action
+          // for custom action
           break;
       }
-    } );
+    });
   }
 }

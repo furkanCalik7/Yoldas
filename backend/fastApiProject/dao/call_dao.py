@@ -16,6 +16,16 @@ def register_call(call: Call) -> str:
     return call_col_ref[1].id
 
 
+def get_call_status(call_id: str) -> CallStatus:
+    call_col_ref = db.collection("CallCollection").document(call_id)
+    doc = call_col_ref.get()
+    if doc.exists:
+        call_dict = doc.to_dict()
+        return CallStatus[call_dict["status"]]
+    else:
+        print(f"call {call_id} does not exist.")
+
+
 def start_call(call_id: str, callee: CallUser):
     call_col_ref = db.collection("CallCollection").document(call_id)
     doc = call_col_ref.get()
@@ -45,7 +55,8 @@ def hangup_call(call_id: str):
     if doc.exists:
         call_dict = doc.to_dict()
         call_dict['end_time'] = datetime.now()
-        call_dict['duration'] = (call_dict["end_time"].replace(tzinfo=None) - call_dict["start_time"].replace(tzinfo=None)).total_seconds()
+        call_dict['duration'] = (call_dict["end_time"].replace(tzinfo=None) - call_dict["start_time"].replace(
+            tzinfo=None)).total_seconds()
         call_dict['status'] = CallStatus.FINISHED.name
         call_col_ref.set(call_dict)
     else:

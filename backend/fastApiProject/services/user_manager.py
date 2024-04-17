@@ -185,7 +185,7 @@ def update_user_request(user_id, update_user_req_obj):
 # Start Call endpoint
 def start_call(startCallRequest: request_models.CallRequest, current_user):
     logger.info(f"start_call with startCallRequest {startCallRequest} called")
-    return user_dao.start_call(startCallRequest, current_user)
+    return user_dao.find_potential_callees(startCallRequest, current_user)
 
 def get_all_abilities():
     logger.info(f"get all abilities called in manager")

@@ -45,6 +45,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
     _textEditingController.dispose();
+    webRTCController.dispose();
     super.dispose();
   }
 

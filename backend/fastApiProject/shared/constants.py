@@ -1,13 +1,12 @@
 from enum import Enum
 
-CALL_ATTEMPT_COUNT = 10
-CALL_ATTEMPT_INTERVAL = 1  # seconds
-
 
 class CallStatus(Enum):
-    WAITING = "waiting"
-    IN_CALL = "in_call"
-    FINISHED = "finished"
+    INITIALIZED = "INITILIAZED"
+    SEARCHING_FOR_CALLEE = "SEARCHING_FOR_CALLEE"
+    IN_CALL = "IN_CALL"
+    FINISHED = "FINISHED"
+    CALLEE_NOT_FOUND = "CALLEE_NOT_FOUND"
 
 
 class CallUserType(Enum):

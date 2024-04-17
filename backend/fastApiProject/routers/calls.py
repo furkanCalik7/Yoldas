@@ -18,13 +18,10 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 @router.post("/call")
 async def call_request(_call_request: CallRequest,
                        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
-    phone_number = current_user["phone_number"]
-    call_id = call_manager.create_call(phone_number, _call_request.category)
-    # TODO: after the notification and make call mechnisim implemented, use this
-    # user_manager.start_call(_call_request, current_user)
+    call_id = call_manager.create_call(_call_request, current_user)
     return CallRequestResponse(
         call_id=call_id,
-        callee_name="tsetj"
+        callee_name="to be removed"
     )
 
 
@@ -37,7 +34,7 @@ async def call_accept(_call_accept: CallAccept,
     call_manager.accept_call(call_id, phone_number)
     return CallAcceptResponse(
         call_id=call_id,
-        caller_name="test_caller_name",
+        caller_name="to be removed",
         signal=signal
     )
 
