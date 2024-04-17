@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/notification_handler.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -25,13 +26,7 @@ class _VolunteerMainFrameState extends State<VolunteerMainFrame> {
 
   static List<Widget> _widgetOptions = <Widget>[
     Text("Nasıl kullanılır?"),
-    VolunteerHomeScreen("Furkan", DateTime.parse("2023-12-04"), [
-      "Aşçılık",
-      "Psikoloji",
-      "Botanik",
-      "Bilgisayar",
-      "Mühendislik",
-    ]),
+    VolunteerHomeScreen(),
     SettingsScreen(),
   ];
 
