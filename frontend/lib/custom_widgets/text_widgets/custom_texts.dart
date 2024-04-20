@@ -15,7 +15,6 @@ class TextHead extends StatelessWidget {
       textAlign: TextAlign.center,
       style: GoogleFonts.libreBaskerville(
         fontSize: size,
-        fontWeight: FontWeight.bold,
         color: textColorLight,
       ),
     );
@@ -31,10 +30,8 @@ class AppBarText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       line,
-      textAlign: TextAlign.center,
       style: GoogleFonts.roboto(
-        fontSize: 30,
-        fontWeight: FontWeight.bold,
+        fontSize: 25,
         color: textColorLight,
       ),
     );

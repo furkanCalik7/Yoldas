@@ -9,7 +9,7 @@ class TappableIcon extends StatelessWidget {
       required this.iconData,
       required this.size,
       this.textColor = textColorLight,
-      this.iconColor = secondaryColor,
+      this.buttonColor = secondaryColor,
       this.text = ""});
 
   final IconData iconData;
@@ -17,7 +17,7 @@ class TappableIcon extends StatelessWidget {
   final double size;
   final String text;
   final Color textColor;
-  final Color iconColor;
+  final Color buttonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +26,16 @@ class TappableIcon extends StatelessWidget {
         height: size * 1.6,
         padding: EdgeInsets.all(size / 10),
         decoration: BoxDecoration(
-            color: iconColor,
+            color: buttonColor,
             borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           children: [
             Text(
               text,
               style: GoogleFonts.robotoSlab(
-                  color: textColor,
-                  fontSize: size / 5,
-                  fontWeight: FontWeight.bold),
+                color: textColorLight,
+                fontSize: size / 5,
+              ),
             ),
             Icon(
               iconData,

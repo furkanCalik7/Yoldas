@@ -124,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.all(20),
         decoration: getBackgroundDecoration(),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const TextContainer(text: "Giris Yap"),
             Form(
