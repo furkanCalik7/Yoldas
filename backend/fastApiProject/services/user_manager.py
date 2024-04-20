@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from ..dao import user_dao
+from ..dao import user_dao, matcher_dao
 from ..models import entity_models, request_models
 from ..models.entity_models import TokenData
 import logging
@@ -189,7 +189,7 @@ def update_user_request(user_id, update_user_req_obj):
 # Start Call endpoint
 def start_call(startCallRequest: request_models.CallRequest, current_user):
     logger.info(f"start_call with startCallRequest {startCallRequest} called")
-    return user_dao.find_potential_callees(startCallRequest, current_user)
+    return matcher_dao.find_potential_callees(startCallRequest, current_user)
 
 
 # Get All Abilities endpoint

@@ -12,13 +12,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-def find_potential_callees(CallRequest: request_models.CallRequest, current_user, num_of_calls: int = 5,
+def find_potential_callees(CallRequest: request_models.CallRequest, current_user: User, num_of_calls: int = 5,
                            excluded_user_list=None):
-    # check if user exists
-    doc = db.collection("UserCollection").document(current_user["phone_number"]).get()
-    if not doc.exists:
-        logger.error(f"User with phone number {CallRequest.phone_number} not found")
-        raise HTTPException(status_code=404, detail=f"User with phone number {CallRequest.phone_number} not found")
     # check which type of call is requested, according to the type of call, find an appropriate user
     if CallRequest.isConsultancyCall:
         user_list = find_consultant_user(num_of_calls, current_user, excluded_user_list)
@@ -38,14 +33,11 @@ def find_consultant_user(num_of_calls: int, caller: User, excluded_user_list: li
         .stream()
     )
     consultant_list = list(docs)
+    consultant_list = [User.model_validate(user.to_dict()) for user in consultant_list]
+
     if not consultant_list:
         logger.error(f"No consultant found")
         raise KeyError(f"No consultant found")
-    # Overall point calculation:
-    # 1. AVG_RATING_WEIGHT of the overall point is the average rating of the consultant
-    # 2. CALL_RATIO_WEIGHT of the overall point is the number of calls the consultant has answered (no_of_calls_completed) divided by the total number of calls (no_of_calls_received)
-    #    2.1. If the consultant has not received any calls, the points are calculated as the average rating
-    # 3. COMPLAINT_WEIGHT of the (Complaint Count × NORMALIZATION_FACTOR / Total Calls)
 
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
@@ -56,32 +48,37 @@ def find_consultant_user(num_of_calls: int, caller: User, excluded_user_list: li
     if caller in consultant_list:
         consultant_list.remove(caller)
 
-    # Initialize the overall point of each consultant
-    user_point_dict: {User, int} = {user: 0 for user in consultant_list}
-
-    for user, point in user_point_dict.items():
+    # Initialize the overall point of each volunteer
+    user_point_dict: {str, (User, int)} = {}
+    for user in consultant_list:
+        user_point_dict[user.phone_number] = (user, 0)
+    for phone_number, (user, score) in user_point_dict.items():
         rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
         if user.no_of_calls_received == 0:
             call_ratio_point = CALL_RATIO_WEIGHT * user.avg_rating
         else:
             call_ratio_point = CALL_RATIO_WEIGHT * (
-                        user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-        complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                NORMALIZATION_FACTOR / user.no_of_calls_completed))
+                    user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
+        if user.no_of_calls_completed == 0:
+            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
+        else:
+            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
+                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
         overall_point = rating_point + call_ratio_point - complaint_point
 
-        user_point_dict.user = overall_point
+        user_point_dict[phone_number] = (user, overall_point)
 
-    # sort the dict of consultants by overall point
-    user_point_dict = dict(sorted(user_point_dict.items(), key=lambda item: item[1], reverse=True))
+    # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
+    # We want the int value to sort the list
+    consultant_list = sorted(user_point_dict.items(), key=lambda item: item[1][1], reverse=True)
 
+    consultant_list = [user for user, score in consultant_list]
     # if there are less than num_of_calls consultants, return all of them
     if len(consultant_list) < num_of_calls:
-        return user_point_dict.keys()
+        return consultant_list
 
-    return user_point_dict[:num_of_calls]
-
+    return consultant_list[:num_of_calls]
 
 def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=None):
     # get avg_rating and return num_of_calls number of users with the highest rating except the caller
@@ -92,11 +89,13 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
         .stream()
     )
     volunteer_list = list(docs)
+
+    volunteer_list = [User.model_validate(user.to_dict()) for user in volunteer_list]
+
     if not volunteer_list:
         logger.error(f"No volunteer found")
         raise KeyError(f"No volunteer found")
 
-    volunteer_list = [User.model_validate(user.to_dict()) for user in volunteer_list]
     if caller in volunteer_list:
         volunteer_list.remove(caller)
 
@@ -107,9 +106,10 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
                 volunteer_list.remove(user)
 
     # Initialize the overall point of each volunteer
-    user_point_dict: {User, int} = {user: 0 for user in volunteer_list}
-
-    for user, point in user_point_dict.items():
+    user_point_dict: {str, (User, int)} = {}
+    for user in volunteer_list:
+        user_point_dict[user.phone_number] = (user, 0)
+    for phone_number, (user, score) in user_point_dict.items():
         rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
         if user.no_of_calls_received == 0:
@@ -117,20 +117,24 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
         else:
             call_ratio_point = CALL_RATIO_WEIGHT * (
                     user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-        complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                NORMALIZATION_FACTOR / user.no_of_calls_completed))
+        if user.no_of_calls_completed == 0:
+            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
+        else:
+            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
+                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
         overall_point = rating_point + call_ratio_point - complaint_point
 
-        user_point_dict.user = overall_point
+        user_point_dict[phone_number] = (user, overall_point)
 
-    # sort the dict of consultants by overall point
-    user_point_dict = dict(sorted(user_point_dict.items(), key=lambda item: item[1], reverse=True))
-
+    # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
+    # We want the int value to sort the list
+    volunteer_list = sorted(user_point_dict.items(), key=lambda item: item[1][1], reverse=True)
+    volunteer_list = [user for user, score in volunteer_list]
     # if there are less than num_of_calls consultants, return all of them
     if len(volunteer_list) < num_of_calls:
-        return user_point_dict.keys()
+        return volunteer_list
 
-    return user_point_dict[:num_of_calls]
+    return volunteer_list[:num_of_calls]
 
 
 def find_matching_ability_user(category: str, num_of_calls: int, caller: User, excluded_user_list=None):
@@ -142,10 +146,11 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
         .stream()
     )
     matching_ability_list = list(docs)
+    matching_ability_list = [User.model_validate(user.to_dict()) for user in matching_ability_list]
+
     if not matching_ability_list:
         logger.error(f"No user with matching abilities found")
         raise KeyError(f"No user with matching abilities found")
-    matching_ability_list = [User.model_validate(user.to_dict()) for user in matching_ability_list]
 
     if caller in matching_ability_list:
         matching_ability_list.remove(caller)
@@ -156,9 +161,10 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
                 matching_ability_list.remove(user)
 
     # Initialize the overall point of each volunteer
-    user_point_dict: {User, int} = {user: 0 for user in matching_ability_list}
-
-    for user, point in user_point_dict.items():
+    user_point_dict: {str, (User, int)} = {}
+    for user in matching_ability_list:
+        user_point_dict[user.phone_number] = (user, 0)
+    for phone_number, (user, score) in user_point_dict.items():
         rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
         if user.no_of_calls_received == 0:
@@ -166,19 +172,21 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
         else:
             call_ratio_point = CALL_RATIO_WEIGHT * (
                     user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-
-        complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                NORMALIZATION_FACTOR / user.no_of_calls_completed))
-
+        if user.no_of_calls_completed == 0:
+            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
+        else:
+            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
+                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
         overall_point = rating_point + call_ratio_point - complaint_point
+        user_point_dict[phone_number] = (user, overall_point)
 
-        user_point_dict.user = overall_point
+    # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
+    # We want the int value to sort the list
+    matching_ability_list = sorted(user_point_dict.items(), key=lambda item: item[1][1], reverse=True)
 
-    # sort the dict of consultants by overall point
-    user_point_dict = dict(sorted(user_point_dict.items(), key=lambda item: item[1], reverse=True))
-
+    matching_ability_list = [user for user, score in matching_ability_list]
     # if there are less than num_of_calls consultants, return all of them
-    if len(user_point_dict) < num_of_calls:
-        return user_point_dict.keys()
+    if len(matching_ability_list) < num_of_calls:
+        return matching_ability_list
 
-    return user_point_dict[:num_of_calls]
+    return matching_ability_list[:num_of_calls]
