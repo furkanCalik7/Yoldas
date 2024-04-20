@@ -4,6 +4,7 @@ import 'package:frontend/controller/notification_handler.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/pages/settings_screen.dart';
 import 'package:frontend/pages/volunteer_home_screen.dart';
+import 'package:frontend/pages/volunteer_tutorial_screen.dart';
 import 'package:frontend/util/secure_storage.dart';
 
 import '../custom_widgets/appbars/appbar_custom.dart';
@@ -25,7 +26,7 @@ class _VolunteerMainFrameState extends State<VolunteerMainFrame> {
   ];
 
   static List<Widget> _widgetOptions = <Widget>[
-    Text("Nasıl kullanılır?"),
+    VolunteerTutorialScreen(),
     VolunteerHomeScreen(),
     SettingsScreen(),
   ];
