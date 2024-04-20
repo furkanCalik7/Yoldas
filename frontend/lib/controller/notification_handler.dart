@@ -16,9 +16,10 @@ Future<void> showCallkitIncoming() async {
 
   final params = CallKitParams(
     id: uuid,
-    nameCaller: 'Görme Engelli birisinin yardımıza ihtiyacı var.',
+    nameCaller: '     Görme Engelli birisinin yardımınıza ihtiyacı var.',
     appName: 'Callkit',
     avatar: 'assets/profile.jpg',
+    handle: 'Görme Engelli birisinin yardımınıza ihtiyacı var.',
     type: 1,
     duration: 10000,
     textAccept: 'Kabul et',
@@ -35,14 +36,14 @@ Future<void> showCallkitIncoming() async {
       isCustomNotification: true,
       isShowLogo: true,
       ringtonePath: 'system_ringtone_default',
-      backgroundColor: '#80bff6',
+      backgroundColor: '#1C1C1C',
       backgroundUrl: 'assets/test.jpg',
       actionColor: '#4CAF50',
       textColor: '#ffffff',
     ),
     ios: const IOSParams(
       iconName: 'CallKitLogo',
-      handleType: '',
+      handleType: 'generic',
       supportsVideo: true,
       maximumCallGroups: 2,
       maximumCallsPerCallGroup: 1,
