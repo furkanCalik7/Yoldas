@@ -47,6 +47,10 @@ class User(BaseModel):
     rating_count: Optional[int] = 1
     notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
     complaints: Optional[list[str]] = []
+    no_of_calls_received: Optional[int] = 0
+    no_of_calls_completed: Optional[int] = 0
+    is_active: Optional[bool] = True
+
 
 class Signal(BaseModel):
     sdp: str
