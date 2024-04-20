@@ -32,7 +32,7 @@ void main() async {
       initialRoute: '/',
       navigatorKey: navigationKey,
       routes: {
-        '/': (context) => const InitializationPage(),
+        '/': (context) => const BlindMainFrame(),
         //'/': (context) => const BlindMainFrame(),
         //'/': (context) => const CallMainFrame(),
         LoginScreen.routeName: (context) => const LoginScreen(),
