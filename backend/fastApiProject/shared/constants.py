@@ -12,3 +12,11 @@ class CallStatus(Enum):
 class CallUserType(Enum):
     CALLER = "caller"
     CALLEE = "callee"
+
+
+class SearchStatus(Enum):
+    INITIALIZED = "INITIALIZED"
+    PROCESSING = "PROCESSING"
+    ACCEPTTED = "ACCEPTTED"
+    REJECTED = "REJECTED"
+    NO_RESPONSE = "NO_RESPONSE"

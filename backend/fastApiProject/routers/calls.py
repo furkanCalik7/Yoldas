@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from ..models import entity_models
-from ..models.request_models import CallAccept, CallRequest, CallHangup
+from ..models.request_models import CallAccept, CallRequest, CallHangup, CallReject
 from ..models.response_models import CallAcceptResponse, CallRequestResponse
 from ..services import call_manager, user_manager
 from ..shared.constants import CallUserType
@@ -37,6 +37,14 @@ async def call_accept(_call_accept: CallAccept,
         caller_name="to be removed",
         signal=signal
     )
+
+
+@router.post("/call/reject")
+async def call_reject(_call_reject: CallReject,
+                      current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    call_id, phone_number = _call_reject.call_id, current_user["phone_number"]
+    logger.info(f"Call reject with call_id {call_id} and user_id {phone_number}")
+    call_manager.reject_call(call_id, phone_number)
 
 
 @router.post("/call/hangup")

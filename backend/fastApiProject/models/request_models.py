@@ -44,5 +44,9 @@ class CallAccept(BaseModel):
     call_id: str
 
 
+class CallReject(BaseModel):
+    call_id: str
+
+
 class CallHangup(BaseModel):
     call_id: str
