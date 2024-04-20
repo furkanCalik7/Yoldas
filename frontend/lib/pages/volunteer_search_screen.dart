@@ -53,7 +53,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[100],
+      backgroundColor: primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,8 +70,8 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
                       turns: _rotationAnimation,
                       child: Image.asset(
                         "assets/search_icon.png",
-                        width: 125,
-                        height: 125,
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        height: MediaQuery.of(context).size.width * 0.75,
                       )),
                 );
               },
@@ -79,10 +79,17 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
             SizedBox(height: 40),
             Text(
               'Uygun gönüllü aranıyor...',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: textColorLight,
+              ),
             ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+            ),
+
             // add hang up button
-            SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);

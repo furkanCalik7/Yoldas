@@ -39,6 +39,10 @@ class CallRequest(BaseModel):
     category: Optional[str] = None
     isConsultancyCall: Optional[bool] = False
 
+class ComplaintRequest(BaseModel):
+    complaint: str
+    callID: str
+
 
 class CallAccept(BaseModel):
     call_id: str

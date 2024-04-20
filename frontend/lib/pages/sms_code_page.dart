@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_default.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -193,7 +194,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                               "${widget.phoneNumber} a gelen doğrulama kodunu giriniz",
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  color: Colors.black,
+                                  color: textColorLight,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold),
                             )),
@@ -204,7 +205,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                           key: formKey,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 8.0,
+                              vertical: 30,
                               horizontal: 50,
                             ),
                             child: PinCodeTextField(
@@ -219,19 +220,21 @@ class _SMSCodePageState extends State<SMSCodePage> {
                               blinkWhenObscuring: true,
                               animationType: AnimationType.fade,
                               validator: (v) {
-                                if (v!.length < 3) {
-                                  return "I'm from validator";
+                                if (v!.length < 6) {
+                                  return "Lütfen tüm haneleri doldurun";
                                 } else {
                                   return null;
                                 }
                               },
                               pinTheme: PinTheme(
-                                  shape: PinCodeFieldShape.box,
-                                  borderRadius: BorderRadius.circular(5),
-                                  fieldHeight: 50,
-                                  fieldWidth: 40,
-                                  activeFillColor: Colors.white,
-                                  inactiveFillColor: Colors.white),
+                                shape: PinCodeFieldShape.box,
+                                borderRadius: BorderRadius.circular(0),
+                                fieldHeight: 50,
+                                fieldWidth: 40,
+                                activeFillColor: textColorLight,
+                                inactiveFillColor:
+                                    textColorLight.withOpacity(0.8),
+                              ),
                               cursorColor: Colors.black,
                               animationDuration:
                                   const Duration(milliseconds: 300),
@@ -239,13 +242,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                               errorAnimationController: errorController,
                               controller: textEditingController,
                               keyboardType: TextInputType.number,
-                              boxShadows: const [
-                                BoxShadow(
-                                  offset: Offset(0, 1),
-                                  color: Colors.black12,
-                                  blurRadius: 10,
-                                )
-                              ],
+
                               onCompleted: (v) {
                                 debugPrint("Completed");
                               },
@@ -267,7 +264,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                             ),
                           ),
                         ),
-                        Padding(
+                        Container(
                           padding: const EdgeInsets.symmetric(horizontal: 30.0),
                           child: Text(
                             hasError
@@ -280,16 +277,13 @@ class _SMSCodePageState extends State<SMSCodePage> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
                               "Kodu almadınız mı? ",
                               style: TextStyle(
-                                  color: Colors.black54, fontSize: 20),
+                                  color: textColorLight, fontSize: 20),
                             ),
                             TextButton(
                               onPressed: () {

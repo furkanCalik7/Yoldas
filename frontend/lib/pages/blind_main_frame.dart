@@ -66,10 +66,10 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
             label: "Ayarlar",
           ),
         ],
-        backgroundColor: defaultButtonColor,
+        backgroundColor: secondaryColor,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: tertiaryColor,
+        unselectedItemColor: textColorLight,
         iconSize: 30,
         onTap: (index) {
           setState(() {

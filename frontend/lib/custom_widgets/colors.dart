@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//old colors
 const tappableIconColor = Color.fromRGBO(128, 191, 246, 1);
 const defaultButtonColor = Color.fromRGBO(128, 191, 246, 1);
 const textContainerColor = Color.fromRGBO(128, 191, 246, 1);
@@ -9,12 +10,20 @@ const redIconButtonColor = Colors.red;
 const gradiendColor1 = Color.fromRGBO(128, 191, 246, 1);
 const gradiendColor2 = Color.fromRGBO(53, 90, 151, 1);
 
+//new colors
+const primaryColor = Color.fromRGBO(28, 28, 28, 1);
+const secondaryColor = Color.fromRGBO(60, 0, 70, 1);
+const tertiaryColor = Color.fromRGBO(255, 200, 0, 1);
+const textColorLight = Color.fromRGBO(240, 240, 240, 1);
+const textColorDark = Colors.black;
+//
+
 BoxDecoration getBackgroundDecoration() {
   return const BoxDecoration(
     gradient: LinearGradient(
       colors: [
-        gradiendColor1,
-        gradiendColor2,
+        primaryColor,
+        primaryColor,
       ],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,

@@ -30,6 +30,12 @@ class CustomPhoneNumberInput extends StatelessWidget {
       onSaved: (PhoneNumber newNumber) {
         phoneNumber = newNumber;
       },
+      selectorTextStyle: const TextStyle(
+        color: textColorLight,
+      ),
+      textStyle: const TextStyle(
+        color: textColorLight,
+      ),
       textFieldController: controller,
       initialValue: initialValue,
       formatInput: true,
@@ -37,9 +43,9 @@ class CustomPhoneNumberInput extends StatelessWidget {
         selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
       ),
       inputDecoration: InputDecoration(
-        prefixIcon: const Icon(Icons.phone),
+        prefixIcon: const Icon(Icons.phone, color: textColorLight),
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.black54),
+        hintStyle: TextStyle(color: textColorLight.withOpacity(0.5)),
       ),
       validator: (value) => validator(value),
     );

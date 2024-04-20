@@ -37,7 +37,6 @@ class NotificationSettings(BaseModel):
 
 
 class User(BaseModel):
-    # id: Optional[UUID] = uuid4()
     name: str
     role: Role
     abilities: Optional[list[str]] = []
@@ -47,7 +46,7 @@ class User(BaseModel):
     avg_rating: Optional[float] = 4
     rating_count: Optional[int] = 1
     notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
-
+    complaints: Optional[list[str]] = []
 
 class Signal(BaseModel):
     sdp: str

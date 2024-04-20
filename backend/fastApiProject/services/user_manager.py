@@ -41,6 +41,10 @@ def register_user(user: entity_models.User):
     return user_dao.register_user(user)
 
 
+def delete_user(user_id):
+    return user_dao.delete_user(user_id)
+
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     logger.info(f"create_access_token with data {data} called")
     to_encode = data.copy()
@@ -187,6 +191,14 @@ def start_call(startCallRequest: request_models.CallRequest, current_user):
     logger.info(f"start_call with startCallRequest {startCallRequest} called")
     return user_dao.find_potential_callees(startCallRequest, current_user)
 
+
+# Get All Abilities endpoint
 def get_all_abilities():
     logger.info(f"get all abilities called in manager")
     return user_dao.get_all_abilities()
+
+
+# Send Complaint endpoint
+def send_complaint(complaintRequest, current_user):
+    logger.info(f"send_complaint with complaintRequest {complaintRequest} called")
+    return user_dao.send_complaint(complaintRequest, current_user)

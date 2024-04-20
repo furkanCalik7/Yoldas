@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 
 class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -12,15 +13,13 @@ class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: Text(
-        title,
-        style: const TextStyle(
-          letterSpacing: 3,
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-        ),
+      title: AppBarText(
+        line: title,
       ),
-      backgroundColor: defaultButtonColor,
+      iconTheme: const IconThemeData(
+        color: textColorLight,
+      ),
+      backgroundColor: secondaryColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(0),

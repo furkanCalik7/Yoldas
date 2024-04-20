@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/util/login.dart';
+import 'package:frontend/custom_widgets/colors.dart';
 
 class InitializationPage extends StatefulWidget {
   const InitializationPage({Key? key}) : super(key: key);
@@ -17,10 +18,14 @@ class _InitializationPageState extends State<InitializationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child:
-            CircularProgressIndicator(), // You can show a loading indicator while initializing
+    return Scaffold(
+      body: Container(
+        color: primaryColor,
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(tertiaryColor),
+          ),
+        ),
       ),
     );
   }
