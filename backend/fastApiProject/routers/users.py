@@ -49,12 +49,6 @@ async def send_complaint(complaintRequest: request_models.ComplaintRequest,
     return user_manager.send_complaint(complaintRequest, current_user)
 
 
-@router.post("/start_call")
-async def start_call(startCallRequest: request_models.StartCallRequest,
-                     current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
-    return user_manager.start_call(startCallRequest, current_user)
-
-
 @router.get("/get_all_abilities")
 async def get_all_abilities():
     logger.info(f"get_all_abilities called")
