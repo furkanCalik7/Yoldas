@@ -40,7 +40,7 @@ class TappableIcon extends StatelessWidget {
             Icon(
               iconData,
               size: size,
-              color: textColorLight,
+              color: tertiaryColor,
             ),
           ],
         ),
