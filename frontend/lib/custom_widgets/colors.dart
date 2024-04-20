@@ -12,7 +12,7 @@ const gradiendColor2 = Color.fromRGBO(53, 90, 151, 1);
 
 //new colors
 const primaryColor = Color.fromRGBO(28, 28, 28, 1);
-const secondaryColor = Color.fromRGBO(60, 0, 70, 1);
+const secondaryColor = Color.fromRGBO(40, 40, 40, 1);
 const tertiaryColor = Color.fromRGBO(255, 200, 0, 1);
 const textColorLight = Color.fromRGBO(240, 240, 240, 1);
 const textColorDark = Colors.black;

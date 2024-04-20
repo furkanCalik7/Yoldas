@@ -36,7 +36,7 @@ class ButtonMain extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0.0),
+                borderRadius: BorderRadius.circular(10.0),
               ),
             )),
         child: Text(

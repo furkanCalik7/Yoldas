@@ -34,7 +34,7 @@ class CustomSwiper extends StatelessWidget {
               size: MediaQuery.of(context).size.width * 0.35,
               text: titles[index],
               textColor: textColorLight,
-              iconColor: primaryColor);
+              buttonColor: primaryColor);
         },
         indicatorLayout: PageIndicatorLayout.COLOR,
         pagination: const SwiperPagination(

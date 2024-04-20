@@ -21,8 +21,7 @@ class TextContainer extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: GoogleFonts.libreBaskerville(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
+            fontSize: 30,
             color: textColorLight,
           ),
         ),

@@ -11,10 +11,9 @@ class AppbarDefault extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      centerTitle: true,
       title: const TextHead(
         line: "YOLDAS",
-        size: 35,
+        size: 25,
       ),
       iconTheme: const IconThemeData(
         color: textColorLight,

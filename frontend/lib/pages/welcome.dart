@@ -21,19 +21,20 @@ class Welcome extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                   decoration: BoxDecoration(
                       color: primaryColor.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(20)),
-                  margin: EdgeInsets.fromLTRB(0, 100, 0, 20),
-                  child: Icon(
+                  margin: const EdgeInsets.fromLTRB(0, 100, 0, 20),
+                  child: const Icon(
                     Icons.blind,
                     size: 200.0,
                     color: tertiaryColor,
                   ),
                 ),
-                TextHead(line: "YOLDAS"),
-                SizedBox(
+                const TextHead(line: "YOLDAS"),
+                const SizedBox(
                   height: 50.0,
                 ),
                 ButtonBig(
