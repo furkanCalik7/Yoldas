@@ -110,11 +110,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
     String password = widget.user.password;
     String phoneNumber = widget.user.phoneNumber;
 
-    print(name);
-    print(password);
-    print(phoneNumber);
-    print(userTypeToString(userType!));
-
     String path = API_URL + "/users/register";
 
     Map<String, dynamic> requestBody = {
@@ -130,7 +125,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
     );
 
     Map data = jsonDecode(response.body);
-    print(data);
 
     String hashedPassword = data["user"]["password"];
 
@@ -150,8 +144,6 @@ class _SMSCodePageState extends State<SMSCodePage> {
   Future<int> checkAuthentication(RxString verificationId) async {
     String smsCode = currentText;
 
-    log(currentText);
-    // Create a PhoneAuthCredential with the code
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId.value, smsCode: smsCode);
 

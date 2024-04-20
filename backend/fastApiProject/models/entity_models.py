@@ -64,5 +64,7 @@ class Call(BaseModel):
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     duration: Optional[int] = 0
-    call_category: Optional[str] = "fast"
-    status: Optional[CallStatus] = CallStatus.WAITING.value
+    category: Optional[str] = "fast"
+    status: Optional[CallStatus] = CallStatus.INITIALIZED.value
+    isQuickCall: Optional[bool] = False
+    isConsultancyCall: Optional[bool] = False

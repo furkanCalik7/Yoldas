@@ -179,48 +179,6 @@ def update_user_request(user_id, update_user_request: UpdateUserRequest):
     return user.model_dump()
 
 
-def start_consultancy_call(callRequest, current_user):
-    # check if user exists
-    doc = db.collection("UserCollection").document(callRequest.phone_number).get()
-    if not doc.exists:
-        logger.error(f"User with phone number {callRequest.phone_number} not found")
-        raise HTTPException(status_code=404, detail=f"User with phone number {callRequest.phone_number} not found")
-
-    callee = User.model_validate(doc.to_dict())
-    call = Call(
-        caller=CallUser(phone_number=current_user.phone_number),
-        callee=CallUser(phone_number=callee.phone_number),
-        start_time=time.time(),
-        isQuickCall=callRequest.isQuickCall,
-        category=callRequest.category,
-        isConsultancyCall=callRequest.isConsultancyCall
-    )
-    call_dao.create_call(call)
-    return call.model_dump()
-
-
-def start_call(CallRequest: request_models.CallRequest, current_user):
-    # check if user exists
-    doc = db.collection("UserCollection").document(current_user["phone_number"]).get()
-    if not doc.exists:
-        logger.error(f"User with phone number {CallRequest.phone_number} not found")
-        raise HTTPException(status_code=404, detail=f"User with phone number {CallRequest.phone_number} not found")
-
-    # check which type of call is requested
-    # according to the type of call, find an appropriate user
-    num_of_calls = 5
-    if CallRequest.isConsultancyCall:
-        user_list = matcher_dao.find_consultant_user(num_of_calls, current_user)
-    elif CallRequest.isQuickCall:
-        user_list = matcher_dao.find_quick_call_user(num_of_calls, current_user)
-    else:
-        user_list = matcher_dao.find_matching_ability_user(CallRequest, num_of_calls, current_user)
-
-    # logger.info(
-    # f"{len(user_list)} users found for the caller with phone number {current_user["phone_number"]}")
-    return user_list  # TODO call the function that will start the actual call
-
-
 def get_all_abilities():
     doc_ref = db.collection("AbilityCollection").document("2hcB6d7Yxys0oIPTEGqT")
     doc = doc_ref.get()

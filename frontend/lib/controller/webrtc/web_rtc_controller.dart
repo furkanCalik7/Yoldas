@@ -36,7 +36,7 @@ class WebRTCController {
   FlutterSecureStorage storage = const FlutterSecureStorage();
   late CollectionReference callCollection;
   FirebaseFirestore db = FirebaseFirestore.instance;
-  late String callId;
+  String? callId;
   late BuildContext context;
 
   // Subsciptions
@@ -269,7 +269,8 @@ class WebRTCController {
   /// [localVideo]: Renderer for local video.
   Future<void> hangUp() async {
     disposeSubsciptions();
-    CallHangup callHangup = CallHangup(callId: callId);
+    if(callId == null) return;
+    CallHangup callHangup = CallHangup(callId: callId!);
 
     final response = await ApiManager.post(
       path: "/calls/call/hangup",
@@ -294,6 +295,7 @@ class WebRTCController {
     }
     if (peerConnection != null) peerConnection!.close();
 
+  
     var callRef = db.collection('CallCollection').doc(callId);
     var calleeCandidates = await callRef.collection('calleeCandidates').get();
     calleeCandidates.docs.forEach((document) => document.reference.delete());
@@ -301,6 +303,7 @@ class WebRTCController {
     var callerCandidates = await callRef.collection('callerCandidates').get();
     callerCandidates.docs.forEach((document) => document.reference.delete());
 
+    // TO delete the call from firestore  
     // await callRef.delete();
 
     localStream!.dispose();
@@ -389,7 +392,7 @@ class WebRTCController {
         context,
         MaterialPageRoute(
             builder: (context) => EvaluationPage(
-                  callId: callId,
+                  callId: callId!,
                 )),
         (route) => false);
     hangupSubscription?.cancel();
@@ -407,4 +410,11 @@ class WebRTCController {
       }
     });
   } 
+
+  void dispose() {
+    disposeSubsciptions();
+    _closePeerConnection();
+    localStream?.dispose();
+    remoteStream?.dispose();
+  }
 }
