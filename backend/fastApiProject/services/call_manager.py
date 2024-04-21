@@ -22,7 +22,7 @@ def create_call(call_request: CallRequest, user) -> str:
     )
     call_id = call_dao.register_call(call)
     potential_callees = matcher_dao.find_potential_callees(call_request, user)
-    search_manager.init_new_search_session(call_id, potential_callees)
+    search_manager.init_new_search_session(call_id, potential_callees, user, call_request)
     search_manager.start_search_session(call_id)
     return call_id
 
@@ -31,8 +31,10 @@ def accept_call(call_id: str, callee_phone_number: str):
     callee = CallUser(
         phone_number=callee_phone_number,
     )
-    search_manager.accept_search_session(call_id, callee_phone_number)
-    call_dao.start_call(call_id, callee)
+    is_accepted = search_manager.accept_search_session(call_id, callee_phone_number)
+    if is_accepted:
+        call_dao.start_call(call_id, callee)
+    return is_accepted
 
 
 def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:

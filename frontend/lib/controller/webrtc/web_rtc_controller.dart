@@ -200,7 +200,7 @@ class WebRTCController {
     );
 
     final response = await ApiManager.post(
-      path: "/calls/call/accept",
+      path: "/calls/call/accept_details",
       bearerToken: await storage.read(key: "access_token"),
       body: callAccept.toJSON(),
     );

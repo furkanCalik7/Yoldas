@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from fastApiProject.models.entity_models import Signal
@@ -9,6 +11,7 @@ class CallRequestResponse(BaseModel):
 
 
 class CallAcceptResponse(BaseModel):
-    caller_name: str
-    call_id: str
-    signal: Signal
+    is_accepted: bool
+    caller_name: Optional[str]
+    call_id: Optional[str]
+    signal: Optional[Signal]

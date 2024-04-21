@@ -27,11 +27,22 @@ async def call_request(_call_request: CallRequest,
 
 @router.post("/call/accept")
 async def call_accept(_call_accept: CallAccept,
-                      current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+                      current_user: Annotated[
+                          entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id, phone_number = _call_accept.call_id, current_user["phone_number"]
     logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
-    signal = call_manager.get_signal(call_id, CallUserType.CALLER)
+    is_accepted = call_manager.accept_call(call_id, phone_number)
+    return {"is_accepted": is_accepted}
+
+
+@router.post("/call/accept_details")
+async def call_accept_details(_call_accept: CallAccept,
+                              current_user: Annotated[
+                                  entity_models.User, Depends(user_manager.get_current_active_user)]):
+    call_id, phone_number = _call_accept.call_id, current_user["phone_number"]
+    logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
     call_manager.accept_call(call_id, phone_number)
+    signal = call_manager.get_signal(call_id, CallUserType.CALLER)
     return CallAcceptResponse(
         call_id=call_id,
         caller_name="to be removed",

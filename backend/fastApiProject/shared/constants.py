@@ -17,6 +17,6 @@ class CallUserType(Enum):
 class SearchStatus(Enum):
     INITIALIZED = "INITIALIZED"
     PROCESSING = "PROCESSING"
-    ACCEPTTED = "ACCEPTTED"
+    ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
     NO_RESPONSE = "NO_RESPONSE"
