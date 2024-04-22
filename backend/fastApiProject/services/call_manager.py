@@ -21,7 +21,8 @@ def create_call(call_request: CallRequest, user) -> str:
         isConsultancyCall=call_request.isConsultancyCall,
     )
     call_id = call_dao.register_call(call)
-    potential_callees = matcher_dao.find_potential_callees(call_request, user)
+    # potential_callees = matcher_dao.find_potential_callees(call_request, user)
+    potential_callees = ["+905444444444"]
     search_manager.init_new_search_session(call_id, potential_callees, user, call_request)
     search_manager.start_search_session(call_id)
     return call_id
@@ -34,6 +35,7 @@ def accept_call(call_id: str, callee_phone_number: str):
     is_accepted = search_manager.accept_search_session(call_id, callee_phone_number)
     if is_accepted:
         call_dao.start_call(call_id, callee)
+        search_manager.delete_session(call_id)
     return is_accepted
 
 
@@ -47,3 +49,7 @@ def hangup_call(call_hangup: CallHangup):
 
 def reject_call(call_id: str, phone_number: str) -> None:
     search_manager.reject_search_session(call_id, phone_number)
+
+
+def cancel_call(call_id):
+    search_manager.cancel_session(call_id)

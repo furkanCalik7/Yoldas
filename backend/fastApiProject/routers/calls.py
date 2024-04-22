@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from ..models import entity_models
-from ..models.request_models import CallAccept, CallRequest, CallHangup, CallReject
-from ..models.response_models import CallAcceptResponse, CallRequestResponse
+from ..models.request_models import CallAccept, CallRequest, CallHangup, CallReject, CallCancel
+from ..models.response_models import CallAcceptDetailsResponse, CallRequestResponse, CallAcceptResponse
 from ..services import call_manager, user_manager
 from ..shared.constants import CallUserType
 
@@ -32,7 +32,9 @@ async def call_accept(_call_accept: CallAccept,
     call_id, phone_number = _call_accept.call_id, current_user["phone_number"]
     logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
     is_accepted = call_manager.accept_call(call_id, phone_number)
-    return {"is_accepted": is_accepted}
+    return CallAcceptResponse (
+        is_accepted=is_accepted
+    )
 
 
 @router.post("/call/accept_details")
@@ -43,7 +45,7 @@ async def call_accept_details(_call_accept: CallAccept,
     logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
     call_manager.accept_call(call_id, phone_number)
     signal = call_manager.get_signal(call_id, CallUserType.CALLER)
-    return CallAcceptResponse(
+    return CallAcceptDetailsResponse(
         call_id=call_id,
         caller_name="to be removed",
         signal=signal
@@ -56,6 +58,14 @@ async def call_reject(_call_reject: CallReject,
     call_id, phone_number = _call_reject.call_id, current_user["phone_number"]
     logger.info(f"Call reject with call_id {call_id} and user_id {phone_number}")
     call_manager.reject_call(call_id, phone_number)
+
+
+@router.post("/call/cancel")
+async def search_cancel(_call_cancel: CallCancel,
+                        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    call_id, phone_number = _call_cancel.call_id, current_user["phone_number"]
+    logger.info(f"Search cancel with call_id {call_id} and user_id {phone_number}")
+    call_manager.cancel_call(call_id)
 
 
 @router.post("/call/hangup")

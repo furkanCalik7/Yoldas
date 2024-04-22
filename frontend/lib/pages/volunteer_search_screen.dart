@@ -1,10 +1,22 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:frontend/controller/webrtc/constants/call_status.dart';
+import 'package:frontend/controller/webrtc/dto/call_cancel.dart';
+import 'package:frontend/controller/webrtc/dto/call_request.dart';
+import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/pages/call_main_frame.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
 
 class VolunteerSearchScreen extends StatefulWidget {
+  VolunteerSearchScreen({Key? key}) : super(key: key);
+
   @override
   _VolunteerSearchScreenState createState() => _VolunteerSearchScreenState();
 
@@ -17,12 +29,18 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   late Animation<double> _rotationAnimation;
   late Animation<Offset> _positionAnimation;
   late FlutterTts flutterTts;
+  String? callId;
+
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  StreamSubscription<DocumentSnapshot<Object?>>? callSubscription;
 
   double _radius = 30.0; // Radius of circular path
 
   @override
   void initState() {
     super.initState();
+
     flutterTts = FlutterTts();
     flutterTts.setLanguage("tr-TR");
     flutterTts.speak("Uygun gönüllü aranıyor");
@@ -47,11 +65,73 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   void dispose() {
     _animationController.dispose();
+
+    callSubscription?.cancel();
     super.dispose();
+  }
+
+  Future<CallRequestResponse> sendCallRequest(Map<String, dynamic> args) async {
+    String accessToken =
+        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+    CallRequest callRequest;
+
+    if (args["is_quick_call"] != null) {
+      callRequest = CallRequest(
+          isQuickCall: true, category: "", isConsultancyCall: false);
+    } else {
+      String category = args["category"];
+      if (category == "Psikoloji") {
+        callRequest = CallRequest(
+            isQuickCall: false, category: category, isConsultancyCall: true);
+      } else {
+        callRequest = CallRequest(
+            isQuickCall: false, category: category, isConsultancyCall: false);
+      }
+    }
+
+    final response = await ApiManager.post(
+      path: "/calls/call",
+      bearerToken: accessToken,
+      body: callRequest.toJson(),
+    );
+
+    return CallRequestResponse.fromJSON(jsonDecode(response.body));
+  }
+
+  void registerCallStatus(String callId, BuildContext context) {
+    callSubscription = db
+        .collection("CallCollection")
+        .doc(callId)
+        .snapshots()
+        .listen((snapshot) {
+      print('(debug) Got updated room: ${snapshot.data()}');
+
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data["status"] == CallStatus.IN_CALL.toString()) {
+        Navigator.pushNamed(context, CallMainFrame.routeName,
+            arguments: {"call_action_type": "start", 'callId': callId});
+      }
+    });
+  }
+
+  void cancelCall(String callId) async {
+    await ApiManager.post(
+      path: "/calls/call/cancel",
+      bearerToken:
+          await SecureStorageManager.read(key: StorageKey.access_token) ??
+              "N/A",
+      body: CallCancel(callID: callId).toJSON(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    sendCallRequest(args).then((callRequestResponse) {
+      callId = callRequestResponse.callID;
+      registerCallStatus(callRequestResponse.callID, context);
+    });
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
@@ -92,6 +172,10 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
             // add hang up button
             ElevatedButton(
               onPressed: () {
+                if (callId != null) {
+                  cancelCall(callId!);
+                }
+
                 Navigator.pop(context);
               },
               child: Icon(Icons.call_end, size: 50, color: Colors.white),

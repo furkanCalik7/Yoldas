@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,11 +7,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:frontend/controller/webrtc/dto/call_accept.dart';
+import 'package:frontend/controller/webrtc/dto/call_accept_response.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/pages/call_main_frame.dart';
+import 'package:frontend/util/api_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
 import 'package:uuid/uuid.dart';
 
 String? currentUuid;
 
-Future<void> showCallkitIncoming() async {
+Future<void> showCallkitIncoming(String callId) async {
   final uuid = Uuid().v4();
   currentUuid = uuid;
 
@@ -30,7 +37,7 @@ Future<void> showCallkitIncoming() async {
       subtitle: 'Cevapsız çağrı',
       callbackText: 'Geri ara',
     ),
-    extra: <String, dynamic>{'userId': '1a2b3c4d'},
+    extra: <String, dynamic>{'callId': callId},
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
     android: const AndroidParams(
       isCustomNotification: true,
@@ -65,7 +72,7 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
   // TODO: call kit cantroller here
   print("Handling a background message: ${message.messageId}");
   print("Payload: ${message.data}");
-  await showCallkitIncoming();
+  await showCallkitIncoming(message.data["call_id"]);
 }
 
 void handleMessage(RemoteMessage? message) async {
@@ -78,8 +85,40 @@ void handleMessage(RemoteMessage? message) async {
 void handleFrondgroundMessage(RemoteMessage remoteMessage) async {
   print("Handling a foreground message: ${remoteMessage.messageId}");
   print("Handling a foreground message: ${remoteMessage.data}");
-  await showCallkitIncoming();
+  await showCallkitIncoming(remoteMessage.data["call_id"]);
   // TODO: notification behavior here when the app is awake
+}
+
+Future<CallAcceptResponse> handleCallAccept(String callId) async {
+  String accessToken =
+      await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+
+  CallReject callAccept = CallReject(
+    callID: callId,
+  );
+
+  final response = await ApiManager.post(
+    path: "/calls/call/accept",
+    bearerToken: accessToken,
+    body: callAccept.toJSON(),
+  );
+
+  return CallAcceptResponse.fromJson(jsonDecode(response.body));
+}
+
+Future<void> handleCallReject(String callId) async {
+  String accessToken =
+      await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+
+  CallReject callReject = CallReject(
+    callID: callId,
+  );
+
+  await ApiManager.post(
+    path: "/calls/call/reject",
+    bearerToken: accessToken,
+    body: callReject.toJSON(),
+  );
 }
 
 class NotificationHandler {
@@ -93,6 +132,12 @@ class NotificationHandler {
     final fcmToken = await _firebaseMessaging.getToken();
     print("FCM Token: $fcmToken");
     await saveTokenToDatabase(phoneNumber, fcmToken);
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
     initPushNotification();
   }
 
@@ -109,14 +154,7 @@ class NotificationHandler {
     });
   }
 
-  Future initPushNotification() async {
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: false,
-      badge: false,
-      sound: false,
-    );
-
+  void initPushNotification() {
     // If the app is not launch and the user launch app via notification,
     FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
@@ -128,35 +166,40 @@ class NotificationHandler {
     });
 
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
-      print("Event: ${event?.event}");
-      switch (event!.event) {
+      if (event == null) return;
+      String callId = event.body["extra"]["callId"];
+
+      switch (event.event) {
         case Event.actionCallIncoming:
-          // TODO: received an incoming call
           break;
         case Event.actionCallStart:
           // TODO: started an outgoing call
           // TODO: show screen calling in Flutter
           break;
         case Event.actionCallAccept:
-          // TODO: accepted an incoming call
-          // TODO: show screen calling in Flutter
-          print("Call accepted");
+          handleCallAccept(callId).then(
+            (callAccept) {
+              if (callAccept.isAccepted) {
+                print("Call is accepted");
+                navigationKey.currentState?.pushNamed(CallMainFrame.routeName,
+                    arguments: {
+                      "call_action_type": "accept",
+                      'callId': callId
+                    });
+              } else {
+                // TODO: show it is already accepted thank you
+              }
+            },
+          );
           break;
         case Event.actionCallDecline:
-          // TODO: declined an incoming call
-          print("Call declined");
+          handleCallReject(callId);
           break;
         case Event.actionCallEnded:
           // TODO: ended an incoming/outgoing call
           break;
         case Event.actionCallTimeout:
-          // TODO: missed an incoming call
-          // cancel the notification
           flutterLocalNotificationsPlugin.cancelAll();
-          print("Notification canceled");
-
-          // TODO: inform server that the call is missed
-
           break;
         case Event.actionCallCallback:
           // only Android - click action `Call back` from missed call notification

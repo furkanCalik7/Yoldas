@@ -34,10 +34,12 @@ class UpdateUserRequest(BaseModel):
     notification_settings: Optional[NotificationSettings] = None
     is_active: Optional[bool] = None
 
+
 class CallRequest(BaseModel):
     isQuickCall: bool
     category: Optional[str] = None
     isConsultancyCall: Optional[bool] = False
+
 
 class ComplaintRequest(BaseModel):
     complaint: str
@@ -53,4 +55,8 @@ class CallReject(BaseModel):
 
 
 class CallHangup(BaseModel):
+    call_id: str
+
+
+class CallCancel(BaseModel):
     call_id: str

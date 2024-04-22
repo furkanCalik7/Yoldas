@@ -6,7 +6,6 @@ import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
 import "package:socket_io_client/socket_io_client.dart" as IO;
 
 class CallMainFrame extends StatefulWidget {
-  const CallMainFrame({Key? key}) : super(key: key);
   static const String routeName = "/callMainFrame";
 
   @override
@@ -20,7 +19,6 @@ class _CallMainFrameState extends State<CallMainFrame> {
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   IO.Socket? socket;
-  late String callID;
   bool isFlashlightOn = false; // Track flashlight state
 
   @override
@@ -103,6 +101,13 @@ class _CallMainFrameState extends State<CallMainFrame> {
   @override
   Widget build(BuildContext context) {
     webRTCController.setContext(context);
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    if (args["call_action_type"] == "start") {
+      webRTCController.startCall(_remoteRenderer, args["call_id"]);
+    } else if (args["call_action_type" == "accept"]) {
+      webRTCController.acceptCall(_remoteRenderer, args["call_id"]);
+    }
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -129,7 +134,7 @@ class _CallMainFrameState extends State<CallMainFrame> {
                 Row(children: [
                   ElevatedButton(
                     onPressed: () async {
-                      await webRTCController.startCall(_remoteRenderer, "fast");
+                      await webRTCController.startCall(_remoteRenderer, "test");
                     },
                     child: Text('call'),
                   ),

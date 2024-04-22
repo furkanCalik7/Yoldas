@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const TextContainer(text: "Giris Yap"),
+            const TextContainer(text: "Giriş Yap"),
             Form(
               key: formKey,
               child: Container(

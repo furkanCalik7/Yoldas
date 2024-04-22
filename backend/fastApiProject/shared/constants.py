@@ -7,6 +7,7 @@ class CallStatus(Enum):
     IN_CALL = "IN_CALL"
     FINISHED = "FINISHED"
     CALLEE_NOT_FOUND = "CALLEE_NOT_FOUND"
+    CANCELLED = "CANCELLED"
 
 
 class CallUserType(Enum):

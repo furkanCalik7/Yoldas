@@ -39,6 +39,17 @@ def start_call(call_id: str, callee: CallUser):
         print(f"call {call_id} does not exist.")
 
 
+def set_call_status(call_id: str, status: CallStatus):
+    call_col_ref = db.collection("CallCollection").document(call_id)
+    doc = call_col_ref.get()
+    if doc.exists:
+        call_dict = doc.to_dict()
+        call_dict['status'] = status.name
+        call_col_ref.set(call_dict)
+    else:
+        print(f"call {call_id} does not exist.")
+
+
 def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
     call_col_ref = db.collection("CallCollection").document(call_id)
     doc = call_col_ref.get()

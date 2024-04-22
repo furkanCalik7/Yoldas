@@ -1,5 +1,5 @@
-class CallAccept {
-  CallAccept({required this.callID});
+class CallReject {
+  CallReject({required this.callID});
 
   String callID;
 

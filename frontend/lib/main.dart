@@ -43,7 +43,7 @@ void main() async {
         CategorySelectionScreen.routeName: (context) =>
             const CategorySelectionScreen(),
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
-        CallMainFrame.routeName: (context) => const CallMainFrame(),
+        CallMainFrame.routeName: (context) => CallMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
         TextRecognitionCameraView.routeName: (context) =>
             TextRecognitionCameraView(),

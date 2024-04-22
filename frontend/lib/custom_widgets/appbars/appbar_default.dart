@@ -12,7 +12,7 @@ class AppbarDefault extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: const TextHead(
-        line: "YOLDAS",
+        line: "YOLDAŞ",
         size: 25,
       ),
       iconTheme: const IconThemeData(

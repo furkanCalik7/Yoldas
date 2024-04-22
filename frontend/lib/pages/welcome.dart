@@ -33,12 +33,12 @@ class Welcome extends StatelessWidget {
                     color: tertiaryColor,
                   ),
                 ),
-                const TextHead(line: "YOLDAS"),
+                const TextHead(line: "YOLDAŞ"),
                 const SizedBox(
                   height: 50.0,
                 ),
                 ButtonBig(
-                    text: "Giris Yap",
+                    text: "Giriş yap",
                     action: () {
                       Navigator.pushNamed(context, LoginScreen.routeName);
                     }),

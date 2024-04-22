@@ -41,7 +41,10 @@ def find_consultant_user(num_of_calls: int, caller: User, excluded_user_list: li
 
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
-        for user in consultant_list:
+        # Kopya bir liste oluştur
+        volunteer_list_copy = consultant_list.copy()
+        # Kopya listeyi üzerinde işlem yap
+        for user in volunteer_list_copy:
             if user.phone_number in excluded_user_list:
                 consultant_list.remove(user)
 
@@ -80,6 +83,7 @@ def find_consultant_user(num_of_calls: int, caller: User, excluded_user_list: li
 
     return consultant_list[:num_of_calls]
 
+
 def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=None):
     # get avg_rating and return num_of_calls number of users with the highest rating except the caller
     docs = (
@@ -101,11 +105,13 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
 
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
-        for user in volunteer_list:
+        # Kopya bir liste oluştur
+        volunteer_list_copy = volunteer_list.copy()
+        # Kopya listeyi üzerinde işlem yap
+        for user in volunteer_list_copy:
             if user.phone_number in excluded_user_list:
-                volunteer_list.remove(user)
+                volunteer_list.remove(user)  # Initialize the overall point of each volunteer
 
-    # Initialize the overall point of each volunteer
     user_point_dict: {str, (User, int)} = {}
     for user in volunteer_list:
         user_point_dict[user.phone_number] = (user, 0)
@@ -156,11 +162,13 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
         matching_ability_list.remove(caller)
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
-        for user in matching_ability_list:
+        # Kopya bir liste oluştur
+        volunteer_list_copy = matching_ability_list.copy()
+        # Kopya listeyi üzerinde işlem yap
+        for user in volunteer_list_copy:
             if user.phone_number in excluded_user_list:
-                matching_ability_list.remove(user)
+                matching_ability_list.remove(user)  # Initialize the overall point of each volunteer
 
-    # Initialize the overall point of each volunteer
     user_point_dict: {str, (User, int)} = {}
     for user in matching_ability_list:
         user_point_dict[user.phone_number] = (user, 0)

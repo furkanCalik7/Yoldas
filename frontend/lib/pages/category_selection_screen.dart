@@ -12,6 +12,7 @@ const List<IconData> icons = [
 ];
 
 const List<String> categories = ['Psikoloji', 'Aşçılık', 'Botanik'];
+int selectedIndex = 0;
 
 class CategorySelectionScreen extends StatelessWidget {
   const CategorySelectionScreen({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class CategorySelectionScreen extends StatelessWidget {
                   titles: categories,
                   icons: icons,
                   action: (index) {
-                    print(categories[index]);
+                    selectedIndex = index;
                   }),
             ),
             SizedBox(
@@ -43,7 +44,7 @@ class CategorySelectionScreen extends StatelessWidget {
             ButtonMain(
               text: "Aramayı Başlat",
               action: () {
-                Navigator.pushNamed(context, VolunteerSearchScreen.routeName);
+                Navigator.pushNamed(context, VolunteerSearchScreen.routeName,arguments: {"is_quick_call": false, "category": categories[selectedIndex]} );
               },
               height: 100,
               width: 350,

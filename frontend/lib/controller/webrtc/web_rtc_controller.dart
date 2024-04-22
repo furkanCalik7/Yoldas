@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
-import 'package:frontend/controller/webrtc/dto/call_accept_response.dart';
+import 'package:frontend/controller/webrtc/dto/call_accept_details_response.dart';
 import 'package:frontend/controller/webrtc/dto/call_hangup.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
 import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
@@ -56,27 +56,15 @@ class WebRTCController {
   ///
   /// [remoteRenderer]: Renderer for remote video.
   /// [type]: Type of call.
-  Future<CallRequestResponse> startCall(
-      RTCVideoRenderer remoteRenderer, String type) async {
+  Future<void> startCall(
+      RTCVideoRenderer remoteRenderer, String call_id) async {
+
     String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
     print('(debug) Create PeerConnection with configuration: $configuration');
-
-    CallRequest callRequest = CallRequest(
-        isQuickCall: true, category: type, isConsultancyCall: false);
-
-    final response = await ApiManager.post(
-      path: "/calls/call",
-      bearerToken: accessToken,
-      body: callRequest.toJson(),
-    );
-
-    CallRequestResponse callRequestResponse =
-        CallRequestResponse.fromJSON(jsonDecode(response.body));
-
-    callId = callRequestResponse.callID;
-    DocumentReference callRef = callCollection.doc(callRequestResponse.callID);
+    callId = call_id;
+    DocumentReference callRef = callCollection.doc(call_id);
 
     peerConnection = await createPeerConnection(configuration);
 
@@ -145,8 +133,8 @@ class WebRTCController {
         }
       });
     });
-    // TODO: simdilik boyle birakiyorum ama bu acaba callee nin adimi olmali yoksa baska static bi seymi 
-    
+    // TODO: simdilik boyle birakiyorum ama bu acaba callee nin adimi olmali yoksa baska static bi seymi
+
     calleeSubscription = callRef.snapshots().listen((snapshot) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["callee"] != null) {
@@ -154,14 +142,13 @@ class WebRTCController {
       }
     });
     _registerFirestoreListeners();
-    return callRequestResponse;
   }
 
   /// Accept an incoming call with the given parameters.
   ///
   /// [remoteVideo]: Renderer for remote video.
   /// [roomId]: ID of the room.
-  Future<CallAcceptResponse> acceptCall(
+  Future<CallAcceptDetailsResponse> acceptCall(
       RTCVideoRenderer remoteVideo, String roomId) async {
     DocumentReference callRef = callCollection.doc(roomId);
     callId = roomId;
@@ -195,7 +182,7 @@ class WebRTCController {
       });
     };
 
-    CallAccept callAccept = CallAccept(
+    CallReject callAccept = CallReject(
       callID: roomId,
     );
 
@@ -206,8 +193,8 @@ class WebRTCController {
     );
 
     var signal = jsonDecode(response.body)['signal'];
-    CallAcceptResponse callAcceptResponse =
-        CallAcceptResponse.fromJSON(jsonDecode(response.body));
+    CallAcceptDetailsResponse callAcceptResponse =
+        CallAcceptDetailsResponse.fromJSON(jsonDecode(response.body));
     RTCSessionDescription offer = RTCSessionDescription(
       signal['sdp'],
       signal['type'],
@@ -269,7 +256,7 @@ class WebRTCController {
   /// [localVideo]: Renderer for local video.
   Future<void> hangUp() async {
     disposeSubsciptions();
-    if(callId == null) return;
+    if (callId == null) return;
     CallHangup callHangup = CallHangup(callId: callId!);
 
     final response = await ApiManager.post(
@@ -295,7 +282,6 @@ class WebRTCController {
     }
     if (peerConnection != null) peerConnection!.close();
 
-  
     var callRef = db.collection('CallCollection').doc(callId);
     var calleeCandidates = await callRef.collection('calleeCandidates').get();
     calleeCandidates.docs.forEach((document) => document.reference.delete());
@@ -303,7 +289,7 @@ class WebRTCController {
     var callerCandidates = await callRef.collection('callerCandidates').get();
     callerCandidates.docs.forEach((document) => document.reference.delete());
 
-    // TO delete the call from firestore  
+    // TO delete the call from firestore
     // await callRef.delete();
 
     localStream!.dispose();
@@ -409,7 +395,7 @@ class WebRTCController {
         _moveToNextScreen();
       }
     });
-  } 
+  }
 
   void dispose() {
     disposeSubsciptions();

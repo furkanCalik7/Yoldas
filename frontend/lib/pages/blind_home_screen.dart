@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
+import 'package:frontend/pages/volunteer_main_frame.dart';
+import 'package:frontend/pages/volunteer_search_screen.dart';
 
 class BlindHomeScreen extends StatelessWidget {
   const BlindHomeScreen({super.key});
@@ -15,7 +17,8 @@ class BlindHomeScreen extends StatelessWidget {
         children: [
           TappableIcon(
             action: () {
-              Navigator.pushNamed(context, CallMainFrame.routeName);
+              Navigator.pushNamed(context, VolunteerSearchScreen.routeName,
+                  arguments: {"is_quick_call": true});
             },
             iconData: Icons.search,
             size: 150,

@@ -1,17 +1,19 @@
 class CallAcceptResponse {
-  CallAcceptResponse({required this.callerName, required this.callID});
+  bool isAccepted;
 
-  String callerName;
-  String callID;
+  CallAcceptResponse({
+    required this.isAccepted,
+  });
 
-  toJSON() {
-    return {'caller_name': callerName, 'call_id': callID};
+  factory CallAcceptResponse.fromJson(Map<String, dynamic> json) {
+    return CallAcceptResponse(
+      isAccepted: json['is_accepted'],
+    );
   }
 
-  factory CallAcceptResponse.fromJSON(Map<String, dynamic> json) {
-    return CallAcceptResponse(
-      callerName: json['caller_name'],
-      callID: json['call_id'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'is_accepted': isAccepted,
+    };
   }
 }

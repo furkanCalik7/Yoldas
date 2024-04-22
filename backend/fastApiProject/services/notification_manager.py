@@ -15,7 +15,10 @@ def call_user_phone(phone_number: str, call_id):
 
 def __try_send_notification_to_token__(phone_number, token, data):
     try:
-        message = messaging.Message(data, token)
+        message = messaging.Message(
+            data=data,
+            token=token,
+        )
         return messaging.send(message)
     except Exception as e:
         if type(e) is firebase_admin.messaging.UnregisteredError:
