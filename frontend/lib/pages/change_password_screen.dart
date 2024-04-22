@@ -30,11 +30,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     // bearerToken = await storage.read(key: "access_token") ?? "N/A";
     // currentPasswordInStorage = await storage.read(key: "password") ?? "N/A";
     // phoneNumber = await storage.read(key: "phone_number") ?? "N/A";
-    bearerToken =
+    bearerToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
-    currentPasswordInStorage =
+    currentPasswordInStorage = SecureStorageManager.readFromCache(key: StorageKey.password) ??
         await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
-    phoneNumber =
+    phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
         await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
   }
 

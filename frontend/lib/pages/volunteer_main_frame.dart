@@ -38,7 +38,7 @@ class _VolunteerMainFrameState extends State<VolunteerMainFrame> {
   }
 
   Future<void> _initNotifications() async {
-    String? phoneNumber =
+    String? phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
         await SecureStorageManager.read(key: StorageKey.phone_number);
     if (phoneNumber == null) return;
     await NotificationHandler().initializeNotifications(phoneNumber);

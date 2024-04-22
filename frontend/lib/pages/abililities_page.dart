@@ -7,7 +7,7 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_dropdown.dart';
 import 'package:frontend/custom_widgets/custom_listView.dart';
 import 'package:frontend/util/api_manager.dart';
-import 'package:frontend/util/secure_storage_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AbilitiesPage extends StatefulWidget {
@@ -27,11 +27,11 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
   String? selectedAbility; // Changed to nullable
 
   void readUserInfo() async {
-    bearerToken =
+    bearerToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "";
-    userAbilities =
+    userAbilities = SecureStorageManager.readListFromCache(key: StorageKey.abilities) ??
         await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
-    phoneNumber =
+    phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
         await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
     setState(() {});
   }

@@ -41,17 +41,17 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Future _getFieldsFromStorage() async {
-    current_name =
+    current_name = SecureStorageManager.readFromCache(key: StorageKey.name) ??
         await SecureStorageManager.read(key: StorageKey.name) ?? "N/A";
-    current_phoneNumber =
+    current_phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
         await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
-    current_password =
+    current_password = SecureStorageManager.readFromCache(key: StorageKey.password) ??
         await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
-    bearerToken =
+    bearerToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
-    consultancy_status =
+    consultancy_status = SecureStorageManager.readFromCache(key: StorageKey.isConsultant) == "true" ||
         await SecureStorageManager.read(key: StorageKey.isConsultant) == "true";
-    current_userType = stringToUserType(
+    current_userType = stringToUserType( SecureStorageManager.readFromCache(key: StorageKey.role) ??
         await SecureStorageManager.read(key: StorageKey.role) ?? "N/A");
 
     setState(() {});

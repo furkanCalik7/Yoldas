@@ -21,19 +21,22 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
   String phoneNumber = "";
   int numberOfHelpedBlindPeople = 0;
 
-  getUserInfo() async{
+  getUserInfo() async {
 
-    username = await SecureStorageManager.read(key: StorageKey.name) ?? "";
-    categories = await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
-    phoneNumber = await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
+    username = SecureStorageManager.readFromCache(key: StorageKey.name)
+        ?? await SecureStorageManager.read(key: StorageKey.name) ?? "";
+    categories = SecureStorageManager.readListFromCache(key: StorageKey.abilities) ??
+        await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
+    phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number)
+        ?? await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
 
     setState(() {});
   }
 
   @override
   void initState() {
-    getUserInfo();
     super.initState();
+    getUserInfo();
   }
 
   @override
