@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
-import 'package:frontend/util/secure_storage_manager.dart';
+import 'package:frontend/util/secure_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -23,8 +23,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   UserType userType = UserType.blind;
 
   void updateUserType() async {
-    userType =
-        await SecureStorageManager.read(key: StorageKey.role) == "volunteer"
+
+    String? type = SecureStorageManager.readFromCache(key: StorageKey.role);
+    type ??= await SecureStorageManager.read(key: StorageKey.role);
+    userType = type == "volunteer"
             ? UserType.volunteer
             : UserType.blind;
     setState(() {});
@@ -34,7 +36,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     updateUserType();
-    setState(() {});
   }
 
   @override

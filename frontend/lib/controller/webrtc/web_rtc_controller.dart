@@ -58,7 +58,7 @@ class WebRTCController {
   /// [type]: Type of call.
   Future<CallRequestResponse> startCall(
       RTCVideoRenderer remoteRenderer, String type) async {
-    String accessToken =
+    String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
     print('(debug) Create PeerConnection with configuration: $configuration');

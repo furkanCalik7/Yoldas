@@ -20,10 +20,12 @@ class Login {
     String phoneNumber;
     String password;
 
-    phoneNumber =
+    print(SecureStorageManager.read(key: StorageKey.phone_number));
+
+    phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
         await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
-    password =
-        await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
+    password = SecureStorageManager.readFromCache(key: StorageKey.password) ??
+            await SecureStorageManager.read(key: StorageKey.password) ?? "N/A";
 
     if (phoneNumber == "N/A" || password == "N/A") {
       print("No phone number or password found in storage");
