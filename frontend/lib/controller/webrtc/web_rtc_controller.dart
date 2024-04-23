@@ -52,10 +52,6 @@ class WebRTCController {
     callCollection = db.collection('CallCollection');
   }
 
-  /// Start a call with the given parameters.
-  ///
-  /// [remoteRenderer]: Renderer for remote video.
-  /// [type]: Type of call.
   Future<void> startCall(
       RTCVideoRenderer remoteRenderer, String call_id) async {
 
@@ -69,7 +65,7 @@ class WebRTCController {
     peerConnection = await createPeerConnection(configuration);
 
     registerPeerConnectionListeners();
-
+    print("local stream $localStream");
     localStream?.getTracks().forEach((track) {
       print("(debug) Add local track: $track");
       peerConnection?.addTrack(track, localStream!);
@@ -138,16 +134,13 @@ class WebRTCController {
     calleeSubscription = callRef.snapshots().listen((snapshot) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["callee"] != null) {
+        print("(debug) update callee ${data['callee']}");
         updateCalleeName(data['callee']['name']);
       }
     });
     _registerFirestoreListeners();
   }
 
-  /// Accept an incoming call with the given parameters.
-  ///
-  /// [remoteVideo]: Renderer for remote video.
-  /// [roomId]: ID of the room.
   Future<CallAcceptDetailsResponse> acceptCall(
       RTCVideoRenderer remoteVideo, String roomId) async {
     DocumentReference callRef = callCollection.doc(roomId);
@@ -234,10 +227,7 @@ class WebRTCController {
     return callAcceptResponse;
   }
 
-  /// Open user media for local and remote videos.
-  ///
-  /// [localVideo]: Renderer for local video.
-  /// [remoteVideo]: Renderer for remote video.
+
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
@@ -251,9 +241,7 @@ class WebRTCController {
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
 
-  /// Hang up the call and perform necessary cleanup.
-  ///
-  /// [localVideo]: Renderer for local video.
+
   Future<void> hangUp() async {
     disposeSubsciptions();
     if (callId == null) return;

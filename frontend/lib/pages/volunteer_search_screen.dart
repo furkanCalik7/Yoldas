@@ -108,8 +108,20 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["status"] == CallStatus.IN_CALL.toString()) {
-        Navigator.pushNamed(context, CallMainFrame.routeName,
-            arguments: {"call_action_type": "start", 'callId': callId});
+        // Navigator.pushNamed(context, CallMainFrame.routeName,
+        //     arguments: {"call_action_type": "start", 'callId': callId});
+        print("Call started");
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CallMainFrame(
+              callId: callId,
+              callActionType: "start",
+            ),
+          ),
+          ModalRoute.withName('/'),
+        );
       }
     });
   }

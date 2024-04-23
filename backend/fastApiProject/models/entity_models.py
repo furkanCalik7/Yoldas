@@ -58,6 +58,7 @@ class Signal(BaseModel):
 
 
 class CallUser(BaseModel):
+    name: str
     phone_number: str
     signal: Optional[Signal] = None
 

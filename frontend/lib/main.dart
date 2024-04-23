@@ -43,7 +43,16 @@ void main() async {
         CategorySelectionScreen.routeName: (context) =>
             const CategorySelectionScreen(),
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
-        CallMainFrame.routeName: (context) => CallMainFrame(),
+        '/callMainFrameWithParams': (context) {
+          final Map<String, dynamic> args = ModalRoute.of(context)!
+              .settings
+              .arguments as Map<String, dynamic>;
+          return CallMainFrame(
+            callId: args['callId'],
+            callActionType: args['call_action_type'],
+          );
+        },
+        // CallMainFrame.routeName: (context) => CallMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
         TextRecognitionCameraView.routeName: (context) =>
             TextRecognitionCameraView(),

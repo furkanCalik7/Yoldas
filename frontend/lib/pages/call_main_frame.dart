@@ -3,23 +3,27 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
-import "package:socket_io_client/socket_io_client.dart" as IO;
 
 class CallMainFrame extends StatefulWidget {
   static const String routeName = "/callMainFrame";
+  final String callId;
+  final String callActionType;
+
+  const CallMainFrame(
+      {Key? key, required this.callId, required this.callActionType})
+      : super(key: key);
 
   @override
-  _CallMainFrameState createState() => _CallMainFrameState();
+  CallMainFrameState createState() => CallMainFrameState();
 }
 
-class _CallMainFrameState extends State<CallMainFrame> {
+class CallMainFrameState extends State<CallMainFrame> {
   String calleeName = "";
   late WebRTCController webRTCController;
-
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-  IO.Socket? socket;
-  bool isFlashlightOn = false; // Track flashlight state
+  bool isFlashlightOn = false;
+  bool isRemoteStreamReceived = false;
 
   @override
   void initState() {
@@ -29,20 +33,32 @@ class _CallMainFrameState extends State<CallMainFrame> {
     webRTCController
         .openUserMedia(_localRenderer, _remoteRenderer)
         .then((value) {
+      startWebRTC();
       setState(() {});
     });
     webRTCController.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
-      setState(() {});
+      setState(() {
+        isRemoteStreamReceived = true;
+      });
     });
+
     super.initState();
+  }
+
+  Future<void> startWebRTC() async {
+    if (widget.callActionType == "start") {
+      await webRTCController.startCall(_remoteRenderer, widget.callId);
+    } else if (widget.callActionType == "accept") {
+      await webRTCController.acceptCall(_remoteRenderer, widget.callId);
+    }
+    setState(() {});
   }
 
   @override
   void dispose() {
     _localRenderer.dispose();
     _remoteRenderer.dispose();
-    _textEditingController.dispose();
     webRTCController.dispose();
     super.dispose();
   }
@@ -53,40 +69,27 @@ class _CallMainFrameState extends State<CallMainFrame> {
     });
   }
 
-  // TODO; Delete later
-  TextEditingController _textEditingController = TextEditingController();
-
   void handleButtonStateChanged(ButtonType buttonType, bool isButtonOn) {
     switch (buttonType) {
       case ButtonType.MIC:
-        // Handle Mic button state change
-        print("Mic button pressed");
         webRTCController.toggleAudio(isButtonOn);
         setState(() {});
         break;
       case ButtonType.Video:
         webRTCController.toggleVideo(isButtonOn);
         setState(() {});
-        // Handle Video button state change
-        print("Video button pressed");
         break;
       case ButtonType.Speaker:
         webRTCController.toogleSpeaker(isButtonOn);
         setState(() {});
-        // Handle Speaker button state change
-        print("Speaker button pressed");
         break;
       case ButtonType.Camera:
         webRTCController.switchVideo();
         setState(() {});
-        // Handle Camera button state choange
-        print("Camera button pressed");
         break;
       case ButtonType.HangUp:
-        // Handle HangUp button state change
         webRTCController.hangUp();
         setState(() {});
-        print("HangUp button pressed");
         break;
     }
   }
@@ -97,17 +100,11 @@ class _CallMainFrameState extends State<CallMainFrame> {
     });
     webRTCController.toggleTorch(isFlashlightOn);
   }
+  // VIDEO call initalization screen
 
   @override
   Widget build(BuildContext context) {
     webRTCController.setContext(context);
-    final Map<String, dynamic> args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    if (args["call_action_type"] == "start") {
-      webRTCController.startCall(_remoteRenderer, args["call_id"]);
-    } else if (args["call_action_type" == "accept"]) {
-      webRTCController.acceptCall(_remoteRenderer, args["call_id"]);
-    }
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -118,37 +115,11 @@ class _CallMainFrameState extends State<CallMainFrame> {
                     width: double.infinity,
                     height: double.infinity,
                     color: Colors.black,
-                    child: RTCVideoView(_remoteRenderer))),
-            // Add button here
-            Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _textEditingController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter text here...',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                Row(children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      await webRTCController.startCall(_remoteRenderer, "test");
-                    },
-                    child: Text('call'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      webRTCController.acceptCall(
-                          _remoteRenderer, _textEditingController.text);
-                      setState(() {});
-                    },
-                    child: Text('answer'),
-                  ),
-                ])
-              ],
-            )),
+                    child: isRemoteStreamReceived
+                        ? RTCVideoView(_remoteRenderer)
+                        : Container(
+                            color: Colors.white,
+                          ))),
             Positioned(
               top: 0,
               left: 0,
