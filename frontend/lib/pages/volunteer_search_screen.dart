@@ -71,6 +71,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   }
 
   Future<CallRequestResponse> sendCallRequest(Map<String, dynamic> args) async {
+    print("(notificition) sendCallRequest: $args");
     String accessToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
     CallRequest callRequest;
@@ -122,6 +123,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
           ),
           ModalRoute.withName('/'),
         );
+        callSubscription?.cancel();
       }
     });
   }
@@ -140,10 +142,11 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   Widget build(BuildContext context) {
     final Map<String, dynamic> args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    sendCallRequest(args).then((callRequestResponse) {
-      callId = callRequestResponse.callID;
-      registerCallStatus(callRequestResponse.callID, context);
-    });
+    print("(notification) volunteer_search_screen builded");
+    // sendCallRequest(args).then((callRequestResponse) {
+    //   callId = callRequestResponse.callID;
+    //   registerCallStatus(callRequestResponse.callID, context);
+    // });
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(

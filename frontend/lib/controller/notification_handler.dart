@@ -70,12 +70,15 @@ Future<void> showCallkitIncoming(String callId) async {
 }
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
+  print("(notification) handleBackgroundMEssage : ${message.data['call_id']}");
   await showCallkitIncoming(message.data["call_id"]);
 }
 
 void handleMessage(RemoteMessage? message) async {}
 
 void handleFrondgroundMessage(RemoteMessage remoteMessage) async {
+  print(
+      "(notification) handleFrondgroundMessage: ${remoteMessage.data['call_id']}");
   await showCallkitIncoming(remoteMessage.data["call_id"]);
 }
 
@@ -151,6 +154,7 @@ class NotificationHandler {
     FirebaseMessaging.onMessage.listen((message) {
       handleFrondgroundMessage(message);
     });
+    
 
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
       if (event == null) return;
@@ -179,9 +183,11 @@ class NotificationHandler {
               }
             },
           );
+          flutterLocalNotificationsPlugin.cancelAll();
           break;
         case Event.actionCallDecline:
           handleCallReject(callId);
+          flutterLocalNotificationsPlugin.cancelAll();
           break;
         case Event.actionCallEnded:
           break;
