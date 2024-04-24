@@ -67,7 +67,7 @@ def hangup_call(call_id: str):
         call_dict = doc.to_dict()
         call_dict['end_time'] = datetime.now()
         call_dict['duration'] = (call_dict["end_time"].replace(tzinfo=None) - call_dict["start_time"].replace(
-            tzinfo=None)).total_seconds()
+            tzinfo=None)).seconds
         call_dict['status'] = CallStatus.FINISHED.name
         call_col_ref.set(call_dict)
     else:
