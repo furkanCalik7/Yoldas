@@ -1,16 +1,20 @@
 import firebase_admin.messaging
 from firebase_admin import messaging
+from icecream import ic
+
 from ..dao.user_dao import get_fcm_tokens, delete_fcm_token
 
 
 def call_user_phone(phone_number: str, call_id):
     fcm_tokens = get_fcm_tokens(phone_number)
-    sorted_fcm_tokens = sorted(fcm_tokens, key=lambda x: x['createdAt'], reverse=False)
+    sorted_fcm_tokens = sorted(fcm_tokens, key=lambda x: x['createdAt'], reverse=True)
     for fcm_token in sorted_fcm_tokens:
+        ic(fcm_token)
         body = {
             "call_id": call_id
         }
         __try_send_notification_to_token__(phone_number, fcm_token["token"], body)
+        return
 
 
 def __try_send_notification_to_token__(phone_number, token, data):

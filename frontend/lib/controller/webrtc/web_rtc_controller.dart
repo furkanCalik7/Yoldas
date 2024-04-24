@@ -132,13 +132,12 @@ class WebRTCController {
         }
       });
     });
-    // TODO: simdilik boyle birakiyorum ama bu acaba callee nin adimi olmali yoksa baska static bi seymi
 
     calleeSubscription = callRef.snapshots().listen((snapshot) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["callee"] != null) {
-        print("(debug) update callee ${data['callee']}");
         updateCalleeName(data['callee']['name']);
+        calleeSubscription?.cancel();
       }
     });
     _registerFirestoreListeners();
@@ -188,26 +187,6 @@ class WebRTCController {
       body: callAccept.toJSON(),
     );
 
-    // offerSubscription = callRef.snapshots().listen((snapshot) async {
-    //   print('(debug) Got updated room: ${snapshot.data()}');
-    //   Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-    //   if (data['caller'] != null) {
-    //     var offerData = data['caller']['signal'];
-    //     if (peerConnection?.getRemoteDescription() != null &&
-    //         offerData != null) {
-    //       var answer = RTCSessionDescription(
-    //         offerData['sdp'],
-    //         offerData['type'],
-    //       );
-
-
-
-
-    //       await peerConnection?.setRemoteDescription(answer);
-    //     }
-    //   }
-    // });
-
     var signal = jsonDecode(response.body)['signal'];
     CallAcceptDetailsResponse callAcceptResponse =
         CallAcceptDetailsResponse.fromJSON(jsonDecode(response.body));
@@ -244,6 +223,7 @@ class WebRTCController {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["caller"] != null) {
         updateCalleeName(data['caller']['name']);
+        calleeSubscription?.cancel();
       }
     });
     _registerFirestoreListeners();
