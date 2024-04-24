@@ -7,7 +7,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
+import 'package:frontend/controller/webrtc/dto/call_accept_details_response.dart';
 import 'package:frontend/controller/webrtc/dto/call_hangup.dart';
+import 'package:frontend/controller/webrtc/dto/call_request.dart';
+import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/pages/evaluation_page.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
@@ -98,7 +101,7 @@ class WebRTCController {
       print('(debug) Got updated room: ${snapshot.data()}');
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (data['callee']['signal'] != null) {
+      if (data['callee'] != null) {
         var answerData = data['callee']['signal'];
         if (peerConnection?.getRemoteDescription() != null &&
             answerData != null) {
@@ -109,9 +112,7 @@ class WebRTCController {
 
           print("(debug) Someone tried to connect: ${answer.toMap()}");
           await peerConnection?.setRemoteDescription(answer);
-          answerSubscription!.cancel();
         }
-        ;
       }
     });
     // Listen for remote Ice candidates below
@@ -138,13 +139,13 @@ class WebRTCController {
       if (data["callee"] != null) {
         print("(debug) update callee ${data['callee']}");
         updateCalleeName(data['callee']['name']);
-        calleeSubscription!.cancel();
       }
     });
     _registerFirestoreListeners();
   }
 
-  Future<void> acceptCall(RTCVideoRenderer remoteVideo, String roomId) async {
+  Future<CallAcceptDetailsResponse> acceptCall(
+      RTCVideoRenderer remoteVideo, String roomId) async {
     DocumentReference callRef = callCollection.doc(roomId);
     callId = roomId;
 
@@ -157,6 +158,7 @@ class WebRTCController {
       peerConnection?.addTrack(track, localStream!);
     });
 
+    // Code for collecting ICE candidates below
     var calleeCandidatesCollection = callRef.collection('calleeCandidates');
     peerConnection!.onIceCandidate = (RTCIceCandidate? candidate) {
       if (candidate == null) {
@@ -166,6 +168,7 @@ class WebRTCController {
       print('(debug) onIceCandidate: ${candidate.toMap()}');
       calleeCandidatesCollection.add(candidate.toMap());
     };
+    // Code for collecting ICE candidate above
 
     peerConnection?.onTrack = (RTCTrackEvent event) {
       print('(debug) Got remote track: ${event.streams[0]}');
@@ -185,26 +188,41 @@ class WebRTCController {
       body: callAccept.toJSON(),
     );
 
-    offerSubscription = callRef.snapshots().listen((snapshot) async {
-      print('(debug) Got updated room: ${snapshot.data()}');
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (data['caller'] != null && data['caller']['signal'] != null) {
-        var offerData = data['caller']['signal'];
-        if (peerConnection?.getRemoteDescription() != null &&
-            offerData != null) {
-          var offer = RTCSessionDescription(
-            offerData['sdp'],
-            offerData['type'],
-          );
-          await peerConnection?.setRemoteDescription(offer);
-          peerConnection?.createAnswer().then((answer) async {
-            peerConnection?.setLocalDescription(answer);
-            data["callee"]["signal"] = answer.toMap();
-            await callRef.update(data);
-          });
-          offerSubscription?.cancel();
-        }
-      }
+    // offerSubscription = callRef.snapshots().listen((snapshot) async {
+    //   print('(debug) Got updated room: ${snapshot.data()}');
+    //   Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    //   if (data['caller'] != null) {
+    //     var offerData = data['caller']['signal'];
+    //     if (peerConnection?.getRemoteDescription() != null &&
+    //         offerData != null) {
+    //       var answer = RTCSessionDescription(
+    //         offerData['sdp'],
+    //         offerData['type'],
+    //       );
+
+
+
+
+    //       await peerConnection?.setRemoteDescription(answer);
+    //     }
+    //   }
+    // });
+
+    var signal = jsonDecode(response.body)['signal'];
+    CallAcceptDetailsResponse callAcceptResponse =
+        CallAcceptDetailsResponse.fromJSON(jsonDecode(response.body));
+    RTCSessionDescription offer = RTCSessionDescription(
+      signal['sdp'],
+      signal['type'],
+    );
+
+    var roomSnapshot = await callRef.get();
+    var data = roomSnapshot.data() as Map<String, dynamic>;
+    await peerConnection?.setRemoteDescription(offer);
+    peerConnection?.createAnswer().then((answer) async {
+      peerConnection?.setLocalDescription(answer);
+      data["callee"]["signal"] = answer.toMap();
+      await callRef.update(data);
     });
 
     // Listening for remote ICE candidates below
@@ -226,10 +244,10 @@ class WebRTCController {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["caller"] != null) {
         updateCalleeName(data['caller']['name']);
-        calleeSubscription!.cancel();
       }
     });
     _registerFirestoreListeners();
+    return callAcceptResponse;
   }
 
   Future<void> openUserMedia(
@@ -364,8 +382,6 @@ class WebRTCController {
   }
 
   void _moveToNextScreen() {
-    hangupSubscription?.cancel();
-    calleeSubscription?.cancel();
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -373,6 +389,8 @@ class WebRTCController {
                   callId: callId!,
                 )),
         (route) => false);
+    hangupSubscription?.cancel();
+    calleeSubscription?.cancel();
   }
 
   void _registerFirestoreListeners() {
