@@ -37,13 +37,13 @@ async def get_user_by_rating_average(low: int, high: int):
     return user_manager.get_user_by_rating_average(low, high)
 
 
-@router.post("/send_feedback")
+@router.post("/feedback")
 async def send_feedback(feedbackRequest: request_models.FeedbackRequest,
                         current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     return user_manager.send_feedback(feedbackRequest, current_user)
 
 
-@router.post("/send_complaint")
+@router.post("/complaint")
 async def send_complaint(complaintRequest: request_models.ComplaintRequest,
                          current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     return user_manager.send_complaint(complaintRequest, current_user)

@@ -31,8 +31,8 @@ async def call_accept(_call_accept: CallAccept,
                           entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id, phone_number = _call_accept.call_id, current_user["phone_number"]
     logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
-    is_accepted = call_manager.accept_call(call_id, phone_number)
-    return CallAcceptResponse (
+    is_accepted = call_manager.accept_call(call_id, current_user)
+    return CallAcceptResponse(
         is_accepted=is_accepted
     )
 
@@ -43,8 +43,8 @@ async def call_accept_details(_call_accept: CallAccept,
                                   entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id, phone_number = _call_accept.call_id, current_user["phone_number"]
     logger.info(f"Call accept with call_id {call_id} and user_id {phone_number}")
-    call_manager.accept_call(call_id, phone_number)
     signal = call_manager.get_signal(call_id, CallUserType.CALLER)
+    # TODO: remove caller name and signal here
     return CallAcceptDetailsResponse(
         call_id=call_id,
         caller_name="to be removed",

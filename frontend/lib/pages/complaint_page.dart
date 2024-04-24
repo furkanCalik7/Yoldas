@@ -55,7 +55,9 @@ class ComplaintPage extends StatelessWidget {
                         ButtonMain(
                           text: "Gönder",
                           width: MediaQuery.of(context).size.width * 0.4,
-                          action: () {},
+                          action: () {
+                            sendComplaint();
+                          },
                         ),
                         const Spacer(),
                         ButtonMain(

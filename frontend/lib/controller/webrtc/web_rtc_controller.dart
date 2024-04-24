@@ -47,6 +47,7 @@ class WebRTCController {
       callerCandidatesSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? hangupSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? calleeSubscription;
+  StreamSubscription<DocumentSnapshot<Object?>>? offerSubscription;
 
   WebRTCController({required this.updateCalleeName}) {
     callCollection = db.collection('CallCollection');
@@ -54,9 +55,10 @@ class WebRTCController {
 
   Future<void> startCall(
       RTCVideoRenderer remoteRenderer, String call_id) async {
-
-    String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
-        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+    String accessToken =
+        SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+            await SecureStorageManager.read(key: StorageKey.access_token) ??
+            "N/A";
 
     print('(debug) Create PeerConnection with configuration: $configuration');
     callId = call_id;
@@ -94,6 +96,7 @@ class WebRTCController {
         remoteStream?.addTrack(track);
       });
     };
+
     answerSubscription = callRef.snapshots().listen((snapshot) async {
       print('(debug) Got updated room: ${snapshot.data()}');
 
@@ -185,6 +188,26 @@ class WebRTCController {
       body: callAccept.toJSON(),
     );
 
+    // offerSubscription = callRef.snapshots().listen((snapshot) async {
+    //   print('(debug) Got updated room: ${snapshot.data()}');
+    //   Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    //   if (data['caller'] != null) {
+    //     var offerData = data['caller']['signal'];
+    //     if (peerConnection?.getRemoteDescription() != null &&
+    //         offerData != null) {
+    //       var answer = RTCSessionDescription(
+    //         offerData['sdp'],
+    //         offerData['type'],
+    //       );
+
+
+
+
+    //       await peerConnection?.setRemoteDescription(answer);
+    //     }
+    //   }
+    // });
+
     var signal = jsonDecode(response.body)['signal'];
     CallAcceptDetailsResponse callAcceptResponse =
         CallAcceptDetailsResponse.fromJSON(jsonDecode(response.body));
@@ -227,7 +250,6 @@ class WebRTCController {
     return callAcceptResponse;
   }
 
-
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
@@ -240,7 +262,6 @@ class WebRTCController {
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
-
 
   Future<void> hangUp() async {
     disposeSubsciptions();
@@ -256,7 +277,6 @@ class WebRTCController {
     if (response.statusCode != 200) {
       throw Exception('Failed to hang up call');
     }
-    // await _closePeerConnection();
   }
 
   Future<void> _closePeerConnection() async {

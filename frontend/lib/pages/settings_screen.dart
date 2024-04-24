@@ -23,12 +23,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   UserType userType = UserType.blind;
 
   void updateUserType() async {
-
     String? type = SecureStorageManager.readFromCache(key: StorageKey.role);
     type ??= await SecureStorageManager.read(key: StorageKey.role);
-    userType = type == "volunteer"
-            ? UserType.volunteer
-            : UserType.blind;
+    userType = type == "volunteer" ? UserType.volunteer : UserType.blind;
     setState(() {});
   }
 
@@ -73,35 +70,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           builder: (BuildContext context) => AbilitiesPage()));
                     },
                   ),
-                SettingsTile.navigation(
-                  leading: Icon(Icons.language),
-                  title: Text('Dil'),
-                  value: Text('Türkçe'),
-                  onPressed: (BuildContext context) {
-                    // change language
-                    changeLocale(context, 'en_US');
-                  },
-                ),
-                SettingsTile.switchTile(
-                  onToggle: (value) {
-                    setState(() {
-                      notificationsEnabled = value;
-                    });
-                  },
-                  initialValue: notificationsEnabled,
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Bildirimler'),
-                ),
-                SettingsTile.navigation(
-                  leading: const Icon(Icons.category),
-                  title: const Text('Tercihler'),
-                ),
-                SettingsTile.switchTile(
-                  onToggle: (value) {},
-                  initialValue: darkThemeEnabled,
-                  leading: const Icon(Icons.format_paint),
-                  title: const Text('Tema'),
-                ),
+                // SettingsTile.navigation(
+                //   leading: Icon(Icons.language),
+                //   title: Text('Dil'),
+                //   value: Text('Türkçe'),
+                //   onPressed: (BuildContext context) {
+                //     // change language
+                //     changeLocale(context, 'en_US');
+                //   },
+                // ),
+
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
                   title: const Text('Hakkında'),

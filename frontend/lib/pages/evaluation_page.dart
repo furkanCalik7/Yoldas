@@ -50,7 +50,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
 
-    String path = "/users/send_feedback/";
+    String path = "/users/feedback";
 
     Map<String, dynamic> requestBody = {
       "rating": point,

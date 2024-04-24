@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 def create_call(call_request: CallRequest, user) -> str:
     call = Call(
         caller=CallUser(
+            name=user["name"],
             phone_number=user["phone_number"],
         ),
         isQuickCall=call_request.isQuickCall,
@@ -28,12 +29,13 @@ def create_call(call_request: CallRequest, user) -> str:
     return call_id
 
 
-def accept_call(call_id: str, callee_phone_number: str):
-    callee = CallUser(
-        phone_number=callee_phone_number,
-    )
-    is_accepted = search_manager.accept_search_session(call_id, callee_phone_number)
+def accept_call(call_id: str, user):
+    is_accepted = search_manager.accept_search_session(call_id, user["phone_number"])
     if is_accepted:
+        callee = CallUser(
+            name=user["name"],
+            phone_number=user["phone_number"],
+        )
         call_dao.start_call(call_id, callee)
         search_manager.delete_session(call_id)
     return is_accepted
