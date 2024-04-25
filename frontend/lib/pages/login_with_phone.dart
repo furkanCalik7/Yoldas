@@ -53,22 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       Map data = jsonDecode(utf8.decode(response.bodyBytes));
       Map user = data['user'];
-
-      await SecureStorageManager.write(
-          key: StorageKey.access_token, value: data['access_token']);
-      await SecureStorageManager.write(
-          key: StorageKey.token_type, value: data['token_type']);
-      await SecureStorageManager.write(
-          key: StorageKey.name, value: user['name']);
-      await SecureStorageManager.write(
-          key: StorageKey.role, value: user['role']);
-      await SecureStorageManager.write(
-          key: StorageKey.phone_number, value: user['phone_number']);
-      await SecureStorageManager.write(
-          key: StorageKey.password, value: password_controller.text);
-      await SecureStorageManager.write(
-          key: StorageKey.isConsultant, value: user['isConsultant'].toString());
-
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);
 
@@ -77,8 +61,14 @@ class _LoginScreenState extends State<LoginScreen> {
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
       UserData userData = UserData(
+        name: user['name'],
         phoneNumber: user['phone_number'],
         password: password_controller.text,
+        accessToken: data['access_token'],
+        role: user['role'],
+        tokenType: data['token_type'],
+        abilities: user['abilities'].cast<String>(),
+        isConsultant: user['isConsultant'],
       );
 
       // Rest of your code for successful response
