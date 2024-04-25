@@ -44,6 +44,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
     flutterTts = FlutterTts();
     flutterTts.setLanguage("tr-TR");
     flutterTts.speak("Uygun gönüllü aranıyor");
+    flutterTts.setVoice({"name": "tr-tr-x-ama-local", "locale": "tr-TR"});
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 4),

@@ -19,7 +19,7 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
   String username = "";
   List<String> categories = [];
   String phoneNumber = "";
-  int numberOfHelpedBlindPeople = 0;
+  int numberOfHelpedBlindPeople = 2;
 
   getUserInfo() async {
 
@@ -109,7 +109,7 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
                   color: secondaryColor, borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
-                    "Yardım ettiğiniz görme engelli kişi sayısı: $numberOfHelpedBlindPeople",
+                    "Şu ana kadar $numberOfHelpedBlindPeople kişiye yardım ettiniz! Çok teşekkür ederiz.",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 20,

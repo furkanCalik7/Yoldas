@@ -23,7 +23,7 @@ def create_call(call_request: CallRequest, user) -> str:
     )
     call_id = call_dao.register_call(call)
     # potential_callees = matcher_dao.find_potential_callees(call_request, user)
-    potential_callees = ["+905444444444"]
+    potential_callees = ["+905555555555"]
     search_manager.init_new_search_session(call_id, potential_callees, user, call_request)
     search_manager.start_search_session(call_id)
     return call_id

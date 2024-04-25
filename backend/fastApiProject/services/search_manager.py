@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-# TODO: neler neler event queue mu koymali acaba buraya
+# TODO: scheduler - (garbage collecter) her 10 dakikada bir active_session temizleyecek - birekebiliyor
 
 class Candidate(BaseModel):
     phone_number: str
@@ -101,15 +101,15 @@ class SearchManager:
     def is_session_valid(self, call_id: str):
         return call_id in self.__active_search_sessions
 
+    # This might be triggered before session is initialized.
     def cancel_session(self, call_id: str):
         call_dao.set_call_status(call_id, CallStatus.CANCELLED)
-        self.__active_search_sessions.pop(call_id)
-        ic()
+        self.delete_session(call_id)
         ic(self.__active_search_sessions)
 
     def delete_session(self, call_id: str):
         self.__active_search_sessions.pop(call_id)
-        
+
     def is_search_session_failed(self, call_id: str):
         if not self.is_session_valid(call_id):
             return

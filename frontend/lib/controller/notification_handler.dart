@@ -17,6 +17,7 @@ import 'package:frontend/util/secure_storage.dart';
 import 'package:uuid/uuid.dart';
 
 String? currentUuid;
+String? lastCallId;
 
 Future<void> showCallkitIncoming(String callId) async {
   final uuid = Uuid().v4();
@@ -71,15 +72,18 @@ Future<void> showCallkitIncoming(String callId) async {
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print("(notification) handleBackgroundMEssage : ${message.data['call_id']}");
+  if (message.data["call_id"] == lastCallId) return;
+  lastCallId = message.data["call_id"];
   await showCallkitIncoming(message.data["call_id"]);
 }
 
 void handleMessage(RemoteMessage? message) async {}
 
-void handleFrondgroundMessage(RemoteMessage remoteMessage) async {
-  print(
-      "(notification) handleFrondgroundMessage: ${remoteMessage.data['call_id']}");
-  await showCallkitIncoming(remoteMessage.data["call_id"]);
+void handleFrondgroundMessage(RemoteMessage message) async {
+  print("(notification) handleFrondgroundMessage: ${message.data['call_id']}");
+  if (message.data["call_id"] == lastCallId) return;
+  lastCallId = message.data["call_id"];
+  await showCallkitIncoming(message.data["call_id"]);
 }
 
 Future<CallAcceptResponse> handleCallAccept(String callId) async {
@@ -154,7 +158,6 @@ class NotificationHandler {
     FirebaseMessaging.onMessage.listen((message) {
       handleFrondgroundMessage(message);
     });
-    
 
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
       if (event == null) return;
