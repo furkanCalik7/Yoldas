@@ -156,6 +156,25 @@ class _SMSCodePageState extends State<SMSCodePage> {
       if (widget.authBehavior == AuthenticationBehavior.Register) {
         return await register();
       } else {
+
+        await SecureStorageManager.write(
+            key: StorageKey.access_token, value: widget.user.accessToken);
+        await SecureStorageManager.write(
+            key: StorageKey.token_type, value: widget.user.tokenType);
+        await SecureStorageManager.write(
+            key: StorageKey.name, value: widget.user.name);
+        await SecureStorageManager.write(
+            key: StorageKey.role, value: widget.user.role);
+        await SecureStorageManager.write(
+            key: StorageKey.phone_number, value: widget.user.phoneNumber);
+        await SecureStorageManager.write(
+            key: StorageKey.password, value: widget.user.password);
+        await SecureStorageManager.write(
+            key: StorageKey.isConsultant, value: widget.user.isConsultant.toString());
+
+        await SecureStorageManager.writeList(
+            key: StorageKey.abilities, value: widget.user.abilities);
+
         return 200;
       }
     } catch (e) {
