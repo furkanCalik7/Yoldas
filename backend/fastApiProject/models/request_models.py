@@ -2,7 +2,6 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, StringConstraints, AfterValidator
 
-from fastApiProject.models import entity_models
 from fastApiProject.models.entity_models import Gender, Role, NotificationSettings
 
 

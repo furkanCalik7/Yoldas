@@ -99,6 +99,9 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except JWTError:
         logger.error(f"Invalid token for user with phone number {phone_number}")
         raise credentials_exception
+    except AttributeError:
+        logger.error(f"Authantication failed")
+        raise HTTPException(401, detail="Authantication failed")
 
     user = user_dao.get_user_by_phone_number(token_data.phone_number)
     if user is None:

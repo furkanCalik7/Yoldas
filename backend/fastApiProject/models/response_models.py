@@ -19,3 +19,6 @@ class CallAcceptDetailsResponse(BaseModel):
 class CallAcceptResponse(BaseModel):
     is_accepted: bool
 
+class CallRejectResponse(BaseModel):
+    is_rejected: bool
+

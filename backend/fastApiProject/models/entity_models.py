@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from pydantic import StringConstraints
 from typing_extensions import Annotated
 
-from fastApiProject.shared.constants import CallStatus
+from fastApiProject.shared.constants import CallStatus, SearchStatus
 
 
 class Token(BaseModel):
@@ -28,6 +28,7 @@ class Role(str, Enum):
     volunteer = "volunteer"
     blind = "blind"
 
+
 class NotificationSettings(BaseModel):
     callNotifications: bool
     messageNotifications: bool
@@ -45,7 +46,8 @@ class User(BaseModel):
     password: str
     avg_rating: Optional[float] = 4
     rating_count: Optional[int] = 1
-    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False, messageNotifications=False)
+    notification_settings: Optional[NotificationSettings] = NotificationSettings(callNotifications=False,
+                                                                                 messageNotifications=False)
     complaints: Optional[list[str]] = []
     no_of_calls_received: Optional[int] = 0
     no_of_calls_completed: Optional[int] = 0
@@ -73,3 +75,9 @@ class Call(BaseModel):
     status: Optional[CallStatus] = CallStatus.INITIALIZED.value
     isQuickCall: Optional[bool] = False
     isConsultancyCall: Optional[bool] = False
+
+
+class Candidate(BaseModel):
+    phone_number: str
+    status: SearchStatus
+
