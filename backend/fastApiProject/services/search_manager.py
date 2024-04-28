@@ -22,23 +22,20 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 
 
 class SearchManager:
-    search_sessions: list[SearchSession]
+    search_sessions: {str, SearchSession}
 
     def __init__(self):
-        self.search_sessions = []
+        self.search_sessions = {}
 
     def get_search_session_by_call_id(self, call_id: str) -> SearchSession:
-        for session in self.search_sessions:
-            if session.call_id == call_id:
-                logger.info("search session found")
-                return session
+        return self.search_sessions[call_id]
 
     def init_new_search_session(self, call_id: str, candidate_users_phone_numbers: list[str], caller,
                                 call_request: CallRequest):
-        logger.info("Search session initialized")
         search_session = SearchSession(call_id, candidate_users_phone_numbers, caller,
                                        call_request)
-        self.search_sessions.append(search_session)
+        self.search_sessions[call_id] = search_session
+        return search_session
 
     def start_search_session(self, search_session: SearchSession):
         search_session.start()
@@ -54,7 +51,7 @@ class SearchManager:
         search_session.add_task("start_call")
 
     def delete_session(self, search_session: SearchSession):
-        self.search_sessions.remove(search_session)
+        self.search_sessions.pop(search_session.call_id)
 
     # def retry_search_session(self, call_id: str):
     #     if not self.is_session_valid(call_id):

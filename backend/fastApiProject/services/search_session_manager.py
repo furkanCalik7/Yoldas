@@ -93,12 +93,12 @@ class SearchSession:
 
     def perform_tasks(self):
         while True:
-            task = self.task_queue.get()  # Get a task from the queue
-            if task is None:  # Exit if the task is None
+            task = self.task_queue.get()
+            if task is None:
                 break
-            # Perform the necessary action for the task
+
             task_type, *args = task
-            logger.info(f'Worker is processing task: {task_type}')  # Print the task being processed
+            logger.info(f'Worker is processing task: {task_type}')
             if task_type == 'accept_call':
                 self.accept_call(*args)
             elif task_type == 'reject_call':
