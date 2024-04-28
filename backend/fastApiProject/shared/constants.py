@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class CallStatus(Enum):
-    INITIALIZED = "INITILIAZED"
+    INITIALIZED = "INITIALIZED"
     SEARCHING_FOR_CALLEE = "SEARCHING_FOR_CALLEE"
     IN_CALL = "IN_CALL"
     FINISHED = "FINISHED"

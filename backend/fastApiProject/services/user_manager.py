@@ -186,7 +186,7 @@ def update_user_request(user_id, update_user_req_obj):
     return user_dao.update_user_request(user_id, update_user_req_obj)
 
 
-# Start Call endpoint
+# Start Call endpoint. Currently, this is user for testing!
 def start_call(startCallRequest: request_models.CallRequest, current_user):
     logger.info(f"start_call with startCallRequest {startCallRequest} called")
     return matcher_dao.find_potential_callees(startCallRequest, current_user)

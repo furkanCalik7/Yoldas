@@ -12,6 +12,50 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
+def _calculate_overall_point(user_point_dict) -> {str, (User, int)}:
+    for phone_number, (user, score) in user_point_dict.items():
+        rating_point = AVG_RATING_WEIGHT * user.avg_rating
+
+        if user.no_of_calls_received == 0:
+            call_ratio_point = CALL_RATIO_WEIGHT * user.avg_rating
+        else:
+            call_ratio_point = CALL_RATIO_WEIGHT * (
+                    user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
+        if user.no_of_calls_completed == 0:
+            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
+        else:
+            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
+                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
+        overall_point = rating_point + call_ratio_point - complaint_point
+
+        user_point_dict[phone_number] = (user, overall_point)
+    return user_point_dict
+
+
+# Check if potential callee is in a call with status = CallStatus.IN_CALL
+def _check_in_call_users(callee_list, caller_phone_number=None) -> list:
+    # get all calls with status = CallStatus.IN_CALL
+    in_call_docs = (db.collection("CallCollection")
+                    .where(filter=FieldFilter("status", "==", "IN_CALL"))
+                    .stream()
+                    )
+    # get all phone numbers of users in calls with status = CallStatus.IN_CALL
+    in_call_user_list = []
+    for call in list(in_call_docs):
+        call = call.to_dict()
+        in_call_user_list.append(call["caller"]["phone_number"])
+        if call["callee"]:
+            in_call_user_list.append(call["callee"]["phone_number"])
+
+    # remove potential callees who are in a call with status = CallStatus.IN_CALL
+    callee_list_copy = callee_list.copy()
+    for user in callee_list_copy:
+        if user.phone_number in in_call_user_list:
+            callee_list.remove(user)
+
+    return callee_list
+
+
 def find_potential_callees(CallRequest: request_models.CallRequest, current_user: User, num_of_calls: int = 5,
                            excluded_user_list=None):
     # check which type of call is requested, according to the type of call, find an appropriate user
@@ -51,26 +95,14 @@ def find_consultant_user(num_of_calls: int, caller: User, excluded_user_list: li
     if caller in consultant_list:
         consultant_list.remove(caller)
 
+    consultant_list = _check_in_call_users(consultant_list, caller["phone_number"])
+
     # Initialize the overall point of each volunteer
     user_point_dict: {str, (User, int)} = {}
     for user in consultant_list:
         user_point_dict[user.phone_number] = (user, 0)
-    for phone_number, (user, score) in user_point_dict.items():
-        rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
-        if user.no_of_calls_received == 0:
-            call_ratio_point = CALL_RATIO_WEIGHT * user.avg_rating
-        else:
-            call_ratio_point = CALL_RATIO_WEIGHT * (
-                    user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-        if user.no_of_calls_completed == 0:
-            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
-        else:
-            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
-        overall_point = rating_point + call_ratio_point - complaint_point
-
-        user_point_dict[phone_number] = (user, overall_point)
+    user_point_dict = _calculate_overall_point(user_point_dict)
 
     # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
     # We want the int value to sort the list
@@ -103,6 +135,8 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
     if caller in volunteer_list:
         volunteer_list.remove(caller)
 
+    volunteer_list = _check_in_call_users(volunteer_list, caller["phone_number"])
+
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
         # Kopya bir liste oluştur
@@ -115,22 +149,8 @@ def find_quick_call_user(num_of_calls: int, caller: User, excluded_user_list=Non
     user_point_dict: {str, (User, int)} = {}
     for user in volunteer_list:
         user_point_dict[user.phone_number] = (user, 0)
-    for phone_number, (user, score) in user_point_dict.items():
-        rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
-        if user.no_of_calls_received == 0:
-            call_ratio_point = CALL_RATIO_WEIGHT * user.avg_rating
-        else:
-            call_ratio_point = CALL_RATIO_WEIGHT * (
-                    user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-        if user.no_of_calls_completed == 0:
-            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
-        else:
-            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
-        overall_point = rating_point + call_ratio_point - complaint_point
-
-        user_point_dict[phone_number] = (user, overall_point)
+    user_point_dict = _calculate_overall_point(user_point_dict)
 
     # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
     # We want the int value to sort the list
@@ -160,6 +180,9 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
 
     if caller in matching_ability_list:
         matching_ability_list.remove(caller)
+
+    matching_ability_list = _check_in_call_users(matching_ability_list, caller["phone_number"])
+
     # remove excluded user phone numbers (users who did not pick up at first) from the list
     if excluded_user_list:
         # Kopya bir liste oluştur
@@ -172,21 +195,8 @@ def find_matching_ability_user(category: str, num_of_calls: int, caller: User, e
     user_point_dict: {str, (User, int)} = {}
     for user in matching_ability_list:
         user_point_dict[user.phone_number] = (user, 0)
-    for phone_number, (user, score) in user_point_dict.items():
-        rating_point = AVG_RATING_WEIGHT * user.avg_rating
 
-        if user.no_of_calls_received == 0:
-            call_ratio_point = CALL_RATIO_WEIGHT * user.avg_rating
-        else:
-            call_ratio_point = CALL_RATIO_WEIGHT * (
-                    user.no_of_calls_completed / user.no_of_calls_received) * NORMALIZATION_FACTOR
-        if user.no_of_calls_completed == 0:
-            complaint_point = COMPLAINT_WEIGHT * user.avg_rating
-        else:
-            complaint_point = (COMPLAINT_WEIGHT * len(user.complaints) * (
-                    NORMALIZATION_FACTOR / user.no_of_calls_completed))
-        overall_point = rating_point + call_ratio_point - complaint_point
-        user_point_dict[phone_number] = (user, overall_point)
+    user_point_dict = _calculate_overall_point(user_point_dict)
 
     # sort the list of volunteers by overall point. user_point_dict contains phone_number as key and (User, int) as value.
     # We want the int value to sort the list
