@@ -56,6 +56,8 @@ class _SMSCodePageState extends State<SMSCodePage> {
   UserType? userType;
   late FirebaseAuth _auth;
   var verificationIdx = ''.obs;
+  bool isSMSCodeSent = false;
+
 
   @override
   void initState() {
@@ -96,6 +98,9 @@ class _SMSCodePageState extends State<SMSCodePage> {
       },
       codeSent: (String verificationId, int? resendToken) async {
         verificationIdx.value = verificationId;
+        setState(() {
+          isSMSCodeSent = true;
+        });
         print("successfully sent");
       },
       timeout: const Duration(seconds: 60),
@@ -185,6 +190,49 @@ class _SMSCodePageState extends State<SMSCodePage> {
       snackBar("Kod doğrulama başarısız");
       return -1;
     }
+  }
+
+  void navigateUser()  async {
+      formKey.currentState!.validate();
+      // conditions for validating
+      if (currentText.length != 6) {
+        errorController!.add(ErrorAnimationType
+            .shake); // Triggering error shake animation
+        Vibration.vibrate();
+        setState(() => hasError = true);
+      } else {
+        setState(
+              () {
+            hasError = false;
+          },
+        );
+        int statusCode =
+            await checkAuthentication(verificationIdx);
+
+        if (statusCode == -1) {
+          return;
+        } else if (statusCode == 200) {
+          snackBar("Doğrulama Başarılı");
+          if (userType == UserType.blind) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, BlindMainFrame.routeName, (r) {
+              return false;
+            });
+          } else if (userType == UserType.volunteer) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, VolunteerMainFrame.routeName,
+                    (r) {
+                  return false;
+                });
+          }
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, SMSCodePage.routeName, (r) {
+            return false;
+          });
+          return;
+        }
+      }
   }
 
   @override
@@ -328,48 +376,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                               vertical: 16.0, horizontal: 30),
                           child: ButtonMain(
                             text: "Dogrula",
-                            action: () async {
-                              formKey.currentState!.validate();
-                              // conditions for validating
-                              if (currentText.length != 6) {
-                                errorController!.add(ErrorAnimationType
-                                    .shake); // Triggering error shake animation
-                                Vibration.vibrate();
-                                setState(() => hasError = true);
-                              } else {
-                                setState(
-                                  () {
-                                    hasError = false;
-                                  },
-                                );
-                                int statusCode =
-                                    await checkAuthentication(verificationIdx);
-
-                                if (statusCode == -1) {
-                                  return;
-                                } else if (statusCode == 200) {
-                                  snackBar("Doğrulama Başarılı");
-                                  if (userType == UserType.blind) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, BlindMainFrame.routeName, (r) {
-                                      return false;
-                                    });
-                                  } else if (userType == UserType.volunteer) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, VolunteerMainFrame.routeName,
-                                        (r) {
-                                      return false;
-                                    });
-                                  }
-                                } else {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context, SMSCodePage.routeName, (r) {
-                                    return false;
-                                  });
-                                  return;
-                                }
-                              }
-                            },
+                            action: isSMSCodeSent ? navigateUser : null,
                           ),
                         ),
                       ],
