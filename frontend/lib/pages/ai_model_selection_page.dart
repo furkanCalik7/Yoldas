@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/gpt_controller.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
@@ -21,7 +22,12 @@ const List<IconData> icons = [
   Icons.image,
 ];
 
-class AIModelSelectionPage extends StatelessWidget {
+class AIModelSelectionPage extends StatefulWidget {
+  @override
+  State<AIModelSelectionPage> createState() => _AIModelSelectionPageState();
+}
+
+class _AIModelSelectionPageState extends State<AIModelSelectionPage> {
   int selectedIndex = 0;
 
   void navigateToModel(context, index) {
@@ -78,13 +84,15 @@ class AIModelSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    selectedIndex = 0;
 
     CustomSwiper customSwiper = CustomSwiper(
       titles: models,
       icons: icons,
       action: (index) {
-        selectedIndex = index;
+        setState(() {
+          selectedIndex = index;
+        });
+        flutterTTs.speak(models[index]);
       },
     );
 
@@ -103,6 +111,7 @@ class AIModelSelectionPage extends StatelessWidget {
             text: "Başlat",
             height: MediaQuery.of(context).size.height * 0.075,
             width: MediaQuery.of(context).size.width * 0.5,
+            semanticLabel: "${models[selectedIndex]} modelini başlat",
             action: () {
               navigateToModel(context, selectedIndex);
             },
