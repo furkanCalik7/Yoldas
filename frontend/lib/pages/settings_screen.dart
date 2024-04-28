@@ -1,4 +1,8 @@
+import 'dart:ffi';
+import 'dart:io';
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:frontend/util/secure_storage.dart';
@@ -9,6 +13,8 @@ import 'package:frontend/pages/change_password_screen.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/util/types.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,6 +26,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
   bool darkThemeEnabled = false;
+  bool isAccessibilityEnabled = false;
   UserType userType = UserType.blind;
 
   void updateUserType() async {
@@ -79,6 +86,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //     changeLocale(context, 'en_US');
                 //   },
                 // ),
+
+                if (userType == UserType.blind)
+                  SettingsTile.navigation(title: Text("Erişilebilirlik"),
+                      leading: Icon(Icons.accessibility), onPressed: (BuildContext context) async {
+
+                        if (Platform.isAndroid) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Talkback Etkinleştirme'),
+                              content: Text(
+                                  'Ses asistanını etkinleştirmek için ayarlardan TalkBack\'i etkinleştiriniz. '
+                                      'Daha sonra Talback>Ayarlar>Metin Okuma ayarlarından uygulamayı Google Ses Tanıma Hizmeti\'ni seçiniz.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('İptal'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    AndroidIntent intent = AndroidIntent(
+                                      action: 'android.settings.ACCESSIBILITY_SETTINGS',
+                                    );
+                                    await intent.launch();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Onayla'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+
+
+
+
+
+                  }),
+
+
+
 
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
