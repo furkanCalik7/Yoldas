@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -7,6 +8,7 @@ import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:http/http.dart' as http;
+
 
 class CategorySelectionScreen extends StatefulWidget {
   const CategorySelectionScreen({Key? key}) : super(key: key);
@@ -65,6 +67,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     }
     isLoading = false; // Even in case of error, stop the loading indicator
   }
+
 
   @override
   Widget build(BuildContext context) {

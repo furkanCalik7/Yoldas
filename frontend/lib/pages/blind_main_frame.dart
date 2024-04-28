@@ -53,6 +53,7 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
+
           BottomNavigationBarItem(
             icon: Icon(Icons.remove_red_eye),
             label: "Yapay Zeka",

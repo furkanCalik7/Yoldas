@@ -10,7 +10,8 @@ class ButtonMain extends StatelessWidget {
       this.height = 40,
       this.width = 200,
       this.fontSize = 0.0,
-      this.buttonColor = tertiaryColor});
+      this.buttonColor = tertiaryColor,
+      this.semanticLabel = ""});
 
   final String text;
   final Function action;
@@ -18,6 +19,7 @@ class ButtonMain extends StatelessWidget {
   final double width;
   final double fontSize;
   final Color buttonColor;
+  final String semanticLabel;
 
   double determineFontSize() {
     return min(height / 2, width / 4);
@@ -28,24 +30,28 @@ class ButtonMain extends StatelessWidget {
     return SizedBox(
       height: height,
       width: width,
-      child: ElevatedButton(
-        onPressed: () {
-          action();
-        },
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            )),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
-            fontWeight: FontWeight.bold,
-            color: textColorDark,
+      child: Semantics(
+        label: semanticLabel,
+        excludeSemantics: semanticLabel != "",
+        child: ElevatedButton(
+          onPressed: () {
+            action();
+          },
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              )),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: fontSize == 0.0 ? determineFontSize() : fontSize,
+              fontWeight: FontWeight.bold,
+              color: textColorDark,
+            ),
           ),
         ),
       ),
