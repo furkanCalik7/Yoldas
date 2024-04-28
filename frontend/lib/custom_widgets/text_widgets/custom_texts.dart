@@ -72,10 +72,11 @@ class SubTitleText extends StatelessWidget {
       line,
       textAlign: TextAlign.center,
       style: GoogleFonts.russoOne(
-        fontSize: 50,
-        fontWeight: FontWeight.bold,
+        fontSize: 35,
         color: textColorLight,
       ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

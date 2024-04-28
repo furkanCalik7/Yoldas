@@ -27,12 +27,18 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
   String? selectedAbility; // Changed to nullable
 
   void readUserInfo() async {
-    bearerToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
-        await SecureStorageManager.read(key: StorageKey.access_token) ?? "";
-    userAbilities = SecureStorageManager.readListFromCache(key: StorageKey.abilities) ??
-        await SecureStorageManager.readList(key: StorageKey.abilities) ?? [];
-    phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
-        await SecureStorageManager.read(key: StorageKey.phone_number) ?? "";
+    bearerToken =
+        SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+            await SecureStorageManager.read(key: StorageKey.access_token) ??
+            "";
+    userAbilities =
+        SecureStorageManager.readListFromCache(key: StorageKey.abilities) ??
+            await SecureStorageManager.readList(key: StorageKey.abilities) ??
+            [];
+    phoneNumber =
+        SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
+            await SecureStorageManager.read(key: StorageKey.phone_number) ??
+            "";
     setState(() {});
   }
 
@@ -129,9 +135,10 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
         title: 'Yeteneklerim',
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(30),
         decoration: getBackgroundDecoration(),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CustomDropdown(
               items: possibleAbilities,
@@ -140,27 +147,21 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
               hintText: 'Bir Yetenek Seçin',
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ButtonMain(
-                  action: addAbility,
-                  text: "Ekle",
-                  width: MediaQuery.of(context).size.width * 0.4,
-                ),
-                ButtonMain(
-                  action: updateUserAbilities,
-                  text: "Kaydet",
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  buttonColor: Colors.amber,
-                ),
-              ],
+            ButtonMain(
+              action: () {
+                addAbility();
+                updateUserAbilities();
+              },
+              text: "Ekle",
             ),
             SizedBox(height: 50),
             Expanded(
               child: CustomListView(
                 list: userAbilities,
-                onDelete: removeAbility,
+                onDelete: (int index) {
+                  removeAbility(index);
+                  updateUserAbilities();
+                },
               ),
             ),
           ],
