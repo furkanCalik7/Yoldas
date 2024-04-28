@@ -5,7 +5,7 @@ import "package:intl_phone_number_input/intl_phone_number_input.dart";
 class CustomPhoneNumberInput extends StatelessWidget {
   CustomPhoneNumberInput(
       {super.key,
-      this.hintText = "Phone Number",
+      this.hintText = "Telefon Numarası",
       required this.controller,
       required this.validator});
 

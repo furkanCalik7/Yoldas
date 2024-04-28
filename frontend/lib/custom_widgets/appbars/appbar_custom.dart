@@ -11,10 +11,25 @@ class AppbarCustom extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    ModalRoute? parentRoute = ModalRoute.of(context);
+    bool back = parentRoute?.impliesAppBarDismissal ?? false;
     return AppBar(
       title: AppBarText(
         line: title,
       ),
+      leading: back ? Semantics(
+        label: "Geri",
+        button: true,
+        excludeSemantics: true,
+        child: IconButton(
+
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ) : null,
       iconTheme: const IconThemeData(
         color: textColorLight,
       ),

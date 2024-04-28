@@ -1,8 +1,11 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/custom_switch.dart';
@@ -172,25 +175,33 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          CustomTextFormField(
-            icon: Icons.person,
-            obscureText: false,
-            controller: newNameController,
-            validator: (value) {
-              return null;
-            },
-            hintText: "Ad Soyad",
+          Semantics(
+            label: "Düzenleme kutusu, Ad Soyad, $current_name",
+            excludeSemantics: true,
+            child: CustomTextFormField(
+              icon: Icons.person,
+              obscureText: false,
+              controller: newNameController,
+              validator: (value) {
+                return null;
+              },
+              hintText: "Ad Soyad",
+            ),
           ),
           const SizedBox(height: 20),
-          CustomTextFormField(
-            icon: Icons.phone,
-            obscureText: false,
-            enabled: false,
-            controller: newPhoneNumberController,
-            validator: (value) {
-              return null;
-            },
-            hintText: "Telefon Numarası",
+          Semantics(
+            label: "Düzenleme kutusu, Telefon Numarası, $current_phoneNumber",
+            excludeSemantics: true,
+            child: CustomTextFormField(
+              icon: Icons.phone,
+              obscureText: false,
+              enabled: false,
+              controller: newPhoneNumberController,
+              validator: (value) {
+                return null;
+              },
+              hintText: "Telefon Numarası",
+            ),
           ),
           const SizedBox(height: 20),
           if (current_userType == UserType.blind)
@@ -204,14 +215,19 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   ),
                 ),
                 const SizedBox(width: 20),
-                CustomSwitch(
-                  value: consultancy_status,
-                  onChanged: (newValue) {
-                    setState(() {
-                      consultancy_status = newValue;
-                    });
-                    somethingChanged = true;
-                  },
+                Semantics(
+                  label: "Danışmanlık Durumu, buton, ${consultancy_status ? 'Açık' : 'Kapalı'}",
+                  excludeSemantics: true,
+                  child: CustomSwitch(
+                    value: consultancy_status,
+                    onChanged: (newValue) {
+                      setState(() {
+                        consultancy_status = newValue;
+                      });
+                      somethingChanged = true;
+                      flutterTTs.speak("Danışmanlık durumu, ${consultancy_status ? 'açıldı' : 'kapatıldı'}");
+                    },
+                  ),
                 ),
               ],
             ),
