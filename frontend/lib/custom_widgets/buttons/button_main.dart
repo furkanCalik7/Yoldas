@@ -11,10 +11,10 @@ class ButtonMain extends StatelessWidget {
       this.width = 200,
       this.fontSize = 0.0,
       this.buttonColor = tertiaryColor,
-      this.semanticLabel = ""});
+      this.semanticLabel = "",});
 
   final String text;
-  final Function action;
+  final void Function()? action;
   final double height;
   final double width;
   final double fontSize;
@@ -34,11 +34,16 @@ class ButtonMain extends StatelessWidget {
         label: semanticLabel,
         excludeSemantics: semanticLabel != "",
         child: ElevatedButton(
-          onPressed: () {
-            action();
-          },
+          onPressed: action,
           style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
+              backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.disabled)) {
+                  // Return the color you want when the button is disabled
+                  return Colors.grey; // Example color
+                }
+                // Return the color you want when the button is enabled
+                return buttonColor; // Example color
+              }),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
