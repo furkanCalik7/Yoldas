@@ -218,6 +218,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 Semantics(
                   label: "Danışmanlık Durumu, buton, ${consultancy_status ? 'Açık' : 'Kapalı'}",
                   excludeSemantics: true,
+                  liveRegion: true,
                   child: CustomSwitch(
                     value: consultancy_status,
                     onChanged: (newValue) {
@@ -225,7 +226,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                         consultancy_status = newValue;
                       });
                       somethingChanged = true;
-                      flutterTTs.speak("Danışmanlık durumu, ${consultancy_status ? 'açıldı' : 'kapatıldı'}");
                     },
                   ),
                 ),
