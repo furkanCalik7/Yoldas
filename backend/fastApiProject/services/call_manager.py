@@ -25,7 +25,7 @@ def create_call(call_request: CallRequest, user) -> str:
     )
     call_id = call_dao.register_call(call)
     # potential_callees = matcher_dao.find_potential_callees(call_request, user)
-    potential_callees = ["+905078267217"]
+    potential_callees = ["+905555555555"]
     search_session = search_manager.init_new_search_session(call_id, potential_callees, user, call_request)
     search_manager.start_search_session(search_session)
     return call_id
@@ -52,8 +52,6 @@ def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
 
 def hangup_call(call_hangup: CallHangup):
     search_session = search_manager.get_search_session_by_call_id(call_hangup.call_id)
-    print("SEARCH SESSIONS:", search_session)
-    # search_manager.delete_session(search_session)
     call_dao.hangup_call(call_hangup.call_id)
 
 

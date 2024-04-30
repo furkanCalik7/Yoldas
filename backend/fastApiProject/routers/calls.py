@@ -71,6 +71,7 @@ async def search_cancel(_call_cancel: CallCancel,
     return call_manager.cancel_call(call_id)
 
 
+# TODO: hangout does work right now
 @router.post("/call/hangup")
 async def call_hangup(_call_hangup: CallHangup,
                       current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):

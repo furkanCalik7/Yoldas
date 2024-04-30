@@ -92,10 +92,10 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
               sendQuickCallRequest().then((callRequestResponse) {
                 callId = callRequestResponse.callID;
                 registerCallStatus(callRequestResponse.callID, context);
-              });
 
-              Navigator.pushNamed(context, VolunteerSearchScreen.routeName,
-                  arguments: {"is_quick_call": true});
+                Navigator.pushNamed(context, VolunteerSearchScreen.routeName,
+                    arguments: {"is_quick_call": true});
+              });
             },
             iconData: Icons.search,
             size: 150,

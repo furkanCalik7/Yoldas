@@ -77,7 +77,11 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
   await showCallkitIncoming(message.data["call_id"]);
 }
 
-void handleMessage(RemoteMessage? message) async {}
+void handleMessage(RemoteMessage? message) async {
+//   if (message?.data["call_id"] == lastCallId) return;
+//   lastCallId = message?.data["call_id"];
+//   await showCallkitIncoming(message?.data["call_id"]);
+}
 
 void handleFrondgroundMessage(RemoteMessage message) async {
   print("(notification) handleFrondgroundMessage: ${message.data['call_id']}");
@@ -180,7 +184,7 @@ class NotificationHandler {
                         callActionType: "accept",
                       ),
                     ),
-                    ModalRoute.withName('/'));
+                    ModalRoute.withName('/onboarding'));
               } else {
                 // TODO: show it is already accepted thank you
               }

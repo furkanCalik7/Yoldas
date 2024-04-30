@@ -41,6 +41,11 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   void initState() {
     super.initState();
 
+    // sendCallRequest(args).then((callRequestResponse) {
+    //   callId = callRequestResponse.callID;
+    //   registerCallStatus(callRequestResponse.callID, context);
+    // });
+
     flutterTts = FlutterTts();
     flutterTts.setLanguage("tr-TR");
     flutterTts.speak("Uygun gönüllü aranıyor");
@@ -72,7 +77,6 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   }
 
   Future<CallRequestResponse> sendCallRequest(Map<String, dynamic> args) async {
-    print("(notificition) sendCallRequest: $args");
     String accessToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
     CallRequest callRequest;
