@@ -21,3 +21,5 @@ class SearchStatus(Enum):
     ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
     NO_RESPONSE = "NO_RESPONSE"
+
+

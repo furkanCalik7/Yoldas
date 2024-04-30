@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends
 
 from ..models import entity_models
 from ..models.request_models import CallAccept, CallRequest, CallHangup, CallReject, CallCancel
-from ..models.response_models import CallAcceptDetailsResponse, CallRequestResponse, CallAcceptResponse
+from ..models.response_models import CallAcceptDetailsResponse, CallRequestResponse, CallAcceptResponse, \
+    CallRejectResponse
 from ..services import call_manager, user_manager
 from ..shared.constants import CallUserType
 
@@ -23,7 +24,6 @@ async def call_request(_call_request: CallRequest,
         call_id=call_id,
         callee_name="to be removed"
     )
-
 
 @router.post("/call/accept")
 async def call_accept(_call_accept: CallAccept,
@@ -57,7 +57,10 @@ async def call_reject(_call_reject: CallReject,
                       current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id, phone_number = _call_reject.call_id, current_user["phone_number"]
     logger.info(f"Call reject with call_id {call_id} and user_id {phone_number}")
-    call_manager.reject_call(call_id, phone_number)
+    is_rejected = call_manager.reject_call(call_id, phone_number)
+    return CallRejectResponse(
+        is_rejected=is_rejected
+    )
 
 
 @router.post("/call/cancel")
@@ -65,7 +68,7 @@ async def search_cancel(_call_cancel: CallCancel,
                         current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id, phone_number = _call_cancel.call_id, current_user["phone_number"]
     logger.info(f"Search cancel with call_id {call_id} and user_id {phone_number}")
-    call_manager.cancel_call(call_id)
+    return call_manager.cancel_call(call_id)
 
 
 @router.post("/call/hangup")
