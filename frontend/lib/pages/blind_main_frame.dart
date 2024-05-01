@@ -1,15 +1,28 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/controller/notification_handler.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/pages/blind_home_screen.dart';
 import 'package:frontend/pages/settings_screen.dart';
 import 'package:frontend/util/secure_storage.dart';
 
+import '../controller/webrtc/dto/call_accept.dart';
+import '../controller/webrtc/dto/call_accept_response.dart';
 import '../custom_widgets/appbars/appbar_custom.dart';
+import '../main.dart';
+import '../util/api_manager.dart';
 import 'ai_model_selection_page.dart';
+import 'call_main_frame.dart';
+
+
 
 class BlindMainFrame extends StatefulWidget {
   const BlindMainFrame({super.key});
+
   static const String routeName = "/blind_main_frame";
 
   @override
@@ -33,11 +46,13 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
   }
 
   Future<void> _initNotifications() async {
-    String? phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
-        await SecureStorageManager.read(key: StorageKey.phone_number);
+    String? phoneNumber =
+        SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
+            await SecureStorageManager.read(key: StorageKey.phone_number);
     if (phoneNumber == null) return;
     await NotificationHandler().initializeNotifications(phoneNumber);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +68,6 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-
           BottomNavigationBarItem(
             icon: Icon(Icons.remove_red_eye),
             label: "Yapay Zeka",

@@ -156,14 +156,9 @@ class NotificationHandler {
   }
 
   void initPushNotification() {
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
-    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
-    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-    FirebaseMessaging.onMessage.listen((message) {
-      handleFrondgroundMessage(message);
-    });
-
+    print("Flutter callkit callback is initialized");
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
+      print("callkit event: $event");
       if (event == null) return;
       String callId = event.body["extra"]["callId"];
 
@@ -225,6 +220,12 @@ class NotificationHandler {
           // for custom action
           break;
       }
+    });
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+    FirebaseMessaging.onMessage.listen((message) {
+      handleFrondgroundMessage(message);
     });
   }
 }

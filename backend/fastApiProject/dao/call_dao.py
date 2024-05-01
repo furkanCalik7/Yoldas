@@ -1,5 +1,7 @@
 import logging
 from datetime import datetime
+import time
+from icecream import ic
 
 from ..db_connection import firebase_auth
 from ..models.entity_models import Call, CallUser, Signal
@@ -49,16 +51,26 @@ def set_call_status(call_id: str, status: CallStatus):
     else:
         print(f"call {call_id} does not exist.")
 
+MAX_RETRIES = 5
+DELAY_BETWEEN_RETRIES = 1  # in seconds
 
 def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
-    call_col_ref = db.collection("CallCollection").document(call_id)
-    doc = call_col_ref.get()
-    if doc.exists:
-        call_dict = doc.to_dict()
-        return Signal.model_validate(call_dict[call_user_type.value]["signal"])
-    else:
-        print(f"call {call_id} does not exist.")
-
+    retries = 0
+    while retries < MAX_RETRIES:
+        ic("retry for get signal: ", retries)
+        call_col_ref = db.collection("CallCollection").document(call_id)
+        doc = call_col_ref.get()
+        if doc.exists:
+            call_dict = doc.to_dict()
+            if call_user_type.value in call_dict and "signal" in call_dict[call_user_type.value]:
+                return Signal.model_validate(call_dict[call_user_type.value]["signal"])
+            else:
+                print(f"Signal property not found for call {call_id} and user type {call_user_type.value}")
+        else:
+            print(f"Call {call_id} does not exist.")
+        retries += 1
+        time.sleep(DELAY_BETWEEN_RETRIES)
+    raise Exception(f"Failed to fetch signal for call {call_id} after {MAX_RETRIES} attempts.")
 
 def hangup_call(call_id: str):
     call_col_ref = db.collection("CallCollection").document(call_id)
