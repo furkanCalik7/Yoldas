@@ -19,9 +19,9 @@ class SearchManager:
     def get_search_session_by_call_id(self, call_id: str) -> SearchSession:
         return self.search_sessions[call_id]
 
-    def init_new_search_session(self, call_id: str, candidate_users_phone_numbers: list[str], caller,
+    def init_new_search_session(self, call_id: str, caller,
                                 call_request: CallRequest):
-        search_session = SearchSession(call_id, candidate_users_phone_numbers, caller,
+        search_session = SearchSession(call_id, caller,
                                        call_request)
         self.search_sessions[call_id] = search_session
         return search_session

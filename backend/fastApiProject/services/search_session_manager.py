@@ -32,19 +32,20 @@ class SearchSession:
             if candidate.phone_number == phone_number:
                 return candidate
 
-    def __init__(self, call_id: str, candidate_users_phone_numbers: list[str], caller,
-                 call_request: CallRequest):
-        self.caller = caller
+    def __init__(self, call_id: str, caller, call_request: CallRequest):
+        self.call_id = call_id
         self.call_request = call_request
+        self.caller = caller
+        self.candidates = []
+        self.task_queue = queue.Queue(maxsize=100)
+        self.status = CallStatus.INITIALIZED
+        self.worker_thread = threading.Thread(target=self.perform_tasks)
+
+    def set_candidates(self, candidate_users_phone_numbers: list[str]):
         self.candidates = [Candidate(
             phone_number=candidate_user_phone_number,
             status=SearchStatus.INITIALIZED
         ) for candidate_user_phone_number in candidate_users_phone_numbers]
-        self.call_id = call_id
-        self.task_queue = queue.Queue(maxsize=100)
-        self.status = CallStatus.INITIALIZED
-        # Start worker thread
-        self.worker_thread = threading.Thread(target=self.perform_tasks)
 
     def start(self):
         if self.status != CallStatus.INITIALIZED:
@@ -104,6 +105,7 @@ class SearchSession:
                 self.reject_call(*args)
             elif task_type == 'cancel':
                 self.cancel()
+                break
             elif task_type == 'start_call':
                 self.start()
             else:

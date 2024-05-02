@@ -42,7 +42,7 @@ class Welcome extends StatelessWidget {
                     action: () {
                       Navigator.pushNamed(context, LoginScreen.routeName);
                     }),
-                SizedBox(
+                const SizedBox(
                   height: 20.0,
                 ),
                 ButtonBig(

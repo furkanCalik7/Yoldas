@@ -77,10 +77,6 @@ class Login {
   // Login function
   static Future<void> tryLoginWithoutSMSVerification(
       BuildContext context) async {
-    // for test purposes
-    //await Future.delayed(Duration(seconds: 1));
-
-    // String path = "$API_URL/users/login";
     String phoneNumber;
     String password;
 

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/gpt_controller.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
