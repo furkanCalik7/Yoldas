@@ -94,7 +94,9 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                       icons: icons,
                       action: (index) => setState(() {
                         selectedIndex = index;
-                      }),
+                        flutterTTs.speak(possibleCategories[index]);
+                      }
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -102,6 +104,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   ),
                   ButtonMain(
                     text: "Aramayı Başlat",
+                    semanticLabel: "${possibleCategories[selectedIndex]} kategorisinde aramayı başlat",
                     action: () {
                       Navigator.pushNamed(
                         context,

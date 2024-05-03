@@ -141,6 +141,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
           key: StorageKey.phone_number, value: phoneNumber);
       await SecureStorageManager.write(
           key: StorageKey.role, value: userTypeToString(userType!));
+      await SecureStorageManager.write(key: StorageKey.is_active, value: "true");
     }
 
     return response.statusCode;
@@ -176,6 +177,8 @@ class _SMSCodePageState extends State<SMSCodePage> {
             key: StorageKey.password, value: widget.user.password);
         await SecureStorageManager.write(
             key: StorageKey.isConsultant, value: widget.user.isConsultant.toString());
+        await SecureStorageManager.write(
+            key: StorageKey.is_active, value: widget.user.isActive.toString());
 
         await SecureStorageManager.writeList(
             key: StorageKey.abilities, value: widget.user.abilities);

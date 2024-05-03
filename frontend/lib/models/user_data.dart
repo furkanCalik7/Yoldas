@@ -7,6 +7,7 @@ class UserData {
   final String tokenType;
   final List<String> abilities;
   final bool isConsultant;
+  final bool isActive;
 
   UserData({
     this.name = "",
@@ -15,6 +16,8 @@ class UserData {
     this.abilities= const [],
     this.tokenType = "",
     this.isConsultant=false,
+    this.isActive=true,
     required this.password,
-    required this.phoneNumber});
+    required this.phoneNumber,}
+);
 }
