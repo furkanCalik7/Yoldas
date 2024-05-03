@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
+import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -24,22 +25,42 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool notificationsEnabled = true;
+  bool isActive = true;
   bool darkThemeEnabled = false;
   bool isAccessibilityEnabled = false;
   UserType userType = UserType.blind;
 
-  void updateUserType() async {
+  void getUserData() async {
     String? type = SecureStorageManager.readFromCache(key: StorageKey.role);
     type ??= await SecureStorageManager.read(key: StorageKey.role);
+
+    String? active = SecureStorageManager.readFromCache(key: StorageKey.is_active);
+    active ??= await SecureStorageManager.read(key: StorageKey.is_active);
+
     userType = type == "volunteer" ? UserType.volunteer : UserType.blind;
+    isActive = active == "true" ? true : false;
     setState(() {});
+  }
+
+  void updateActivity(value) async {
+
+    String phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ?? await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
+
+    ApiManager.put(
+      path: '/users/update/$phoneNumber',
+      bearerToken: SecureStorageManager.readFromCache(key: StorageKey.access_token) ?? await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A",
+      body: {
+        'is_active': value,
+      },
+    );
+
+    SecureStorageManager.write(key: StorageKey.is_active, value: value.toString());
   }
 
   @override
   void initState() {
     super.initState();
-    updateUserType();
+    getUserData();
   }
 
   @override
@@ -94,41 +115,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (Platform.isAndroid) {
                           showDialog(
                             context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('Talkback Etkinleştirme'),
-                              content: Text(
-                                  'Ses asistanını etkinleştirmek için ayarlardan TalkBack\'i etkinleştiriniz. '
-                                      'Daha sonra Talback>Ayarlar>Metin Okuma ayarlarından uygulamayı Google Ses Tanıma Hizmeti\'ni seçiniz.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('İptal'),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    AndroidIntent intent = AndroidIntent(
-                                      action: 'android.settings.ACCESSIBILITY_SETTINGS',
-                                    );
-                                    await intent.launch();
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Onayla'),
-                                ),
-                              ],
+                            builder: (context) => Semantics(
+                              child: AlertDialog(
+                                title: Text('Talkback Etkinleştirme'),
+                                content: Text(
+                                    'Ses asistanını etkinleştirmek için ayarlardan TalkBack\'i etkinleştiriniz. '
+                                        'Daha sonra Talback>Ayarlar>Metin Okuma ayarlarından uygulamayı Google Ses Tanıma Hizmeti\'ni seçiniz.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('İptal'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      AndroidIntent intent = AndroidIntent(
+                                        action: 'android.settings.ACCESSIBILITY_SETTINGS',
+                                      );
+                                      await intent.launch();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Onayla'),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         }
-
-
-
-
-
-
                   }),
+                if(userType == UserType.volunteer)
+                  SettingsTile.switchTile(
+                    title: Text('Arama Aktifliği'),
+                    leading: Icon(Icons.video_call),
+                    initialValue: isActive,
+                    onToggle: (bool value) {
+                      setState(() {
+                        isActive = value;
+                        updateActivity(value);
 
-
-
-
+                      });
+                    },
+                  ),
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
                   title: const Text('Hakkında'),
