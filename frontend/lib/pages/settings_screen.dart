@@ -36,9 +36,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     type ??= await SecureStorageManager.read(key: StorageKey.role);
 
     String? active = SecureStorageManager.readFromCache(key: StorageKey.is_active);
-    active ??= await SecureStorageManager.read(key: StorageKey.is_active);
-
     print(active);
+    active ??= await SecureStorageManager.read(key: StorageKey.is_active);
+    print(active);
+
 
     userType = type == "volunteer" ? UserType.volunteer : UserType.blind;
     isActive = active == "true" ? true : false;

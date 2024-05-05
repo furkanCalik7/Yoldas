@@ -60,6 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
+      print("isActive: ${user['is_active']}");
+
       UserData userData = UserData(
         name: user['name'],
         phoneNumber: user['phone_number'],
@@ -69,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         tokenType: data['token_type'],
         abilities: user['abilities'].cast<String>(),
         isConsultant: user['isConsultant'],
-        isActive: user['is_active'] == "true" ? true : false,
+        isActive: user['is_active'],
       );
 
       // Rest of your code for successful response
