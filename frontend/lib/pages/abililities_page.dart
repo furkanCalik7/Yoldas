@@ -50,7 +50,7 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
   }
 
   void getAllAbilities() async {
-    String path = '/users/get_all_abilities}';
+    String path = '/users/get_all_abilities';
     Map<String, String> headers = {
       'Content-Type': 'application/json;charset=UTF-8',
     };
