@@ -54,44 +54,18 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     'Botanik'
   ];
 
-  // List<String> possibleCategories = [];
   int selectedIndex = 0;
-  bool isLoading = false; // New variable to track loading status
+  bool isLoading = false;
   late StreamSubscription<DocumentSnapshot> callSubscription;
   late String callId;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
+  late CallRequest callRequest;
+
   @override
   void initState() {
     super.initState();
-    // getAllAbilities();
-
   }
-  // CAno beni affet çok gözüme battııı
-  // Future<void> getAllAbilities() async {
-  //   String path = '/users/get_all_abilities';
-  //   Map<String, String> headers = {
-  //     'Content-Type': 'application/json;charset=UTF-8',
-  //   };
-  //
-  //   http.Response response = await ApiManager.get(
-  //     path,
-  //     headers,
-  //   );
-  //
-  //   if (response.statusCode == 200) {
-  //     Map<String, dynamic> responseBody =
-  //         jsonDecode(utf8.decode(response.bodyBytes));
-  //     setState(() {
-  //       possibleCategories = List.from(responseBody.values.toList());
-  //     });
-  //   } else {
-  //     print('ERROR: Status code: ${response.statusCode}');
-  //     setState(() {});
-  //   }
-  //   print(possibleCategories);
-  //   isLoading = false; // Even in case of error, stop the loading indicator
-  // }
 
   Future<CallRequestResponse> sendQuickCallRequest() async {
     try {
@@ -101,18 +75,12 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       CallRequest callRequest;
 
       String selectedCategory = possibleCategories[selectedIndex];
-      print(selectedCategory);
-      if (selectedCategory == "Psikoloji") {
-        callRequest = CallRequest(
-            isQuickCall: true,
-            category: possibleCategories[selectedIndex],
-            isConsultancyCall: true);
-      } else {
-        callRequest = CallRequest(
-            isQuickCall: true,
-            category: possibleCategories[selectedIndex],
-            isConsultancyCall: false);
-      }
+      callRequest = CallRequest(
+          isQuickCall: true,
+          category: possibleCategories[selectedIndex],
+          isConsultancyCall: false);
+
+      this.callRequest = callRequest;
 
       final response = await ApiManager.post(
         path: "/calls/call",
@@ -161,7 +129,6 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       if (data["status"] == CallStatus.IN_CALL.toString()) {
-        print("Call started");
 
         Navigator.pushAndRemoveUntil(
           context,
@@ -222,10 +189,17 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                         callId = callRequestResponse.callID;
                         registerCallStatus(callRequestResponse.callID, context);
 
+                        Map<String, dynamic> args = {
+                          'callRequest': callRequest,
+                          'callId': callId
+                        };
+
                         Navigator.pushNamed(
-                            context, VolunteerSearchScreen.routeName,
-                            arguments: {"call_id": callId}).then((result) {
-                          if (result == true) {
+                          context,
+                          VolunteerSearchScreen.routeName,
+                          arguments: args,
+                        ).then((result) {
+                          if(result == true) {
                             setState(() {
                               isLoading = false;
                             });

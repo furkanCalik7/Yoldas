@@ -41,14 +41,10 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
 
   Future<CallRequestResponse> sendQuickCallRequest() async {
     try {
-      String accessToken =
-          await SecureStorageManager.read(key: StorageKey.access_token) ??
-              "N/A";
-      CallRequest callRequest;
-
+      String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+          await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
       callRequest = CallRequest(
           isQuickCall: true, category: "", isConsultancyCall: false);
-      this.callRequest = callRequest;
 
       final response = await ApiManager.post(
         path: "/calls/call",
