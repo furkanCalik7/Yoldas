@@ -4,10 +4,9 @@ import threading
 from typing import Optional
 
 from icecream import ic
-from pydantic import BaseModel
 
-from fastApiProject.config import CALL_TIMEOUT, NUMBER_OF_CALLS
-from fastApiProject.dao import matcher_dao, call_dao
+from fastApiProject.config import CALL_TIMEOUT
+from fastApiProject.dao import call_dao
 from fastApiProject.models.entity_models import User, Candidate
 from fastApiProject.models.request_models import CallRequest
 from fastApiProject.services import notification_manager
@@ -33,20 +32,20 @@ class SearchSession:
             if candidate.phone_number == phone_number:
                 return candidate
 
-    def __init__(self, call_id: str, candidate_users_phone_numbers: list[str], caller,
-                 call_request: CallRequest):
-        self.caller = caller
+    def __init__(self, call_id: str, caller, call_request: CallRequest):
+        self.call_id = call_id
         self.call_request = call_request
+        self.caller = caller
+        self.candidates = []
+        self.task_queue = queue.Queue(maxsize=100)
+        self.status = CallStatus.INITIALIZED
+        self.worker_thread = threading.Thread(target=self.perform_tasks)
+
+    def set_candidates(self, candidate_users_phone_numbers: list[str]):
         self.candidates = [Candidate(
             phone_number=candidate_user_phone_number,
             status=SearchStatus.INITIALIZED
         ) for candidate_user_phone_number in candidate_users_phone_numbers]
-        self.call_id = call_id
-        self.task_queue = queue.Queue(maxsize=100)
-        self.status = CallStatus.INITIALIZED
-        # Start worker thread
-        self.worker_thread = threading.Thread(target=self.perform_tasks)
-
 
     def start(self):
         if self.status != CallStatus.INITIALIZED:
@@ -59,6 +58,7 @@ class SearchSession:
             threading.Timer(CALL_TIMEOUT, self.handle_call_timeout, [candidate]).start()
         self.status = CallStatus.SEARCHING_FOR_CALLEE
         self.worker_thread.start()
+
     def accept_call(self, candidate_phone_number: str):
         if self.status != CallStatus.SEARCHING_FOR_CALLEE:
             logger.error(f"session with call_id {self.call_id} is not in searching state can't be accepted")
@@ -80,7 +80,7 @@ class SearchSession:
         call_dao.set_call_status(self.call_id, CallStatus.CANCELLED)
         self.status = CallStatus.CANCELLED
 
-    #TODO rewrite this method after implementing retry mechanism
+    # TODO rewrite this method after implementing retry mechanism
     def is_failed(self):
         if self.status != CallStatus.IN_CALL or self.status != CallStatus.SEARCHING_FOR_CALLEE:
             return True
@@ -105,6 +105,7 @@ class SearchSession:
                 self.reject_call(*args)
             elif task_type == 'cancel':
                 self.cancel()
+                break
             elif task_type == 'start_call':
                 self.start()
             else:

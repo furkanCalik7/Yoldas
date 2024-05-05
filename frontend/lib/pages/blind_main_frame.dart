@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/notification_handler.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -8,8 +10,11 @@ import 'package:frontend/util/secure_storage.dart';
 import '../custom_widgets/appbars/appbar_custom.dart';
 import 'ai_model_selection_page.dart';
 
+
+
 class BlindMainFrame extends StatefulWidget {
   const BlindMainFrame({super.key});
+
   static const String routeName = "/blind_main_frame";
 
   @override
@@ -33,11 +38,13 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
   }
 
   Future<void> _initNotifications() async {
-    String? phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
-        await SecureStorageManager.read(key: StorageKey.phone_number);
+    String? phoneNumber =
+        SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
+            await SecureStorageManager.read(key: StorageKey.phone_number);
     if (phoneNumber == null) return;
     await NotificationHandler().initializeNotifications(phoneNumber);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,6 @@ class _BlindMainFrameState extends State<BlindMainFrame> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-
           BottomNavigationBarItem(
             icon: Icon(Icons.remove_red_eye),
             label: "Yapay Zeka",

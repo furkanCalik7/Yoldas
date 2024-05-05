@@ -5,12 +5,10 @@ import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_cancel.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
 import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/custom_widgets/colors.dart';
-import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
 
@@ -40,19 +38,18 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   void initState() {
     super.initState();
-
     flutterTts = FlutterTts();
     flutterTts.setLanguage("tr-TR");
     flutterTts.speak("Uygun gönüllü aranıyor");
     flutterTts.setVoice({"name": "tr-tr-x-ama-local", "locale": "tr-TR"});
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 4),
+      duration: const Duration(seconds: 4),
     );
     _rotationAnimation = Tween<double>(begin: math.pi / 32, end: -math.pi / 32)
         .animate(_animationController);
     _positionAnimation = Tween<Offset>(
-      begin: Offset(0, 0),
+      begin: const Offset(0, 0),
       end: Offset(0, _radius),
     ).animate(
       CurvedAnimation(
@@ -72,7 +69,6 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   }
 
   Future<CallRequestResponse> sendCallRequest(Map<String, dynamic> args) async {
-    print("(notificition) sendCallRequest: $args");
     String accessToken =
         await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
     CallRequest callRequest;
@@ -100,35 +96,6 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
     return CallRequestResponse.fromJSON(jsonDecode(response.body));
   }
 
-  void registerCallStatus(String callId, BuildContext context) {
-    callSubscription = db
-        .collection("CallCollection")
-        .doc(callId)
-        .snapshots()
-        .listen((snapshot) {
-      print('(debug) Got updated room: ${snapshot.data()}');
-
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (data["status"] == CallStatus.IN_CALL.toString()) {
-        // Navigator.pushNamed(context, CallMainFrame.routeName,
-        //     arguments: {"call_action_type": "start", 'callId': callId});
-        print("Call started");
-
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CallMainFrame(
-              callId: callId,
-              callActionType: "start",
-            ),
-          ),
-          ModalRoute.withName('/'),
-        );
-        callSubscription?.cancel();
-      }
-    });
-  }
-
   void cancelCall(String callId) async {
     await ApiManager.post(
       path: "/calls/call/cancel",
@@ -143,11 +110,9 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   Widget build(BuildContext context) {
     final Map<String, dynamic> args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    print("(notification) volunteer_search_screen builded");
-    // sendCallRequest(args).then((callRequestResponse) {
-    //   callId = callRequestResponse.callID;
-    //   registerCallStatus(callRequestResponse.callID, context);
-    // });
+    callId = args["call_id"];
+
+
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
@@ -172,8 +137,8 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
                 );
               },
             ),
-            SizedBox(height: 40),
-            Text(
+            const SizedBox(height: 40),
+            const Text(
               'Uygun gönüllü aranıyor...',
               style: TextStyle(
                 fontSize: 25,
@@ -185,22 +150,26 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               height: MediaQuery.of(context).size.height * 0.3,
             ),
 
-            // add hang up button
-            ElevatedButton(
-              onPressed: () {
-                if (callId != null) {
-                  cancelCall(callId!);
-                }
-
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.call_end, size: 50, color: Colors.white),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(redIconButtonColor),
-                shape: MaterialStateProperty.all(CircleBorder()),
-                padding: MaterialStateProperty.all(EdgeInsets.all(10)),
+            Ink(
+              decoration: const ShapeDecoration(
+                color: redIconButtonColor, // Set the background color of the IconButton
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  if (callId != null) {
+                    cancelCall(callId!);
+                  }
+                  Navigator.pop(context, true);
+                },
+                icon: const Icon(Icons.call_end, size: 50, color: Colors.white),
+                iconSize: 50, // Adjust the size of the icon as needed
+                padding: const EdgeInsets.all(10), // Adjust the padding as needed
+                splashRadius: 28, // Set the splash radius as needed
+                tooltip: "Aramayı iptal et",
               ),
             ),
+
           ],
         ),
       ),

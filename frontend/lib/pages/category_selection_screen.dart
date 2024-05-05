@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
@@ -7,8 +10,12 @@ import 'package:frontend/custom_widgets/colors.dart';
 import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
 import 'package:frontend/util/api_manager.dart';
-import 'package:http/http.dart' as http;
 
+import '../controller/webrtc/constants/call_status.dart';
+import '../controller/webrtc/dto/call_request.dart';
+import '../controller/webrtc/dto/call_request_response.dart';
+import '../util/secure_storage.dart';
+import 'call_main_frame.dart';
 
 class CategorySelectionScreen extends StatefulWidget {
   const CategorySelectionScreen({Key? key}) : super(key: key);
@@ -34,50 +41,152 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     Icons.eco,
   ];
 
-  List<String> possibleCategories = [];
+  List<String> possibleCategories = [
+    'Sağlık',
+    'Müzik',
+    'Aşçılık',
+    'Alışveriş',
+    'Hukuk',
+    'Felsefe',
+    'Eğitim',
+    'Ekonomi',
+    'Psikoloji',
+    'Botanik'
+  ];
+
+  // List<String> possibleCategories = [];
   int selectedIndex = 0;
-  bool isLoading = true; // New variable to track loading status
+  bool isLoading = false; // New variable to track loading status
+  late StreamSubscription<DocumentSnapshot> callSubscription;
+  late String callId;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    getAllAbilities();
+    // getAllAbilities();
+
   }
+  // CAno beni affet çok gözüme battııı
+  // Future<void> getAllAbilities() async {
+  //   String path = '/users/get_all_abilities';
+  //   Map<String, String> headers = {
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //   };
+  //
+  //   http.Response response = await ApiManager.get(
+  //     path,
+  //     headers,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     Map<String, dynamic> responseBody =
+  //         jsonDecode(utf8.decode(response.bodyBytes));
+  //     setState(() {
+  //       possibleCategories = List.from(responseBody.values.toList());
+  //     });
+  //   } else {
+  //     print('ERROR: Status code: ${response.statusCode}');
+  //     setState(() {});
+  //   }
+  //   print(possibleCategories);
+  //   isLoading = false; // Even in case of error, stop the loading indicator
+  // }
 
-  Future<void> getAllAbilities() async {
-    String path = '/users/get_all_abilities';
-    Map<String, String> headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-    };
+  Future<CallRequestResponse> sendQuickCallRequest() async {
+    try {
+      String accessToken =
+          await SecureStorageManager.read(key: StorageKey.access_token) ??
+              "N/A";
+      CallRequest callRequest;
 
-    http.Response response = await ApiManager.get(
-      path,
-      headers,
-    );
+      String selectedCategory = possibleCategories[selectedIndex];
+      print(selectedCategory);
+      if (selectedCategory == "Psikoloji") {
+        callRequest = CallRequest(
+            isQuickCall: true,
+            category: possibleCategories[selectedIndex],
+            isConsultancyCall: true);
+      } else {
+        callRequest = CallRequest(
+            isQuickCall: true,
+            category: possibleCategories[selectedIndex],
+            isConsultancyCall: false);
+      }
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody =
-          jsonDecode(utf8.decode(response.bodyBytes));
+      final response = await ApiManager.post(
+        path: "/calls/call",
+        bearerToken: accessToken,
+        body: callRequest.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        return CallRequestResponse.fromJSON(jsonDecode(response.body));
+      } else {
+        // Handle error response
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Arama isteği gönderilemedi.'),
+          ),
+        );
+        setState(() {
+          isLoading = false;
+        });
+        throw Exception(
+            'Failed to send quick call request. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions occurred during the process
+      print('Error sending quick call request: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Arama isteği gönderilemedi.'),
+        ),
+      );
       setState(() {
-        possibleCategories = List.from(responseBody.values.toList());
+        isLoading = false;
       });
-    } else {
-      print('ERROR: Status code: ${response.statusCode}');
-      setState(() {});
+      // Re-throw the exception if you want to propagate it further
+      throw e;
     }
-    isLoading = false; // Even in case of error, stop the loading indicator
   }
 
+  void registerCallStatus(String callId, BuildContext context) {
+    callSubscription = db
+        .collection("CallCollection")
+        .doc(callId)
+        .snapshots()
+        .listen((snapshot) {
+      print('(debug) Got updated room: ${snapshot.data()}');
+
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data["status"] == CallStatus.IN_CALL.toString()) {
+        print("Call started");
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CallMainFrame(
+              callId: callId,
+              callActionType: "start",
+            ),
+          ),
+          ModalRoute.withName('/'),
+        );
+        callSubscription.cancel();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppbarCustom(
+      appBar: isLoading ? null :AppbarCustom(
         title: "Kategori Seç",
       ),
       body: Container(
         decoration: getBackgroundDecoration(),
-        padding: EdgeInsets.all(50),
+        padding: const EdgeInsets.all(50),
         child: isLoading
             ? const Center(
                 child: CircularProgressIndicator()) // Show loading indicator
@@ -87,17 +196,17 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.1,
                   ),
-                  Container(
+                  SizedBox(
                     height: 250,
                     child: CustomSwiper(
-                      titles: possibleCategories,
-                      icons: icons,
-                      action: (index) => setState(() {
-                        selectedIndex = index;
-                        flutterTTs.speak(possibleCategories[index]);
-                      }
-                      ),
-                    ),
+                        titles: possibleCategories,
+                        icons: icons,
+                        action: (index) {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                          flutterTTs.speak(possibleCategories[selectedIndex]);
+                        }),
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.1,
@@ -106,14 +215,23 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                     text: "Aramayı Başlat",
                     semanticLabel: "${possibleCategories[selectedIndex]} kategorisinde aramayı başlat",
                     action: () {
-                      Navigator.pushNamed(
-                        context,
-                        VolunteerSearchScreen.routeName,
-                        arguments: {
-                          "is_quick_call": false,
-                          "category": possibleCategories[selectedIndex],
-                        },
-                      );
+                      setState(() {
+                        isLoading = true;
+                      });
+                      sendQuickCallRequest().then((callRequestResponse) {
+                        callId = callRequestResponse.callID;
+                        registerCallStatus(callRequestResponse.callID, context);
+
+                        Navigator.pushNamed(
+                            context, VolunteerSearchScreen.routeName,
+                            arguments: {"call_id": callId}).then((result) {
+                          if (result == true) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
+                        });
+                      });
                     },
                     height: MediaQuery.of(context).size.height * 0.075,
                   ),

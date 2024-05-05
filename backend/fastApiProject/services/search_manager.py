@@ -1,18 +1,7 @@
 import logging
-import queue
-import threading
-from typing import Optional
 
-from icecream import ic
-from pydantic import BaseModel
-
-from fastApiProject.config import CALL_TIMEOUT, NUMBER_OF_CALLS
-from fastApiProject.dao import matcher_dao, call_dao
-from fastApiProject.models.entity_models import User, Candidate
 from fastApiProject.models.request_models import CallRequest
-from fastApiProject.services import notification_manager
 from fastApiProject.services.search_session_manager import SearchSession
-from fastApiProject.shared.constants import SearchStatus, CallStatus
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -30,9 +19,9 @@ class SearchManager:
     def get_search_session_by_call_id(self, call_id: str) -> SearchSession:
         return self.search_sessions[call_id]
 
-    def init_new_search_session(self, call_id: str, candidate_users_phone_numbers: list[str], caller,
+    def init_new_search_session(self, call_id: str, caller,
                                 call_request: CallRequest):
-        search_session = SearchSession(call_id, candidate_users_phone_numbers, caller,
+        search_session = SearchSession(call_id, caller,
                                        call_request)
         self.search_sessions[call_id] = search_session
         return search_session
@@ -48,7 +37,7 @@ class SearchManager:
 
     # This might be triggered before session is initialized.
     def cancel_session(self, search_session: SearchSession):
-        search_session.add_task("start_call")
+        search_session.add_task("cancel")
 
     def delete_session(self, search_session: SearchSession):
         self.search_sessions.pop(search_session.call_id)

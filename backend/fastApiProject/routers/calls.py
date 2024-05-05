@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
 
 from ..models import entity_models
 from ..models.request_models import CallAccept, CallRequest, CallHangup, CallReject, CallCancel
@@ -21,9 +21,18 @@ async def call_request(_call_request: CallRequest,
                        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
     call_id = call_manager.create_call(_call_request, current_user)
     return CallRequestResponse(
-        call_id=call_id,
-        callee_name="to be removed"
+        call_id=call_id
     )
+
+
+@router.post("/{call_id}/search-session")
+async def start_search_session(
+        call_id: str,
+        _call_request: CallRequest,
+        current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]
+):
+    call_manager.start_search_session(call_id, _call_request, current_user)
+
 
 @router.post("/call/accept")
 async def call_accept(_call_accept: CallAccept,
@@ -71,6 +80,7 @@ async def search_cancel(_call_cancel: CallCancel,
     return call_manager.cancel_call(call_id)
 
 
+# TODO: hangout does work right now
 @router.post("/call/hangup")
 async def call_hangup(_call_hangup: CallHangup,
                       current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
