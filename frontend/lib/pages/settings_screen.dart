@@ -7,6 +7,7 @@ import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
+import 'package:http/http.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -37,6 +38,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     String? active = SecureStorageManager.readFromCache(key: StorageKey.is_active);
     active ??= await SecureStorageManager.read(key: StorageKey.is_active);
 
+    print(active);
+
     userType = type == "volunteer" ? UserType.volunteer : UserType.blind;
     isActive = active == "true" ? true : false;
     setState(() {});
@@ -45,14 +48,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void updateActivity(value) async {
 
     String phoneNumber = SecureStorageManager.readFromCache(key: StorageKey.phone_number) ?? await SecureStorageManager.read(key: StorageKey.phone_number) ?? "N/A";
-
-    ApiManager.put(
-      path: '/users/update/$phoneNumber',
+    print("phoneNumber: $phoneNumber");
+    print("isActive: $value");
+    String path = '/users/update/$phoneNumber';
+    Response response = await ApiManager.put(
+      path: path,
       bearerToken: SecureStorageManager.readFromCache(key: StorageKey.access_token) ?? await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A",
       body: {
         'is_active': value,
       },
     );
+
+    if (response.statusCode == 200) {
+      print("Activity updated successfully");
+      print(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Arama aktifliği durumu güncellendi'),
+        ),
+      );
+    } else {
+      print("Activity update failed");
+    }
 
     SecureStorageManager.write(key: StorageKey.is_active, value: value.toString());
   }
@@ -151,7 +168,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {
                         isActive = value;
                         updateActivity(value);
-
                       });
                     },
                   ),

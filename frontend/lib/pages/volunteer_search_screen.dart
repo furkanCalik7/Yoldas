@@ -13,7 +13,12 @@ import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
 
 class VolunteerSearchScreen extends StatefulWidget {
-  VolunteerSearchScreen({Key? key}) : super(key: key);
+  VolunteerSearchScreen(
+      {Key? key, required this.callRequest, required this.callId})
+      : super(key: key);
+
+  final CallRequest callRequest;
+  final String callId;
 
   @override
   _VolunteerSearchScreenState createState() => _VolunteerSearchScreenState();
@@ -38,9 +43,16 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
   @override
   void initState() {
     super.initState();
+    sendSearchSessionDetails();
     flutterTts = FlutterTts();
     flutterTts.setLanguage("tr-TR");
-    flutterTts.speak("Uygun gönüllü aranıyor");
+
+    if (!widget.callRequest.isConsultancyCall!) {
+      flutterTts.speak("Uygun gönüllü aranıyor");
+    } else {
+      flutterTts.speak("Uygun görme engelli aranıyor");
+    }
+
     flutterTts.setVoice({"name": "tr-tr-x-ama-local", "locale": "tr-TR"});
     _animationController = AnimationController(
       vsync: this,
@@ -68,51 +80,32 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
     super.dispose();
   }
 
-  Future<CallRequestResponse> sendCallRequest(Map<String, dynamic> args) async {
+  Future<void> sendSearchSessionDetails() async {
     String accessToken =
-        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
-    CallRequest callRequest;
-
-    if (args["is_quick_call"] != null) {
-      callRequest = CallRequest(
-          isQuickCall: true, category: "", isConsultancyCall: false);
-    } else {
-      String category = args["category"];
-      if (category == "Psikoloji") {
-        callRequest = CallRequest(
-            isQuickCall: false, category: category, isConsultancyCall: true);
-      } else {
-        callRequest = CallRequest(
-            isQuickCall: false, category: category, isConsultancyCall: false);
-      }
-    }
-
-    final response = await ApiManager.post(
-      path: "/calls/call",
+        SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+            await SecureStorageManager.read(key: StorageKey.access_token) ??
+            "N/A";
+    await ApiManager.post(
+      path: "/calls/call/${widget.callId}/search-session",
       bearerToken: accessToken,
-      body: callRequest.toJson(),
+      body: widget.callRequest.toJson(),
     );
-
-    return CallRequestResponse.fromJSON(jsonDecode(response.body));
   }
 
   void cancelCall(String callId) async {
+    String accessToken =
+        SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+            await SecureStorageManager.read(key: StorageKey.access_token) ??
+            "N/A";
     await ApiManager.post(
       path: "/calls/call/cancel",
-      bearerToken:
-          await SecureStorageManager.read(key: StorageKey.access_token) ??
-              "N/A",
+      bearerToken: accessToken,
       body: CallCancel(callID: callId).toJSON(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    callId = args["call_id"];
-
-
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
@@ -138,9 +131,11 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               },
             ),
             const SizedBox(height: 40),
-            const Text(
-              'Uygun gönüllü aranıyor...',
-              style: TextStyle(
+            Text(
+              widget.callRequest.isConsultancyCall!
+                  ? 'Uygun görme engelli aranıyor...'
+                  : 'Uygun gönüllü aranıyor...',
+              style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
                 color: textColorLight,
@@ -149,27 +144,29 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
             ),
-
             Ink(
               decoration: const ShapeDecoration(
-                color: redIconButtonColor, // Set the background color of the IconButton
+                color: redIconButtonColor,
+                // Set the background color of the IconButton
                 shape: CircleBorder(),
               ),
               child: IconButton(
                 onPressed: () {
-                  if (callId != null) {
-                    cancelCall(callId!);
+                  if (widget.callId != null) {
+                    cancelCall(widget.callId);
                   }
                   Navigator.pop(context, true);
                 },
                 icon: const Icon(Icons.call_end, size: 50, color: Colors.white),
-                iconSize: 50, // Adjust the size of the icon as needed
-                padding: const EdgeInsets.all(10), // Adjust the padding as needed
-                splashRadius: 28, // Set the splash radius as needed
+                iconSize: 50,
+                // Adjust the size of the icon as needed
+                padding: const EdgeInsets.all(10),
+                // Adjust the padding as needed
+                splashRadius: 28,
+                // Set the splash radius as needed
                 tooltip: "Aramayı iptal et",
               ),
             ),
-
           ],
         ),
       ),

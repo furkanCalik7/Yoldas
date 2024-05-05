@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
         tokenType: data['token_type'],
         abilities: user['abilities'].cast<String>(),
         isConsultant: user['isConsultant'],
-        isActive: user['is_active'],
+        isActive: user['is_active'] == "true" ? true : false,
       );
 
       // Rest of your code for successful response
