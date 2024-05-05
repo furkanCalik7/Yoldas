@@ -1,7 +1,5 @@
 import "package:camera/camera.dart";
-import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:flutter/widgets.dart";
 import "package:frontend/controller/base_controller.dart";
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import "package:frontend/custom_widgets/colors.dart";

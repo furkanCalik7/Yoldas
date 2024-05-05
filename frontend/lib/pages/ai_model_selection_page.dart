@@ -107,9 +107,9 @@ class _AIModelSelectionPageState extends State<AIModelSelectionPage> {
             height: 50,
           ),
           ButtonMain(
-            text: "Başlat",
+            text: "Modeli Başlat",
             height: MediaQuery.of(context).size.height * 0.075,
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: MediaQuery.of(context).size.width * 0.8,
             semanticLabel: "${models[selectedIndex]} modelini başlat",
             action: () {
               navigateToModel(context, selectedIndex);

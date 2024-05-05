@@ -42,9 +42,22 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     Icons.eco,
   ];
 
-  List<String> possibleCategories = [];
+  List<String> possibleCategories = [
+    'Sağlık',
+    'Müzik',
+    'Aşçılık',
+    'Alışveriş',
+    'Hukuk',
+    'Felsefe',
+    'Eğitim',
+    'Ekonomi',
+    'Psikoloji',
+    'Botanik'
+  ];
+
+  // List<String> possibleCategories = [];
   int selectedIndex = 0;
-  bool isLoading = true; // New variable to track loading status
+  bool isLoading = false; // New variable to track loading status
   late StreamSubscription<DocumentSnapshot> callSubscription;
   late String callId;
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -52,33 +65,34 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   @override
   void initState() {
     super.initState();
-    getAllAbilities();
+    // getAllAbilities();
 
   }
-
-  Future<void> getAllAbilities() async {
-    String path = '/users/get_all_abilities';
-    Map<String, String> headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-    };
-
-    http.Response response = await ApiManager.get(
-      path,
-      headers,
-    );
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody =
-          jsonDecode(utf8.decode(response.bodyBytes));
-      setState(() {
-        possibleCategories = List.from(responseBody.values.toList());
-      });
-    } else {
-      print('ERROR: Status code: ${response.statusCode}');
-      setState(() {});
-    }
-    isLoading = false; // Even in case of error, stop the loading indicator
-  }
+  // CAno beni affet çok gözüme battııı
+  // Future<void> getAllAbilities() async {
+  //   String path = '/users/get_all_abilities';
+  //   Map<String, String> headers = {
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //   };
+  //
+  //   http.Response response = await ApiManager.get(
+  //     path,
+  //     headers,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     Map<String, dynamic> responseBody =
+  //         jsonDecode(utf8.decode(response.bodyBytes));
+  //     setState(() {
+  //       possibleCategories = List.from(responseBody.values.toList());
+  //     });
+  //   } else {
+  //     print('ERROR: Status code: ${response.statusCode}');
+  //     setState(() {});
+  //   }
+  //   print(possibleCategories);
+  //   isLoading = false; // Even in case of error, stop the loading indicator
+  // }
 
   Future<CallRequestResponse> sendQuickCallRequest() async {
     try {

@@ -142,7 +142,7 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
                   },
                   iconData: Icons.search,
                   size: 150,
-                  text: "Hızlı Arama",
+                  text: "Hızlı Arama Yap",
                 ),
                 TappableIcon(
                   action: () {
@@ -151,7 +151,7 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
                   },
                   iconData: Icons.person_search,
                   size: 150,
-                  text: "Özel Arama",
+                  text: "Özel Arama Yap",
                 ),
               ],
             ),

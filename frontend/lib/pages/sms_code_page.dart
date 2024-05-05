@@ -280,6 +280,7 @@ class _SMSCodePageState extends State<SMSCodePage> {
                           vertical: 30,
                           horizontal: 50,
                         ),
+
                         child: PinCodeTextField(
                           appContext: context,
                           pastedTextStyle: TextStyle(
