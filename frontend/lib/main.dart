@@ -32,6 +32,7 @@ void main() async {
       initialRoute: '/',
       navigatorKey: navigationKey,
       routes: {
+
         '/': (context) => const InitializationPage(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
