@@ -11,6 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept_response.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/pages/already_answered_screen.dart';
 import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
@@ -181,7 +182,11 @@ class NotificationHandler {
                     ),
                     ModalRoute.withName('/onboarding'));
               } else {
-                // TODO: show it is already accepted thank you
+                navigationKey.currentState?.pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => AlreadyAnsweredScreen(),
+                    ),
+                    (route) => false);
               }
             },
           );
