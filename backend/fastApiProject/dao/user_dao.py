@@ -161,7 +161,6 @@ def update_user_request(user_id, update_user_request: UpdateUserRequest):
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
 
     user = UpdateUserRequest.model_validate(doc.to_dict())
-
     # Define a dictionary containing attributes to update
     attributes_to_update = {
         'name': update_user_request.name,
@@ -170,7 +169,7 @@ def update_user_request(user_id, update_user_request: UpdateUserRequest):
         'isConsultant': update_user_request.isConsultant,
         'role': update_user_request.role,
         'notification_settings': update_user_request.notification_settings,
-        'abilities': update_user_request.abilities,
+        'abilities': update_user_request.abilities if update_user_request.abilities != [] else None,
         'is_active': update_user_request.is_active,
     }
 
