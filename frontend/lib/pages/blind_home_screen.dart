@@ -9,6 +9,7 @@ import 'package:frontend/controller/webrtc/dto/call_request.dart';
 import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
 import 'package:frontend/pages/call_main_frame.dart';
+import 'package:frontend/pages/call_type_selection_page.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
 import 'package:frontend/util/api_manager.dart';
@@ -147,7 +148,9 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
                 TappableIcon(
                   action: () {
                     Navigator.pushNamed(
-                        context, CategorySelectionScreen.routeName);
+                      context,
+                      CallTypeSelectionScreen.routeName,
+                    );
                   },
                   iconData: Icons.person_search,
                   size: 150,
