@@ -62,9 +62,10 @@ class ProfileText extends StatelessWidget {
 }
 
 class SubTitleText extends StatelessWidget {
-  const SubTitleText({super.key, required this.line});
+  const SubTitleText({super.key, required this.line, this.size = 35});
 
   final String line;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +73,9 @@ class SubTitleText extends StatelessWidget {
       line,
       textAlign: TextAlign.center,
       style: GoogleFonts.russoOne(
-        fontSize: 35,
+        fontSize: size,
         color: textColorLight,
       ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }
