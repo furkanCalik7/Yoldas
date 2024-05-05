@@ -30,7 +30,7 @@ def create_call(call_request: CallRequest, user) -> str:
 
 def start_search_session(call_id, call_request: CallRequest, user) -> str:
     # potential_callees = matcher_dao.find_potential_callees(call_request, user)
-    potential_callees = ["+905555555555", "+905077148636"]
+    potential_callees = ["+905555555555", "+905077148636", "+905222222222"]
     search_session = search_manager.get_search_session_by_call_id(call_id)
     search_session.set_candidates(potential_callees)
     search_manager.start_search_session(search_session)

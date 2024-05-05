@@ -62,7 +62,8 @@ def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
         doc = call_col_ref.get()
         if doc.exists:
             call_dict = doc.to_dict()
-            if call_user_type.value in call_dict and "signal" in call_dict[call_user_type.value]:
+            print("call_dict ", call_dict)
+            if call_user_type.value in call_dict and call_dict[call_user_type.value]["signal"] is not None:
                 return Signal.model_validate(call_dict[call_user_type.value]["signal"])
             else:
                 print(f"Signal property not found for call {call_id} and user type {call_user_type.value}")
