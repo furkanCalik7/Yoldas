@@ -27,6 +27,7 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
   late StreamSubscription<DocumentSnapshot> callSubscription;
   late String callId;
   bool isLoadingForCallId = false;
+  late CallRequest callRequest;
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
 
       callRequest = CallRequest(
           isQuickCall: true, category: "", isConsultancyCall: false);
+      this.callRequest = callRequest;
 
       final response = await ApiManager.post(
         path: "/calls/call",
@@ -130,14 +132,21 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
                       callId = callRequestResponse.callID;
                       registerCallStatus(callRequestResponse.callID, context);
 
+                      Map<String, dynamic> args = {
+                        'callRequest': callRequest,
+                        'callId': callId
+                      };
+
                       Navigator.pushNamed(
-                          context, VolunteerSearchScreen.routeName,
-                          arguments: {"call_id": callId}).then((result) {
-                            if(result == true) {
-                              setState(() {
-                                isLoadingForCallId = false;
-                              });
-                            }
+                        context,
+                        VolunteerSearchScreen.routeName,
+                        arguments: args,
+                      ).then((result) {
+                        if(result == true) {
+                          setState(() {
+                            isLoadingForCallId = false;
+                          });
+                        }
                       });
                     });
                   },

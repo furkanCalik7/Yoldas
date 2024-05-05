@@ -25,7 +25,7 @@ async def call_request(_call_request: CallRequest,
     )
 
 
-@router.post("/{call_id}/search-session")
+@router.post("/call/{call_id}/search-session")
 async def start_search_session(
         call_id: str,
         _call_request: CallRequest,

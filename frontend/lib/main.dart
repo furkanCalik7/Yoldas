@@ -9,7 +9,7 @@ import 'package:frontend/pages/currency_recognition_camera_view.dart';
 import 'package:frontend/pages/initial_screen.dart';
 import 'package:frontend/pages/login_with_phone.dart';
 import 'package:frontend/pages/notification_screen.dart';
-import "package:frontend/pages/onboarding_screen.dart";
+import 'package:frontend/pages/onboarding_screen.dart';
 import 'package:frontend/pages/text_recognition_view.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
@@ -34,24 +34,33 @@ void main() async {
       initialRoute: '/',
       navigatorKey: navigationKey,
       routes: {
-        '/': (context) => InitializationPage(),
-        //'/': (context) => const BlindMainFrame(),
-        //'/': (context) => const CallMainFrame(),
+        '/': (context) => const InitializationPage(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
         BlindMainFrame.routeName: (context) => const BlindMainFrame(),
         CategorySelectionScreen.routeName: (context) =>
-            const CategorySelectionScreen(),
+        const CategorySelectionScreen(),
         VolunteerMainFrame.routeName: (context) => const VolunteerMainFrame(),
         Welcome.routeName: (context) => const Welcome(),
         TextRecognitionCameraView.routeName: (context) =>
-            const TextRecognitionCameraView(),
+        const TextRecognitionCameraView(),
         CurrencyRecognitionCameraView.routeName: (context) =>
-            const CurrencyRecognitionCameraView(),
-        VolunteerSearchScreen.routeName: (context) => VolunteerSearchScreen(),
+        const CurrencyRecognitionCameraView(),
         NotificationScreen.routeName: (context) => const NotificationScreen(),
         CallTypeSelectionScreen.routeName: (context) =>
             const CallTypeSelectionScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == VolunteerSearchScreen.routeName) {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => VolunteerSearchScreen(
+              callRequest: args['callRequest'],
+              callId: args['callId'],
+            ),
+          );
+        }
+        return null;
       },
     ),
   );
