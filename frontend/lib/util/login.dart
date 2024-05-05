@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/pages/already_answered_screen.dart';
 import 'package:frontend/pages/blind_main_frame.dart';
 import 'package:frontend/pages/volunteer_main_frame.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -28,7 +29,6 @@ class CallingKitService {
       (call) async {
         if (call.method == 'CALL_ACCEPTED_INTENT') {
           final data = call.arguments;
-          print("test callkit $data");
           if (data != null) {
             _completer.complete(data);
           } else {
@@ -50,7 +50,6 @@ class CallingKitService {
       });
       return await _completer.future;
     } catch (e) {
-      log('tset Either data is empty or No call received in killed state: ${e.toString()}');
       return {};
     }
   }
@@ -146,7 +145,11 @@ class Login {
               ),
               ModalRoute.withName('/onboarding'));
         } else {
-          // TODO: show it is already accepted thank you
+          navigationKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => AlreadyAnsweredScreen(),
+              ),
+              (route) => false);
         }
         return;
       }

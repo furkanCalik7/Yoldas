@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:frontend/controller/base_controller.dart";
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import "package:frontend/custom_widgets/colors.dart";
+import "package:frontend/custom_widgets/loading_indicator.dart";
 import "package:get/get.dart";
 import "package:vibration/vibration.dart";
 
@@ -91,6 +92,15 @@ class _AIModelViewState extends State<AIModelView> {
                           ),
                         ),
                       ),
+                      if (!controller.isImageStreamActive.value &&
+                          controller.output == "")
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
+                            child: LoadingIndicator(),
+                            height: MediaQuery.of(context).size.height * 0.1,
+                          ),
+                        ),
                       if (controller.output != "")
                         Align(
                           alignment: Alignment.bottomCenter,
