@@ -170,7 +170,8 @@ def update_user_request(user_id, update_user_request: UpdateUserRequest):
         'isConsultant': update_user_request.isConsultant,
         'role': update_user_request.role,
         'notification_settings': update_user_request.notification_settings,
-        'abilities': update_user_request.abilities
+        'abilities': update_user_request.abilities,
+        'is_active': update_user_request.is_active,
     }
 
     # Iterate over the dictionary and update user attributes if the value is not None

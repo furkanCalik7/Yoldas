@@ -81,5 +81,4 @@ async def get_all_abilities():
 @router.put("/update/{user_id}")
 async def update_user(update_user_request: request_models.UpdateUserRequest,
                       current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
-    #logger.info(f"update_user with user_id {current_user["phone_number"]} called")
     return user_manager.update_user_request(current_user["phone_number"], update_user_request)
