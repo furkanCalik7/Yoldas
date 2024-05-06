@@ -47,8 +47,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   Future<void> sendEvaluation() async {
     print(point);
-    String accessToken = SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
-        await SecureStorageManager.read(key: StorageKey.access_token) ?? "N/A";
+    String accessToken =
+        SecureStorageManager.readFromCache(key: StorageKey.access_token) ??
+            await SecureStorageManager.read(key: StorageKey.access_token) ??
+            "N/A";
 
     String path = "/users/feedback";
 
@@ -138,8 +140,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 height: 75,
                 buttonColor: Colors.red,
                 action: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => ComplaintPage()));
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => ComplaintPage(
+                        callId: widget.callId,
+                      ),
+                    ),
+                  );
                 },
               )
             ],
