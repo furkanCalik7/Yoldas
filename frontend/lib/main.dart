@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/config.dart';
+import 'package:frontend/pages/already_answered_screen.dart';
+import 'package:frontend/pages/call_type_selection_page.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/currency_recognition_camera_view.dart';
 import 'package:frontend/pages/initial_screen.dart';
@@ -32,7 +34,6 @@ void main() async {
       initialRoute: '/',
       navigatorKey: navigationKey,
       routes: {
-
         '/': (context) => const InitializationPage(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         OnboardingScreen.routeName: (context) => const OnboardingScreen(),
@@ -46,6 +47,8 @@ void main() async {
         CurrencyRecognitionCameraView.routeName: (context) =>
         const CurrencyRecognitionCameraView(),
         NotificationScreen.routeName: (context) => const NotificationScreen(),
+        CallTypeSelectionScreen.routeName: (context) =>
+            const CallTypeSelectionScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == VolunteerSearchScreen.routeName) {
