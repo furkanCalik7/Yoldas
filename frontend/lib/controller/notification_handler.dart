@@ -182,6 +182,7 @@ class NotificationHandler {
                     ),
                     ModalRoute.withName('/onboarding'));
               } else {
+                print(callAccept);
                 navigationKey.currentState?.pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (context) => AlreadyAnsweredScreen(),

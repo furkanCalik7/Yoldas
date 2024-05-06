@@ -17,7 +17,10 @@ class SearchManager:
         self.search_sessions = {}
 
     def get_search_session_by_call_id(self, call_id: str) -> SearchSession:
-        return self.search_sessions[call_id]
+        try:
+            return self.search_sessions[call_id]
+        except KeyError:
+            return None
 
     def init_new_search_session(self, call_id: str, caller,
                                 call_request: CallRequest):
