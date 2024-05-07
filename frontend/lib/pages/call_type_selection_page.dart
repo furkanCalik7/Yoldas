@@ -27,6 +27,11 @@ class CallTypeSelectionScreen extends StatefulWidget {
 }
 
 class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  late StreamSubscription<DocumentSnapshot> callSubscription;
+  late String callId;
+  bool isLoadingForCallId = false;
+  late CallRequest callRequest;
   @override
   void initState() {
     super.initState();
@@ -34,7 +39,81 @@ class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
 
   @override
   void dispose() {
+    callSubscription.cancel();
     super.dispose();
+  }
+
+  Future<CallRequestResponse> sendConsultancyCall() async {
+    try {
+      String accessToken =
+          await SecureStorageManager.read(key: StorageKey.access_token) ??
+              "N/A";
+      CallRequest callRequest;
+
+      callRequest = CallRequest(
+          isQuickCall: false, category: "", isConsultancyCall: true);
+      this.callRequest = callRequest;
+
+      final response = await ApiManager.post(
+        path: "/calls/call",
+        bearerToken: accessToken,
+        body: callRequest.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        return CallRequestResponse.fromJSON(jsonDecode(response.body));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Arama isteği gönderilemedi.'),
+          ),
+        );
+        setState(() {
+          isLoadingForCallId = false;
+        });
+        flutterTTs.speak("Arama isteği gönderilemedi");
+        throw Exception(
+            'Failed to send quick call request. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Arama isteği gönderilemedi.'),
+        ),
+      );
+      setState(() {
+        isLoadingForCallId = false;
+      });
+      flutterTTs.speak("Arama isteği gönderilemedi");
+      throw e;
+    }
+  }
+
+  void registerCallStatus(String callId, BuildContext context) {
+    callSubscription = db
+        .collection("CallCollection")
+        .doc(callId)
+        .snapshots()
+        .listen((snapshot) {
+      print('(debug) Got updated room: ${snapshot.data()}');
+
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      if (data["status"] == CallStatus.IN_CALL.toString()) {
+        print("Call started");
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CallMainFrame(
+              callId: callId,
+              callActionType: "start",
+            ),
+          ),
+          ModalRoute.withName('/'),
+        );
+        callSubscription.cancel();
+      }
+    });
   }
 
   @override
@@ -43,7 +122,9 @@ class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
       appBar: AppbarCustom(
         title: "Arama Türünü Seçin",
       ),
-      body: Container(
+      body: isLoadingForCallId
+            ? const Center(child: CircularProgressIndicator()) :
+      Container(
       decoration: getBackgroundDecoration(),
         padding: EdgeInsets.all(40),
         child: Center(
@@ -62,7 +143,30 @@ class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
               ),
               TappableIcon(
                 action: () {
+                  setState(() {
+                    isLoadingForCallId = true;
+                  });
+                  sendConsultancyCall().then((callRequestResponse) {
+                    callId = callRequestResponse.callID;
+                    registerCallStatus(callRequestResponse.callID, context);
 
+                    Map<String, dynamic> args = {
+                      'callRequest': callRequest,
+                      'callId': callId
+                    };
+
+                    Navigator.pushNamed(
+                      context,
+                      VolunteerSearchScreen.routeName,
+                      arguments: args,
+                    ).then((result) {
+                      if(result == true) {
+                        setState(() {
+                          isLoadingForCallId = false;
+                        });
+                      }
+                    });
+                  });
                 },
                 iconData: Icons.blind,
                 size: 150,
