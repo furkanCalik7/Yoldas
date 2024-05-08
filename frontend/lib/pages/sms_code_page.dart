@@ -19,6 +19,7 @@ import 'package:frontend/util/secure_storage.dart';
 import 'package:frontend/util/types.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:vibration/vibration.dart';
 
 import '../config.dart';
@@ -64,13 +65,33 @@ class _SMSCodePageState extends State<SMSCodePage> {
     sendSMS(widget.user.phoneNumber);
     super.initState();
     if (userType == UserType.blind) {
-      flutterTTs.speak("SMSe gelen kodu giriniz");
+      flutterTTs.speak("SMS ile gelen kodu giriniz");
+    }
+    SmsAutoFill().listenForCode;
+    // Listen for SMS code changes
+    SmsAutoFill().code.listen((code) {
+      // Handle the retrieved code according to your application logic
+      handleSMSCode(code);
+    });
+  }
+
+  void handleSMSCode(String? code) {
+    // Implement your logic to handle the retrieved SMS code
+    print("Filling the code received via SMS");
+    if (code != null) {
+      print("Received code: $code");
+      // Do something with the SMS code, such as validating it or filling it in a field
+      setState(() {
+        textEditingController.text = code; // Example: Fill the code in a text field
+      });
     }
   }
+
 
   @override
   void dispose() {
     errorController!.close();
+    SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
