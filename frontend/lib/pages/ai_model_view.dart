@@ -26,7 +26,7 @@ class _AIModelViewState extends State<AIModelView> {
   // Get type of controller from the constructor
 
   String instruction =
-      "Yapay zeka modelini aktif etmek için uzun basın, kamerayı değiştirmek için çift tıklayın";
+      "Yapay zeka modelini aktif etmek için çift dokunun, kamerayı değiştirmek için iki parmakla aşağı veya yukarı kaydırın";
 
   @override
   void dispose() {
@@ -44,20 +44,20 @@ class _AIModelViewState extends State<AIModelView> {
         title: title,
       ),
       body: GestureDetector(
-        onLongPress: () {
+        onTap: () {
           // Vibrates the device
           Vibration.vibrate(duration: 100);
           controller.onTapScreen();
           setState(() {
             if (controller.isImageStreamActive.value) {
-              instruction = "Yapay zeka modelini aktif etmek için uzun basın";
+              instruction = "Yapay zeka modelini aktif etmek için çift dokunun";
             } else {
-              instruction = "Tekrar başlatmak için uzun basın";
+              instruction = "Tekrar başlatmak için çift dokunun";
             }
           });
         },
-        onDoubleTap: () {
-          controller.changeCameraDirection();
+        onVerticalDragEnd: (details) {
+            controller.changeCameraDirection();
         },
         child: GetBuilder<BaseController>(
           init: controller,

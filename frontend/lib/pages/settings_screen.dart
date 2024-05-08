@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/abililities_page.dart';
+import 'package:frontend/pages/blind_tutorial_screen.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
@@ -11,6 +12,8 @@ import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password_screen.dart';
 import 'package:frontend/util/types.dart';
+
+import 'about_screen.dart';
 
 
 class SettingsScreen extends StatefulWidget {
@@ -167,9 +170,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+                if (userType == UserType.blind)
+                  SettingsTile.navigation(
+                    leading: Icon(Icons.question_mark),
+                    title: Text('Nasıl Kullanılır?'),
+                    onPressed: (BuildContext context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => BlindTutorialScreen()));
+                    },
+                  ),
+
+
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
                   title: const Text('Hakkında'),
+                  onPressed: (BuildContext context) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AboutScreen()));
+                  },
                 ),
                 SettingsTile.navigation(
                     leading: Icon(Icons.logout),

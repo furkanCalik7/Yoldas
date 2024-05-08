@@ -115,14 +115,14 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('User abilities updated successfully'),
+          content: Text('Yetenekleriniz başarıyla güncellendi.'),
         ),
       );
     } else {
       print('ERROR: Status code: ${response.statusCode}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update user abilities'),
+          content: Text('Yetenekleriniz güncellenirken bir hata oluştu.'),
         ),
       );
     }
