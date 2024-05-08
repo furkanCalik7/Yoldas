@@ -4,6 +4,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:frontend/pages/abililities_page.dart';
+import 'package:frontend/pages/blind_tutorial_screen.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:frontend/util/api_manager.dart';
 import 'package:frontend/util/secure_storage.dart';
@@ -172,6 +173,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+                if (userType == UserType.blind)
+                  SettingsTile.navigation(
+                    leading: Icon(Icons.question_mark),
+                    title: Text('Nasıl Kullanılır?'),
+                    onPressed: (BuildContext context) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => BlindTutorialScreen()));
+                    },
+                  ),
+
+
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
                   title: const Text('Hakkında'),
