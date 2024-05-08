@@ -3,11 +3,17 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
+import 'package:image/image.dart';
+
+import '../controller/webrtc/dto/call_request.dart';
+import '../util/secure_storage.dart';
+import '../util/types.dart';
 
 class CallMainFrame extends StatefulWidget {
   static const String routeName = "/callMainFrame";
   final String callId;
   final String callActionType;
+
 
   const CallMainFrame(
       {Key? key, required this.callId, required this.callActionType})
@@ -24,10 +30,12 @@ class CallMainFrameState extends State<CallMainFrame> {
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   bool isFlashlightOn = false;
   bool isRemoteStreamReceived = false;
+  CallRequest? callRequest;
+  UserType? userType;
 
   @override
   void initState() {
-    webRTCController = WebRTCController(updateCalleeName: updateCalleeName);
+    webRTCController = WebRTCController(updateCalleeName: updateCalleeName, getCallRequest: getCallRequest);
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     webRTCController
@@ -42,6 +50,7 @@ class CallMainFrameState extends State<CallMainFrame> {
         isRemoteStreamReceived = true;
       });
     });
+    getUserType();
 
     super.initState();
   }
@@ -61,6 +70,22 @@ class CallMainFrameState extends State<CallMainFrame> {
     _remoteRenderer.dispose();
     webRTCController.dispose();
     super.dispose();
+  }
+
+  Future<void> getUserType() async {
+    String? type = SecureStorageManager.readFromCache(key: StorageKey.role);
+    type ??= await SecureStorageManager.read(key: StorageKey.role);
+    setState(() {
+      userType = stringToUserType(type!);
+    });
+  }
+
+   CallRequest? getCallRequest (CallRequest callRequest) {
+    setState(() {
+      this.callRequest = callRequest;
+    });
+    print("debug");
+    print(this.callRequest);
   }
 
   void updateCalleeName(String name) {
@@ -84,6 +109,12 @@ class CallMainFrameState extends State<CallMainFrame> {
         setState(() {});
         break;
       case ButtonType.Camera:
+        if(userType == null) return;
+        if (userType == UserType.volunteer) {
+          webRTCController.switchRemoteVideo();
+          setState(() {});
+          return;
+        }
         webRTCController.switchVideo();
         setState(() {});
         break;
@@ -102,6 +133,18 @@ class CallMainFrameState extends State<CallMainFrame> {
   }
   // VIDEO call initalization screen
 
+  Widget getMainCallWidget() {
+    if (!isRemoteStreamReceived || userType == null) {
+      return Container(
+        color: Colors.white,
+      );
+    }
+    if (userType == UserType.volunteer || (callRequest != null && callRequest!.isConsultancyCall == true)) {
+      return RTCVideoView(_remoteRenderer);
+    }
+    return RTCVideoView(_localRenderer, mirror: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     webRTCController.setContext(context);
@@ -111,15 +154,13 @@ class CallMainFrameState extends State<CallMainFrame> {
           fit: StackFit.expand,
           children: [
             Center(
-                child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: Colors.black,
-                    child: isRemoteStreamReceived
-                        ? RTCVideoView(_remoteRenderer)
-                        : Container(
-                            color: Colors.white,
-                          ))),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black,
+                child: getMainCallWidget(),
+              ),
+            ),
             Positioned(
               top: 0,
               left: 0,
@@ -130,14 +171,6 @@ class CallMainFrameState extends State<CallMainFrame> {
                 },
               ),
             ),
-            Positioned(
-                top: 16.0,
-                right: 16.0,
-                child: Container(
-                    width: 120.0,
-                    height: 160.0,
-                    color: Colors.black,
-                    child: RTCVideoView(_localRenderer, mirror: true))),
             Positioned(
               top: 20,
               child: SizedBox(

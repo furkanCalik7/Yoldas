@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept.dart';
 import 'package:frontend/controller/webrtc/dto/call_accept_details_response.dart';
@@ -29,6 +30,7 @@ class WebRTCController {
     ]
   };
   Function(String) updateCalleeName;
+  Function(CallRequest) getCallRequest;
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? remoteStream;
@@ -38,6 +40,7 @@ class WebRTCController {
   FirebaseFirestore db = FirebaseFirestore.instance;
   String? callId;
   late BuildContext context;
+  RTCDataChannel? _dc;
 
   // Subsciptions
   StreamSubscription<DocumentSnapshot<Object?>>? answerSubscription;
@@ -48,8 +51,9 @@ class WebRTCController {
   StreamSubscription<DocumentSnapshot<Object?>>? hangupSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? calleeSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? offerSubscription;
+  StreamSubscription<DocumentSnapshot<Object?>>? callRequestSubscription;
 
-  WebRTCController({required this.updateCalleeName}) {
+  WebRTCController({required this.updateCalleeName, required this.getCallRequest}) {
     callCollection = db.collection('CallCollection');
   }
 
@@ -66,6 +70,20 @@ class WebRTCController {
 
     peerConnection = await createPeerConnection(configuration);
 
+    _dc = await peerConnection!.createDataChannel('pc1-dc', RTCDataChannelInit()..id = 1);
+    _dc!.onDataChannelState = (state) {
+      print("(debug) channel state $state");
+    };
+
+    _dc!.onMessage = (data) {
+      if (data.text == "toggleCameraRequest") {
+        flutterTTs.speak("Kamera yönü gönüllü tarafından değiştirildi.");
+        switchVideo();
+      }
+    };
+
+
+
     registerPeerConnectionListeners();
     print("local stream $localStream");
     localStream?.getTracks().forEach((track) {
@@ -74,6 +92,7 @@ class WebRTCController {
     });
 
     var callerCandidatesCollection = callRef.collection('callerCandidates');
+
 
     peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
       print('(debug) Got candidate: ${candidate.toMap()}');
@@ -140,6 +159,12 @@ class WebRTCController {
         calleeSubscription?.cancel();
       }
     });
+    callRequestSubscription = callRef.snapshots().listen((snapshot) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      CallRequest callRequest = CallRequest.fromJson(data);
+      getCallRequest(callRequest);
+      callRequestSubscription?.cancel();
+    });
     _registerFirestoreListeners();
   }
 
@@ -150,6 +175,16 @@ class WebRTCController {
 
     print('(debug) Create PeerConnection with configuration: $configuration');
     peerConnection = await createPeerConnection(configuration);
+    peerConnection!.onDataChannel = (channel) {
+      _dc = channel;
+      _dc!.onDataChannelState = (state) {
+        print("(debug) $state");
+      };
+      _dc!.onMessage = (data) {
+        _dc!.send(
+            RTCDataChannelMessage('(caller ==> callee) Hello from dc2 echo !!!'));
+      };
+    };
 
     registerPeerConnectionListeners();
 
@@ -226,6 +261,11 @@ class WebRTCController {
         calleeSubscription?.cancel();
       }
     });
+    callRequestSubscription = callRef.snapshots().listen((snapshot) {
+      CallRequest callRequest = CallRequest.fromJson(data);
+      getCallRequest(callRequest);;
+      callRequestSubscription?.cancel();
+    });
     _registerFirestoreListeners();
     return callAcceptResponse;
   }
@@ -297,6 +337,11 @@ class WebRTCController {
         .getVideoTracks()
         .firstWhere((track) => track.kind == 'video');
     await Helper.switchCamera(videoTrack);
+  }
+
+  void switchRemoteVideo() {
+    if (_dc == null) throw Exception("Data channel not open yet.");
+    _dc!.send(RTCDataChannelMessage("toggleCameraRequest"));
   }
 
   Future<void> toggleVideo(bool isOn) async {

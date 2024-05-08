@@ -18,4 +18,11 @@ class CallRequest {
     }
     return data;
   }
+  factory CallRequest.fromJson(Map<String, dynamic> json) {
+    return CallRequest(
+      isQuickCall: json['isQuickCall'] as bool,
+      category: json['category'] as String?,
+      isConsultancyCall: json['isConsultancyCall'] as bool?,
+    );
+  }
 }
