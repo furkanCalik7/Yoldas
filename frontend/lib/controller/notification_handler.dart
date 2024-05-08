@@ -71,6 +71,7 @@ Future<void> showCallkitIncoming(String callId) async {
   await FlutterCallkitIncoming.showCallkitIncoming(params);
 }
 
+@pragma('vm:entry-point')
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print("(notification) handleBackgroundMEssage : ${message.data['call_id']}");
   if (message.data["call_id"] == lastCallId) return;

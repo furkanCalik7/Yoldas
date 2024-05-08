@@ -109,6 +109,12 @@ class CallMainFrameState extends State<CallMainFrame> {
         setState(() {});
         break;
       case ButtonType.Camera:
+        if(userType == null) return;
+        if (userType == UserType.volunteer) {
+          webRTCController.switchRemoteVideo();
+          setState(() {});
+          return;
+        }
         webRTCController.switchVideo();
         setState(() {});
         break;
