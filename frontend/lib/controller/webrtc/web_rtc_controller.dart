@@ -29,6 +29,7 @@ class WebRTCController {
     ]
   };
   Function(String) updateCalleeName;
+  Function(CallRequest) getCallRequest;
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? remoteStream;
@@ -48,8 +49,9 @@ class WebRTCController {
   StreamSubscription<DocumentSnapshot<Object?>>? hangupSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? calleeSubscription;
   StreamSubscription<DocumentSnapshot<Object?>>? offerSubscription;
+  StreamSubscription<DocumentSnapshot<Object?>>? callRequestSubscription;
 
-  WebRTCController({required this.updateCalleeName}) {
+  WebRTCController({required this.updateCalleeName, required this.getCallRequest}) {
     callCollection = db.collection('CallCollection');
   }
 
@@ -140,6 +142,12 @@ class WebRTCController {
         calleeSubscription?.cancel();
       }
     });
+    callRequestSubscription = callRef.snapshots().listen((snapshot) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      CallRequest callRequest = CallRequest.fromJson(data);
+      getCallRequest(callRequest);
+      callRequestSubscription?.cancel();
+    });
     _registerFirestoreListeners();
   }
 
@@ -225,6 +233,11 @@ class WebRTCController {
         updateCalleeName(data['caller']['name']);
         calleeSubscription?.cancel();
       }
+    });
+    callRequestSubscription = callRef.snapshots().listen((snapshot) {
+      CallRequest callRequest = CallRequest.fromJson(data);
+      getCallRequest(callRequest);;
+      callRequestSubscription?.cancel();
     });
     _registerFirestoreListeners();
     return callAcceptResponse;
