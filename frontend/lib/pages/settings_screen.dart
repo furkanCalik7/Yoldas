@@ -18,6 +18,8 @@ import 'package:frontend/util/types.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'about_screen.dart';
+
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -187,6 +189,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsTile.navigation(
                   leading: const Icon(Icons.info),
                   title: const Text('Hakkında'),
+                  onPressed: (BuildContext context) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AboutScreen()));
+                  },
                 ),
                 SettingsTile.navigation(
                     leading: Icon(Icons.logout),

@@ -6,10 +6,22 @@ import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 import 'package:vibration/vibration.dart';
 
-class BlindTutorialScreen extends StatelessWidget {
+class BlindTutorialScreen extends StatefulWidget {
 
   static const String routeName = "/volunteerTutorialScreen";
+
+  @override
+  State<BlindTutorialScreen> createState() => _BlindTutorialScreenState();
+}
+
+class _BlindTutorialScreenState extends State<BlindTutorialScreen> {
   final FlutterTts flutterTTs = FlutterTts();
+
+  @override
+  void dispose() {
+    flutterTTs.stop();
+    super.dispose();
+  }
 
   final String allText = """
 Çağrı Gönderin
@@ -48,7 +60,7 @@ Talkback ile Kullanın
       body: SingleChildScrollView(
         child: Container(
           decoration: getBackgroundDecoration(),
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: GestureDetector(
             onLongPress: () {
               Vibration.vibrate(duration: 100);
@@ -63,7 +75,7 @@ Talkback ile Kullanın
               children: [
 
 
-                Text("Çağrı Gönderin", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
+                const Text("Çağrı Gönderin", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
                 ),),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -81,113 +93,113 @@ Talkback ile Kullanın
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "Yoldaş'ta Hızlı Arama ve Özel Arama şeklinde iki farklı arama seçeneği vardır. İlgili butonlar girişte açılan Arama sayfasında bulunur.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "1- Hızlı Arama: Bu arama seçeneği, sizi en kısa zamanda en uygun gönüllü kullanıcı ile eşleştirmeyi sağlar.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "2- Özel Arama: Bu arama seçeneği, aramanızı belli bir kategoride özelleştirmenizi sağlar. İlgili butona tıkladığınızda karşınıza 'Gönüllü Ara' ve 'Görme Engelli Ara' butonları çıkacaktır.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "2.1- Gönüllü Özel Arama: 'Gönüllü Ara' butonuna tıkladığınızda karşınıza Sağlık, Müzik, Aşçılık gibi kategorileri seçmeyi sağlayan bir menü çıkar. İlgili kategoriyi seçtikten sonra 'Aramayı Başlat' butonuna tıklayarak aramanızı başlatabilirsiniz.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "2.2- Görme Engelli Arama: 'Görme Engelli Ara' seçeneği ile diğer görme engellilerden destek alabilirsiniz.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
 
-                Text("Yapay Zeka Modellerini Kullanın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
+                const Text("Yapay Zeka Modellerini Kullanın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
                 ),),
                 Image.asset("assets/blind_tutorial_3.png", alignment: Alignment.center,),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "Yoldaş'ta Para tanıma, Resim tanıma, Metin tanıma ve Belge tanıma olmak üzere dört farklı yapay zeka modeli bulunmaktadır. Bu modelleri kullanarak çevrenizdeki nesneleri tanıyabilir, metinleri okuyabilir ve belgelerinizi tarayabilirsiniz.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "1- Yapay zeka sayfasına gitmek için 'Yapay Zeka' sekmesine tıklayın.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "2- İlgili modeli seçtikten sonra 'Modeli Başlat' butonuna tıklayarak kamerayı aktif hale getirin.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text(
                     "3- Modeli kullanmak için kameranızı ilgili nesneye tutun ve ekrana dokunarak resmini çekin. Model, nesneyi tanıyarak size sesli geri bildirimde bulunacaktır.",
                     style: TextStyle(fontSize: 14, color: textColorLight),
                   ),
                 ),
 
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
 
-                Text("Profilinizi düzenleyin", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
+                const Text("Profilinizi düzenleyin", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
                 ),),
                 Image.asset("assets/tutorial_2.png", alignment: Alignment.center,),
-                Text("1- Ayarlardan Profil'e tıklayın.'", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("1- Ayarlardan Profil'e tıklayın.'", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
-                Text("2- Profil bilgilerinizi düzenleyin", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("2- Profil bilgilerinizi düzenleyin", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
-                Text("3- Profil bilgilerinizi güncellemek için 'Kaydet' butonuna tıklayın", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("3- Profil bilgilerinizi güncellemek için 'Kaydet' butonuna tıklayın", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
 
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
 
-                Text("Görme Engellilere Danışmanlık Yapın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
+                const Text("Görme Engellilere Danışmanlık Yapın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
                 ),),
                 Image.asset("assets/tutorial_3.png", alignment: Alignment.center,),
-                Text("1- Profil sayfasından danışmanlık durumunu aktif ederek destek almak veya sohbet etmek isteyen kişilere yardımcı olabilirsiniz.",
+                const Text("1- Profil sayfasından danışmanlık durumunu aktif ederek destek almak veya sohbet etmek isteyen görme engelli kişilere yardımcı olabilirsiniz.",
                   style: TextStyle(fontSize: 14, color: textColorLight
                   ),),
-                Text("2- Çağrı geldiğinde yanıtlamak için 'Kabul et' butonuna tıklayın", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("2- Çağrı geldiğinde yanıtlamak için 'Kabul et' butonuna tıklayın", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
-                Text("3- Eğer müsait değilseniz 'Reddet' butonuna tıklayabilirsiniz. Bu durumda başka bir görme engelli ile bağlantı kurulur.", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("3- Eğer müsait değilseniz 'Reddet' butonuna tıklayabilirsiniz. Bu durumda başka bir kişi ile bağlantı kurulur.", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
 
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
 
-                Text("Talkback ile Kullanın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
+                const Text("Talkback ile Kullanın", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: textColorLight
                 ),),
                 Container(
-                  margin: EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
-                  child: Text("Uygulamayı daha rahat kullanabilmek için Talkback özelliğini aktif hale getirebilirsiniz. Talkback özelliği, uygulamadaki tüm butonları ve metinleri sesli olarak okur. Bu sayede uygulamayı daha rahat kullanabilirsiniz.",
+                  margin: const EdgeInsets.only(bottom: 8.0), // Adjust margin as needed
+                  child: const Text("Uygulamayı daha rahat kullanabilmek için Talkback özelliğini aktif hale getirebilirsiniz. Talkback özelliği, uygulamadaki tüm butonları ve metinleri sesli olarak okur. Bu sayede uygulamayı daha rahat kullanabilirsiniz.",
                     style: TextStyle(fontSize: 14, color: textColorLight
                     ),),
                 ),
-                Text("1- Uygulamanın 'Ayarlar' sayfasından 'Erişilebilirlik' sekmesine tıklayın. Bu sizi telefonunuzdaki Erişilebilirlik ayarlarına yönlendirecektir." , style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("1- Uygulamanın 'Ayarlar' sayfasından 'Erişilebilirlik' sekmesine tıklayın. Bu sizi telefonunuzdaki Erişilebilirlik ayarlarına yönlendirecektir." , style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
-                Text("2- Erişilebilirlik ayarlarından TalkBack'i etkinleştiriniz", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("2- Erişilebilirlik ayarlarından TalkBack'i etkinleştiriniz", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
-                Text("3- Daha sonra Talkback metin okuma ayarlarından Google Ses Tanıma Hizmetini seçiniz. Ardından Dili Türkçe olarak seçiniz.", style: TextStyle(fontSize: 14, color: textColorLight
+                const Text("3- Daha sonra Talkback metin okuma ayarlarından Google Ses Tanıma Hizmetini seçiniz. Ardından Dili Türkçe olarak seçiniz.", style: TextStyle(fontSize: 14, color: textColorLight
                 ),),
               ],
             ),

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:flutter_rating_bar/flutter_rating_bar.dart";
+import "package:flutter_tts/flutter_tts.dart";
 import "package:frontend/custom_widgets/appbars/appbar_custom.dart";
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
@@ -25,6 +26,8 @@ class EvaluationPage extends StatefulWidget {
 class _EvaluationPageState extends State<EvaluationPage> {
   var point = 3.0;
   final controller = TextEditingController();
+  final FlutterTts flutterTTs = FlutterTts();
+  UserType userType = UserType.blind;
 
   Future<UserType> getUserType() async {
     return await SecureStorageManager.read(key: StorageKey.role) ==
@@ -42,6 +45,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
     } else {
       Navigator.pushNamedAndRemoveUntil(
           context, VolunteerMainFrame.routeName, (route) => false);
+    }
+  }
+
+  void speakOnChange(double rating) async {
+    userType = await getUserType();
+    print(userType);
+    if(userType == UserType.blind){
+      print("speak");
+      await flutterTTs.speak("${rating.toInt()} yıldıza ayarlandı");
     }
   }
 
@@ -100,15 +112,20 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   setState(() {
                     point = rating;
                   });
+                  speakOnChange(rating);
                 },
                 allowHalfRating: false,
                 initialRating: 3,
                 itemCount: 5,
                 itemSize: 60.0,
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: tertiaryColor,
-                  shadows: [Shadow(color: tertiaryColor, blurRadius: 20)],
+                itemBuilder: (context, count) => Semantics(
+                  label: "${count + 1} yıldız",
+                  excludeSemantics: true,
+                  child: const Icon(
+                    Icons.star,
+                    color: tertiaryColor,
+                    shadows: [Shadow(color: tertiaryColor, blurRadius: 20)],
+                  ),
                 ),
               ),
               Row(
@@ -118,7 +135,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       text: "Gönder",
                       width: 150,
                       height: 75,
-                      fontSize: 30.0,
+                      fontSize: 27.0,
                       action: () {
                         sendEvaluation();
                       }),
@@ -129,14 +146,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     text: "Geç",
                     width: 150,
                     height: 75,
-                    fontSize: 30.0,
+                    fontSize: 27.0,
                     action: navigateToNextScreen,
                   )
                 ],
               ),
               ButtonMain(
                 text: "Şikayet Et",
-                fontSize: 30.0,
+                fontSize: 27.0,
                 height: 75,
                 buttonColor: Colors.red,
                 action: () {
