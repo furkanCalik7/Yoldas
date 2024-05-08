@@ -1,8 +1,6 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:frontend/pages/abililities_page.dart';
 import 'package:frontend/pages/profile_screen.dart';
 import 'package:frontend/util/api_manager.dart';
@@ -12,10 +10,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/pages/change_password_screen.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 import 'package:frontend/util/types.dart';
-import 'package:frontend/custom_widgets/colors.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 
 class SettingsScreen extends StatefulWidget {

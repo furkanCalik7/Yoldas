@@ -7,4 +7,4 @@ const String productionApiUrl = "http://161.35.202.231:8000";
 
 const String deployedApiUrl = "http://161.35.202.231:8000";
 
-const String API_URL = debugApiUrl;
+const String API_URL = deployedApiUrl;
