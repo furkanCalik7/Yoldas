@@ -38,7 +38,7 @@ def start_call(call_id: str, callee: CallUser):
         call_dict['status'] = CallStatus.IN_CALL.name
         call_col_ref.set(call_dict)
         # Increment completed calls for the callee
-        increment_completed_calls(callee['phone_number'])
+        increment_completed_calls(callee.phone_number)
     else:
         logger.error(f"call {call_id} does not exist.")
 
