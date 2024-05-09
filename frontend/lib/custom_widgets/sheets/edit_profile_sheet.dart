@@ -207,16 +207,18 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
           if (current_userType == UserType.blind)
             Row(
               children: [
-                const Text(
-                  "Danışmanlık Durumu:",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: textColorLight,
+                const Flexible( // or Expanded
+                  child: Text(
+                    "Bir görme engelli beni arayabilsin:",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textColorLight,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 20),
                 Semantics(
-                  label: "Danışmanlık Durumu, buton, ${consultancy_status ? 'Açık' : 'Kapalı'}",
+                  label: "Bir görme engelli beni arayabilsin, buton, ${consultancy_status ? 'Açık' : 'Kapalı'}",
                   excludeSemantics: true,
                   liveRegion: true,
                   child: CustomSwitch(
