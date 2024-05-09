@@ -13,7 +13,8 @@ enum StorageKey {
   token_type,
   abilities,
   isConsultant,
-  is_active
+  is_active,
+  call_count,
 }
 
 class SecureStorageManager {

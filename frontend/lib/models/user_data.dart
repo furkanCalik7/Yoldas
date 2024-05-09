@@ -8,6 +8,7 @@ class UserData {
   final List<String> abilities;
   final bool isConsultant;
   final bool isActive;
+  final int callCount;
 
   UserData({
     this.name = "",
@@ -17,6 +18,7 @@ class UserData {
     this.tokenType = "",
     this.isConsultant=false,
     this.isActive=true,
+    this.callCount=0,
     required this.password,
     required this.phoneNumber,}
 );

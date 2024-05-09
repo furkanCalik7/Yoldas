@@ -127,6 +127,9 @@ class Login {
           key: StorageKey.password, value: password);
       await SecureStorageManager.write(
           key: StorageKey.is_active, value: user['is_active'].toString());
+      await SecureStorageManager.write(
+        key: StorageKey.call_count, value: user['no_of_calls_completed'].toString(),
+      );
 
       await SecureStorageManager.writeList(
           key: StorageKey.abilities, value: user['abilities']);

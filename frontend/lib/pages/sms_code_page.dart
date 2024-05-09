@@ -198,6 +198,8 @@ class _SMSCodePageState extends State<SMSCodePage> {
         await SecureStorageManager.write(
             key: StorageKey.is_active, value: widget.user.isActive.toString());
 
+        await SecureStorageManager.write(key: StorageKey.call_count, value: widget.user.callCount.toString());
+
         await SecureStorageManager.writeList(
             key: StorageKey.abilities, value: widget.user.abilities);
 
