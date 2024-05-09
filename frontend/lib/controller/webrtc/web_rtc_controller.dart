@@ -276,11 +276,11 @@ class WebRTCController {
   ) async {
     var stream = await navigator.mediaDevices
         .getUserMedia({'video': true, 'audio': true});
-
     localVideo.srcObject = stream;
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
+    openSpeaker();
   }
 
   Future<void> hangUp() async {
@@ -337,6 +337,30 @@ class WebRTCController {
         .getVideoTracks()
         .firstWhere((track) => track.kind == 'video');
     await Helper.switchCamera(videoTrack);
+  }
+
+  void switchAudio() async {
+    if (localStream == null) throw Exception('Stream is not initialized');
+
+    final audioTrack = localStream!
+        .getAudioTracks()
+        .firstWhere((track) => track.kind == 'audio');
+    switchAudioDevice(audioTrack);
+  }
+
+  void openSpeaker() async {
+    if (localStream == null) throw Exception('Stream is not initialized');
+
+    final audioTrack = localStream!
+        .getAudioTracks()
+        .firstWhere((track) => track.kind == 'audio');
+    WebRTC.invokeMethod('enableSpeakerphone',<String, dynamic>{'trackId': audioTrack.id,'enable': isSpeakerOpen});
+  }
+
+  bool isSpeakerOpen = true;
+  void switchAudioDevice(MediaStreamTrack track) {
+    isSpeakerOpen = !isSpeakerOpen;
+    WebRTC.invokeMethod('enableSpeakerphone',<String, dynamic>{'trackId': track.id,'enable': isSpeakerOpen});
   }
 
   void switchRemoteVideo() {

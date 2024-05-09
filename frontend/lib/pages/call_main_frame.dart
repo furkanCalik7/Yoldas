@@ -106,7 +106,7 @@ class CallMainFrameState extends State<CallMainFrame> {
         setState(() {});
         break;
       case ButtonType.Speaker:
-        webRTCController.toogleSpeaker(isButtonOn);
+        webRTCController.switchAudio();
         setState(() {});
         break;
       case ButtonType.Camera:
