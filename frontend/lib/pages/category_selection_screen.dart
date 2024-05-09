@@ -7,6 +7,7 @@ import 'package:frontend/controller/text_recognizer_controller.dart';
 import 'package:frontend/custom_widgets/appbars/appbar_custom.dart';
 import 'package:frontend/custom_widgets/buttons/button_main.dart';
 import 'package:frontend/custom_widgets/colors.dart';
+import 'package:frontend/custom_widgets/loading_indicator.dart';
 import 'package:frontend/custom_widgets/swiper/custom_swiper.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
 import 'package:frontend/util/api_manager.dart';
@@ -188,8 +189,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
         decoration: getBackgroundDecoration(),
         padding: const EdgeInsets.all(50),
         child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator()) // Show loading indicator
+            ? const LoadingIndicator() // Show loading indicator
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

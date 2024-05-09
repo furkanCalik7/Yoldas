@@ -8,6 +8,7 @@ import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
 import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
+import 'package:frontend/custom_widgets/loading_indicator.dart';
 import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
 import 'package:frontend/pages/volunteer_search_screen.dart';
@@ -123,10 +124,10 @@ class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
         title: "Arama Türünü Seçin",
       ),
       body: isLoadingForCallId
-            ? const Center(child: CircularProgressIndicator()) :
+            ? const LoadingIndicator() :
       Container(
       decoration: getBackgroundDecoration(),
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,6 +172,7 @@ class _CallTypeSelectionScreenState extends State<CallTypeSelectionScreen> {
                 iconData: Icons.blind,
                 size: 150,
                 text: "Görme Engelli Ara",
+                textSizeRatio: 6,
               ),
             ],
           ),

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:frontend/controller/webrtc/web_rtc_controller.dart';
 import 'package:frontend/custom_widgets/appbars/video_call_bar.dart';
+import 'package:frontend/custom_widgets/loading_indicator.dart';
 import 'package:frontend/custom_widgets/text_widgets/custom_texts.dart';
-import 'package:image/image.dart';
+
 
 import '../controller/webrtc/dto/call_request.dart';
 import '../util/secure_storage.dart';
@@ -24,7 +25,7 @@ class CallMainFrame extends StatefulWidget {
 }
 
 class CallMainFrameState extends State<CallMainFrame> {
-  String calleeName = "";
+  String? calleeName;
   late WebRTCController webRTCController;
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -135,9 +136,7 @@ class CallMainFrameState extends State<CallMainFrame> {
 
   Widget getMainCallWidget() {
     if (!isRemoteStreamReceived || userType == null) {
-      return Container(
-        color: Colors.white,
-      );
+      return const LoadingIndicator();
     }
     if (userType == UserType.volunteer || (callRequest != null && callRequest!.isConsultancyCall == true)) {
       return RTCVideoView(_remoteRenderer);
@@ -171,12 +170,13 @@ class CallMainFrameState extends State<CallMainFrame> {
                 },
               ),
             ),
-            Positioned(
+            if (calleeName != null)
+              Positioned(
               top: 20,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Center(
-                  child: VideoCallName(line: calleeName),
+                  child: VideoCallName(line: calleeName!),
                 ),
               ),
             ),

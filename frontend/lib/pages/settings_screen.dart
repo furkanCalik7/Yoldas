@@ -160,11 +160,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }),
                 if(userType == UserType.volunteer)
                   SettingsTile.switchTile(
-                    title: Text('Arama Aktifliği'),
+                    title: Text('Rahatsız etmeyin'),
                     leading: Icon(Icons.video_call),
                     initialValue: isActive,
                     onToggle: (bool value) {
                       setState(() {
+                        value = !value;
                         isActive = value;
                         updateActivity(value);
                       });

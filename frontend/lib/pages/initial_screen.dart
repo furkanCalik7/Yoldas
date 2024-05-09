@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/custom_widgets/loading_indicator.dart';
 import 'package:frontend/util/login.dart';
 import 'package:frontend/custom_widgets/colors.dart';
 
@@ -21,11 +22,7 @@ class _InitializationPageState extends State<InitializationPage> {
     return Scaffold(
       body: Container(
         color: primaryColor,
-        child: const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(tertiaryColor),
-          ),
-        ),
+        child: const LoadingIndicator(),
       ),
     );
   }

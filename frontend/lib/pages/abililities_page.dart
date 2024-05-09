@@ -18,7 +18,18 @@ class AbilitiesPage extends StatefulWidget {
 }
 
 class _AbilitiesPageState extends State<AbilitiesPage> {
-  List<String> possibleAbilities = [];
+  List<String> possibleAbilities = [
+    'Sağlık',
+    'Müzik',
+    'Aşçılık',
+    'Alışveriş',
+    'Hukuk',
+    'Felsefe',
+    'Eğitim',
+    'Ekonomi',
+    'Psikoloji',
+    'Botanik'
+  ];
 
   List<String> userAbilities = [];
   String phoneNumber = "";
@@ -45,32 +56,32 @@ class _AbilitiesPageState extends State<AbilitiesPage> {
   @override
   void initState() {
     readUserInfo();
-    getAllAbilities();
+    // getAllAbilities();
     super.initState();
   }
-
-  void getAllAbilities() async {
-    String path = '/users/get_all_abilities';
-    Map<String, String> headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-    };
-
-    http.Response response = await ApiManager.get(
-      path,
-      headers,
-    );
-
-    if (response.statusCode == 200) {
-      // Manually decode the response body using UTF-8 encoding
-      Map<String, dynamic> responseBody =
-          jsonDecode(utf8.decode(response.bodyBytes));
-      setState(() {
-        possibleAbilities = List.from(responseBody.values.toList());
-      });
-    } else {
-      print('ERROR: Status code: ${response.statusCode}');
-    }
-  }
+  //
+  // void getAllAbilities() async {
+  //   String path = '/users/get_all_abilities';
+  //   Map<String, String> headers = {
+  //     'Content-Type': 'application/json;charset=UTF-8',
+  //   };
+  //
+  //   http.Response response = await ApiManager.get(
+  //     path,
+  //     headers,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     // Manually decode the response body using UTF-8 encoding
+  //     Map<String, dynamic> responseBody =
+  //         jsonDecode(utf8.decode(response.bodyBytes));
+  //     setState(() {
+  //       possibleAbilities = List.from(responseBody.values.toList());
+  //     });
+  //   } else {
+  //     print('ERROR: Status code: ${response.statusCode}');
+  //   }
+  // }
 
   void selectAbility(String? ability) {
     setState(() {

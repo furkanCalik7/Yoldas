@@ -8,6 +8,7 @@ import 'package:frontend/controller/webrtc/constants/call_status.dart';
 import 'package:frontend/controller/webrtc/dto/call_request.dart';
 import 'package:frontend/controller/webrtc/dto/call_request_response.dart';
 import 'package:frontend/custom_widgets/buttons/tappableIcon.dart';
+import 'package:frontend/custom_widgets/loading_indicator.dart';
 import 'package:frontend/pages/call_main_frame.dart';
 import 'package:frontend/pages/call_type_selection_page.dart';
 import 'package:frontend/pages/category_selection_screen.dart';
@@ -117,7 +118,7 @@ class _BlindHomeScreenState extends State<BlindHomeScreen> {
   Widget build(BuildContext context) {
     return Center(
       child: isLoadingForCallId
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingIndicator()
           : // Show loading ind:
           Column(
               crossAxisAlignment: CrossAxisAlignment.center,

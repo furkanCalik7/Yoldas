@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:frontend/controller/webrtc/dto/call_cancel.dart';
@@ -111,6 +112,7 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             AnimatedBuilder(
               animation: _animationController,
@@ -131,14 +133,18 @@ class _VolunteerSearchScreenState extends State<VolunteerSearchScreen>
               },
             ),
             const SizedBox(height: 40),
-            Text(
-              widget.callRequest.isConsultancyCall!
-                  ? 'Uygun görme engelli aranıyor...'
-                  : 'Uygun gönüllü aranıyor...',
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: textColorLight,
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                textAlign: TextAlign.center,
+                widget.callRequest.isConsultancyCall!
+                    ? 'Uygun görme engelli aranıyor...'
+                    : 'Uygun gönüllü aranıyor...',
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: textColorLight,
+                ),
               ),
             ),
             SizedBox(
