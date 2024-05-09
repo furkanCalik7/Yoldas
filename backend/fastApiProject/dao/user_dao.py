@@ -199,6 +199,8 @@ def send_complaint(complaintRequest, current_user):
 
     if call["caller"]["phone_number"] == current_user["phone_number"]:
         phone_number_of_complaint_receiver = call["callee"]["phone_number"]
+    elif call["callee"]["phone_number"] == current_user["phone_number"]:
+        phone_number_of_complaint_receiver = call["caller"]["phone_number"]
     else:
         logger.error(f"User with phone number {current_user['phone_number']} is not the caller of the call")
         raise HTTPException(status_code=400,
