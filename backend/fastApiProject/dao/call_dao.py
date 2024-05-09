@@ -37,9 +37,10 @@ def start_call(call_id: str, callee: CallUser):
         call_dict['start_time'] = datetime.now()
         call_dict['status'] = CallStatus.IN_CALL.name
         call_col_ref.set(call_dict)
+        # Increment completed calls for the callee
+        increment_completed_calls(callee['phone_number'])
     else:
-        print(f"call {call_id} does not exist.")
-
+        logger.error(f"call {call_id} does not exist.")
 
 def set_call_status(call_id: str, status: CallStatus):
     call_col_ref = db.collection("CallCollection").document(call_id)
@@ -53,6 +54,7 @@ def set_call_status(call_id: str, status: CallStatus):
 
 MAX_RETRIES = 5
 DELAY_BETWEEN_RETRIES = 1  # in seconds
+
 
 def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
     retries = 0
@@ -73,6 +75,7 @@ def get_signal(call_id: str, call_user_type: CallUserType) -> Signal:
         time.sleep(DELAY_BETWEEN_RETRIES)
     raise Exception(f"Failed to fetch signal for call {call_id} after {MAX_RETRIES} attempts.")
 
+
 def hangup_call(call_id: str):
     call_col_ref = db.collection("CallCollection").document(call_id)
     doc = call_col_ref.get()
@@ -85,3 +88,26 @@ def hangup_call(call_id: str):
         call_col_ref.set(call_dict)
     else:
         print(f"call {call_id} does not exist.")
+
+
+def increment_received_calls(callees: list[str]):
+    for callee in callees:
+        user_ref = db.collection("UserCollection").document(callee)
+        doc = user_ref.get()
+        if doc.exists:
+            user_dict = doc.to_dict()
+            user_dict['no_of_calls_received'] = user_dict['no_of_calls_received'] + 1
+            user_ref.set(user_dict)
+        else:
+            print(f"user {callee} does not exist .")
+
+
+def increment_completed_calls(phone_number: str):
+    user_ref = db.collection("UserCollection").document(phone_number)
+    doc = user_ref.get()
+    if doc.exists:
+        user_dict = doc.to_dict()
+        user_dict['no_of_calls_completed'] = user_dict['no_of_calls_completed'] + 1
+        user_ref.set(user_dict)
+    else:
+        print(f"user {phone_number} does not exist .")
