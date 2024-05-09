@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
       UserType userType =
           user['role'] == "volunteer" ? UserType.volunteer : UserType.blind;
 
-      print("isActive: ${user['is_active']}");
+      print("User: $user");
 
       UserData userData = UserData(
         name: user['name'],
@@ -72,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
         abilities: user['abilities'].cast<String>(),
         isConsultant: user['isConsultant'],
         isActive: user['is_active'],
+        callCount: user['no_of_calls_completed'],
       );
 
       // Rest of your code for successful response

@@ -32,6 +32,9 @@ class _VolunteerHomeScreenState extends State<VolunteerHomeScreen> {
         SecureStorageManager.readFromCache(key: StorageKey.phone_number) ??
             await SecureStorageManager.read(key: StorageKey.phone_number) ??
             "";
+    String callCount = SecureStorageManager.readFromCache(
+            key: StorageKey.call_count) ?? await SecureStorageManager.read(key: StorageKey.call_count) ?? "0";
+    numberOfHelpedBlindPeople = int.parse(callCount);
 
     setState(() {});
   }
