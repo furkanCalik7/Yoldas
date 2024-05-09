@@ -205,3 +205,10 @@ def get_all_abilities():
 def send_complaint(complaintRequest, current_user):
     logger.info(f"send_complaint with complaintRequest {complaintRequest} called")
     return user_dao.send_complaint(complaintRequest, current_user)
+
+
+# Get Completed Calls endpoint
+def get_completed_calls(phone_number: str):
+    logger.info(f"get_completed_calls called")
+    call_count = user_dao.get_completed_calls(phone_number)
+    return {"call_count": call_count}
