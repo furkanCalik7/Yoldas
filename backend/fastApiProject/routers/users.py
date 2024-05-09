@@ -79,3 +79,9 @@ async def get_user_by_matching_abilities(abilities: str):
 async def get_user_by_rating_average(low: int, high: int):
     logger.info(f"get_user_by_feedback_average for rating in range {low} and {high} called")
     return user_manager.get_user_by_rating_average(low, high)
+
+
+@router.get("/completed_call_count")
+async def get_completed_calls(current_user: Annotated[entity_models.User, Depends(user_manager.get_current_active_user)]):
+    logger.info(f"get_call_count called")
+    return user_manager.get_completed_calls(current_user["phone_number"])

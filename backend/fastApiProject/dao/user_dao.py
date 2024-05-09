@@ -188,6 +188,15 @@ def get_all_abilities():
     return doc.to_dict()
 
 
+def get_completed_calls(phone_number):
+    doc_ref = db.collection("UserCollection").document(phone_number)
+    doc = doc_ref.get()
+    if not doc.exists:
+        logger.error(f"User with phone number {phone_number} not found")
+        raise HTTPException(status_code=404, detail=f"User with phone number {phone_number} not found")
+    user = User.model_validate(doc.to_dict())
+    return user.no_of_calls_completed
+
 def send_complaint(complaintRequest, current_user):
     doc = db.collection("CallCollection").document(complaintRequest.callID).get()
     if not doc.exists:
@@ -199,6 +208,8 @@ def send_complaint(complaintRequest, current_user):
 
     if call["caller"]["phone_number"] == current_user["phone_number"]:
         phone_number_of_complaint_receiver = call["callee"]["phone_number"]
+    elif call["callee"]["phone_number"] == current_user["phone_number"]:
+        phone_number_of_complaint_receiver = call["caller"]["phone_number"]
     else:
         logger.error(f"User with phone number {current_user['phone_number']} is not the caller of the call")
         raise HTTPException(status_code=400,
